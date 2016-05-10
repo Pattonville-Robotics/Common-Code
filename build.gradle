@@ -40,6 +40,8 @@ dependencies {
     //compile files('libs/android-support-v4.jar')
     compile 'com.android.support:appcompat-v7:23.2.0'
 
+    compile 'org.atteo.classindex:classindex:3.4'
+
     compile(name: 'RobotCore-release', ext: 'aar')
     compile(name: 'Hardware-release', ext: 'aar')
     compile(name: 'FtcCommon-release', ext: 'aar')
