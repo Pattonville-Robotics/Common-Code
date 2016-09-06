@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
+package org.pattonvillerobotics.opmodes;
 
 import org.atteo.classindex.IndexAnnotated;
 

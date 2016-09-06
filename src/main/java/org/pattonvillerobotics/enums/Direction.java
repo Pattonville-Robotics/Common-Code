@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller.enums;
+package org.pattonvillerobotics.enums;
 
 /**
  * Created by developer on 7/30/16.

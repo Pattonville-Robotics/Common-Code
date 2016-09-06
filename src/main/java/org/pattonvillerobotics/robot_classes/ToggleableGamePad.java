@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller.robot_classes;
+package org.pattonvillerobotics.robot_classes;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 

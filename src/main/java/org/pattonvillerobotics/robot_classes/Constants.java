@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller.robot_classes;
+package org.pattonvillerobotics.robot_classes;
 
 /**
  * Created by developer on 7/31/16.

@@ -1,8 +1,9 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
+package org.pattonvillerobotics.opmodes;
 
-import com.qualcomm.ftcrobotcontroller.enums.Direction;
-import com.qualcomm.ftcrobotcontroller.robot_classes.Drive;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.pattonvillerobotics.enums.Direction;
+import org.pattonvillerobotics.robot_classes.Drive;
 
 /**
  * Created by developer on 7/31/16.

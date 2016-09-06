@@ -1,7 +1,8 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
+package org.pattonvillerobotics.opmodes;
 
-import com.qualcomm.ftcrobotcontroller.robot_classes.ToggleableGamePad;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.pattonvillerobotics.robot_classes.ToggleableGamePad;
 
 /**
  * Created by developer on 8/6/16.

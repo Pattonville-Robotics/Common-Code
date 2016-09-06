@@ -1,14 +1,15 @@
-package com.qualcomm.ftcrobotcontroller.robot_classes;
+package org.pattonvillerobotics.robot_classes;
 
 import android.util.Log;
 
-import com.qualcomm.ftcrobotcontroller.enums.Direction;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+
+import org.pattonvillerobotics.enums.Direction;
 
 /**
  * Created by developer on 7/30/16.
