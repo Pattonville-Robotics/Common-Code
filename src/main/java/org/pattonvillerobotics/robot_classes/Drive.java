@@ -11,9 +11,6 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.pattonvillerobotics.enums.Direction;
 
-/**
- * Created by developer on 7/30/16.
- */
 public class Drive {
 
     private static final double ANGLE_THRESHOLD = 2;
@@ -32,14 +29,14 @@ public class Drive {
         left_drive_motor = hardwareMap.dcMotor.get("left_drive_motor");
         right_drive_motor = hardwareMap.dcMotor.get("right_drive_motor");
 
-        gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
-        touchSensor = hardwareMap.touchSensor.get("touch_sensor");
+        //gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+        //touchSensor = hardwareMap.touchSensor.get("touch_sensor");
 
-        gyroSensor.calibrate();
+        //gyroSensor.calibrate();
 
-        while (gyroSensor.isCalibrating()) {
+        /*while (gyroSensor.isCalibrating()) {
             Thread.sleep(50);
-        }
+        }*/
 
     }
 
