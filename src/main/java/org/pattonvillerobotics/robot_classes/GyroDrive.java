@@ -14,15 +14,17 @@ public class GyroDrive extends Drive {
 
     public ModernRoboticsI2cGyro gyroSensor = null;
 
-    public GyroDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode) throws InterruptedException {
-
+    public GyroDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode) {
         super(hardwareMap, linearOpMode);
 
         gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
         gyroSensor.calibrate();
 
         while (gyroSensor.isCalibrating()) {
-            Thread.sleep(50);
+            try {
+                linearOpMode.sleep(100);
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 
