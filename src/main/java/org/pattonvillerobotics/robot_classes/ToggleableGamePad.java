@@ -2,9 +2,6 @@ package org.pattonvillerobotics.robot_classes;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-/**
- * Created by developer on 8/6/16.
- */
 public class ToggleableGamePad extends Gamepad {
 
     public boolean buttonPressed, systemActive;
@@ -30,7 +27,5 @@ public class ToggleableGamePad extends Gamepad {
         } else {
             buttonPressed = false;
         }
-
     }
-
 }

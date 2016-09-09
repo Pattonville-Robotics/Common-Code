@@ -1,23 +1,15 @@
 package org.pattonvillerobotics.robot_classes;
 
-import android.util.Log;
-
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.pattonvillerobotics.enums.Direction;
 
 public class Drive {
 
-    private static final double ANGLE_THRESHOLD = 2;
-
-    public DcMotor left_drive_motor, right_drive_motor = null;
-    public ModernRoboticsI2cGyro gyroSensor = null;
-    public TouchSensor touchSensor = null;
+    public DcMotor left_drive_motor, right_drive_motor;
     public LinearOpMode linearOpMode;
     public HardwareMap hardwareMap;
 
@@ -28,16 +20,6 @@ public class Drive {
 
         left_drive_motor = hardwareMap.dcMotor.get("left_drive_motor");
         right_drive_motor = hardwareMap.dcMotor.get("right_drive_motor");
-
-        //gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
-        //touchSensor = hardwareMap.touchSensor.get("touch_sensor");
-
-        //gyroSensor.calibrate();
-
-        /*while (gyroSensor.isCalibrating()) {
-            Thread.sleep(50);
-        }*/
-
     }
 
     public void moveFreely(double left_power, double right_power) {
@@ -61,7 +43,6 @@ public class Drive {
         }
 
         moveFreely(motorPower, motorPower);
-
     }
 
     public void turn(Direction direction, double power) {
@@ -82,9 +63,6 @@ public class Drive {
         }
 
         moveFreely(left, right);
-        sleep(50);
-        stop();
-
     }
 
     public void stop() {
@@ -128,66 +106,8 @@ public class Drive {
         while (left_drive_motor.getCurrentPosition() != targetPositionLeft || right_drive_motor.getCurrentPosition() != targetPositionRight) {
             move(direction, power);
         }
-
         stop();
-
     }
-
-    public void turnDegrees(Direction direction, double angle, double power) {
-        //Turn Specified Degrees Using Gyro Sensor
-
-        double currentHeading = gyroSensor.getIntegratedZValue();
-        double targetHeading;
-
-        switch (direction) {
-            case LEFT:
-                targetHeading = currentHeading - angle;
-                break;
-            case RIGHT:
-                targetHeading = currentHeading + angle;
-                break;
-            default:
-                throw new IllegalArgumentException();
-
-        }
-
-        telemetry("Headings", "Current Heading: " + currentHeading + " Target Heading: " + targetHeading);
-
-        while (currentHeading < targetHeading - ANGLE_THRESHOLD) {
-            telemetry("Turning Direction", "Left");
-
-            turn(Direction.LEFT, power);
-            currentHeading = gyroSensor.getIntegratedZValue();
-
-            Log.i("GyroHeading", Double.toString(currentHeading));
-        }
-
-        while (currentHeading > targetHeading + ANGLE_THRESHOLD) {
-            telemetry("Turning Direction", "Right");
-
-            turn(Direction.RIGHT, power);
-            currentHeading = gyroSensor.getIntegratedZValue();
-
-            Log.i("GyroHeading", Double.toString(currentHeading));
-        }
-
-        telemetry("Drive", "Angle obtained, stopping motors.");
-        Log.i("GyroHeading", Double.toString(gyroSensor.getIntegratedZValue()));
-
-        stop();
-
-    }
-
-    public void driveUntilContact(double power) {
-
-        while (!touchSensor.isPressed()) {
-            move(Direction.FORWARD, power);
-        }
-
-        stop();
-
-    }
-
 
     private double inchesToTicks(double inches) {
         return inches;
@@ -201,9 +121,7 @@ public class Drive {
         }
     }
 
-    private void telemetry(String tag, String message) {
+    public void telemetry(String tag, String message) {
         this.linearOpMode.telemetry.addData(tag, message);
     }
-
-
 }
