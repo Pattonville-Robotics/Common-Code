@@ -10,6 +10,7 @@ import org.pattonvillerobotics.commoncode.enums.Direction;
  * Created by Mitchell on 9/9/2016.
  */
 public abstract class AbstractDrive {
+
     public DcMotor leftDriveMotor;
     public DcMotor rightDriveMotor;
     public LinearOpMode linearOpMode;
