@@ -19,7 +19,7 @@ public class BeaconColorSensor {
 
     }
 
-    public void determineColor(AllianceColor alliance, Runnable ifBlue, Runnable ifRed, Runnable ifNeither){
+    public void determineColor(Runnable ifBlue, Runnable ifRed, Runnable ifNeither){
 
         switch(dominantColor()){
             case BLUE:
@@ -57,7 +57,7 @@ public class BeaconColorSensor {
             return ColorSensorColor.BLUE;
 
         }else if(red() > blue() && red() > green()){
-            return ColorSensorColor.GREEN;
+            return ColorSensorColor.RED;
 
         }else if(green() > blue() && green() > red()){
             return  ColorSensorColor.GREEN;
