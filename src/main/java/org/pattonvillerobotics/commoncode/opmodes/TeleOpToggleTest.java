@@ -2,7 +2,7 @@ package org.pattonvillerobotics.commoncode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.pattonvillerobotics.commoncode.robot_classes.ToggleableGamePad;
+import org.pattonvillerobotics.commoncode.robotclasses.ToggleableGamePad;
 
 /**
  * Created by developer on 8/6/16.

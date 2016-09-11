@@ -1,4 +1,4 @@
-package org.pattonvillerobotics.commoncode.robot_classes;
+package org.pattonvillerobotics.commoncode.robotclasses;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
