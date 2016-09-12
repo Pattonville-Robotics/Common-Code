@@ -10,7 +10,7 @@ import org.pattonvillerobotics.commoncode.enums.Direction;
 
 public class GyroDrive extends Drive {
 
-    private static final double ANGLE_THRESHOLD = 2;
+    private static final double ANGLE_THRESHOLD = 1;
 
     public ModernRoboticsI2cGyro gyroSensor = null;
 
@@ -46,24 +46,28 @@ public class GyroDrive extends Drive {
 
         }
 
-        telemetry("Headings", "Current Heading: " + currentHeading + " Target Heading: " + targetHeading);
+        telemetry("Headings", "Current Heading: " + currentHeading + "& Target Heading: " + targetHeading);
 
-        while (currentHeading < targetHeading - ANGLE_THRESHOLD) {
-            telemetry("Turning Direction", "Left");
+        while(currentHeading > targetHeading + ANGLE_THRESHOLD || currentHeading > targetHeading - ANGLE_THRESHOLD){
 
-            turn(Direction.LEFT, power);
-            currentHeading = gyroSensor.getIntegratedZValue();
+            while (currentHeading > targetHeading - ANGLE_THRESHOLD) {
+                telemetry("Turning Direction", "Left");
 
-            Log.i("GyroHeading", Double.toString(currentHeading));
-        }
+                turn(Direction.LEFT, power);
+                currentHeading = gyroSensor.getIntegratedZValue();
 
-        while (currentHeading > targetHeading + ANGLE_THRESHOLD) {
-            telemetry("Turning Direction", "Right");
+                Log.i("GyroHeading", Double.toString(currentHeading));
+            }
 
-            turn(Direction.RIGHT, power);
-            currentHeading = gyroSensor.getIntegratedZValue();
+            while (currentHeading < targetHeading + ANGLE_THRESHOLD) {
+                telemetry("Turning Direction", "Right");
 
-            Log.i("GyroHeading", Double.toString(currentHeading));
+                turn(Direction.RIGHT, power);
+                currentHeading = gyroSensor.getIntegratedZValue();
+
+                Log.i("GyroHeading", Double.toString(currentHeading));
+            }
+
         }
 
         telemetry("Drive", "Angle obtained, stopping motors.");
