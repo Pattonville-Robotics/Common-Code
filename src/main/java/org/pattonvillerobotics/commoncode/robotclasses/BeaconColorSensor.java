@@ -19,17 +19,28 @@ public class BeaconColorSensor {
 
     }
 
-    public void determineColor(Runnable ifBlue, Runnable ifRed, Runnable ifNeither){
+    public void determineColor(AllianceColor allianceColor, Runnable ifPositiveID, Runnable ifNegativeID, Runnable ifNeither){
 
-        switch(dominantColor()){
+        ColorSensorColor dominantColor = dominantColor();
+
+        switch(allianceColor){
             case BLUE:
-                ifBlue.run();
+                if(dominantColor == ColorSensorColor.BLUE){
+                    ifPositiveID.run();
+                }else if(dominantColor == ColorSensorColor.RED){
+                    ifNegativeID.run();
+                }else{
+                    ifNeither.run();
+                }
                 break;
             case RED:
-                ifRed.run();
-                break;
-            default:
-                ifNeither.run();
+                if(dominantColor == ColorSensorColor.RED){
+                    ifPositiveID.run();
+                }else if(dominantColor == ColorSensorColor.BLUE){
+                    ifNegativeID.run();
+                }else{
+                    ifNeither.run();
+                }
                 break;
         }
 
@@ -60,7 +71,7 @@ public class BeaconColorSensor {
             return ColorSensorColor.RED;
 
         }else if(green() > blue() && green() > red()){
-            return  ColorSensorColor.GREEN;
+            return ColorSensorColor.GREEN;
 
         }else{
             return null;
