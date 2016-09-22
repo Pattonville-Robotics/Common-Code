@@ -24,9 +24,9 @@ public class BeaconColorSensorTest extends LinearOpMode {
 
         waitForStart();
 
-        while(opModeIsActive()){
+        while (opModeIsActive()) {
 
-            beaconColorSensor.determineColor(new Runnable() {
+            beaconColorSensor.determineColor(AllianceColor.BLUE, new Runnable() {
                 @Override
                 public void run() {
                     telemetry.addData("RESULT", "Found Blue");
@@ -47,7 +47,7 @@ public class BeaconColorSensorTest extends LinearOpMode {
 
     }
 
-    public void initialize(){
+    public void initialize() {
         colorSensor = hardwareMap.colorSensor.get("color_sensor");
         beaconColorSensor = new BeaconColorSensor(colorSensor, false);
     }
