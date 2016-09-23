@@ -14,18 +14,16 @@ import org.pattonvillerobotics.commoncode.robotclasses.BeaconColorSensor;
 @TeleOp(name = "Color Sensor Test", group = "Common")
 public class BeaconColorSensorTest extends LinearOpMode {
 
-    BeaconColorSensor beaconColorSensor;
-    ColorSensor colorSensor;
+    private BeaconColorSensor beaconColorSensor;
+    private ColorSensor colorSensor;
 
     @Override
     public void runOpMode() throws InterruptedException {
-
         initialize();
 
         waitForStart();
 
         while (opModeIsActive()) {
-
             beaconColorSensor.determineColor(AllianceColor.BLUE, new Runnable() {
                 @Override
                 public void run() {
@@ -42,9 +40,7 @@ public class BeaconColorSensorTest extends LinearOpMode {
                     telemetry.addData("RESULT", "Found Nothing");
                 }
             });
-
         }
-
     }
 
     public void initialize() {
