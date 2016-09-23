@@ -3,19 +3,19 @@ package org.pattonvillerobotics.commoncode.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.pattonvillerobotics.commoncode.enums.Direction;
-import org.pattonvillerobotics.commoncode.robotclasses.GyroDrive;
+import org.pattonvillerobotics.commoncode.robotclasses.GyroEncoderDrive;
 
 /**
  * Created by developer on 7/31/16.
  */
 public class GyroTest extends LinearOpMode {
 
-    public GyroDrive drive;
+    public GyroEncoderDrive drive;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        drive = new GyroDrive(hardwareMap, this);
+        drive = new GyroEncoderDrive(hardwareMap, this);
 
         drive.turnDegrees(Direction.LEFT, 45, 0.5);
         drive.stop();
