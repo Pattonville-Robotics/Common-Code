@@ -8,13 +8,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.pattonvillerobotics.commoncode.enums.Direction;
 
-public class GyroDrive extends Drive {
+public class GyroEncoderDrive extends EncoderDrive {
 
     private static final double ANGLE_THRESHOLD = 1;
 
     public ModernRoboticsI2cGyro gyroSensor = null;
 
-    public GyroDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode) {
+    public GyroEncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode) {
         super(hardwareMap, linearOpMode);
 
         gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");

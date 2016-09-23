@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.pattonvillerobotics.commoncode.enums.Direction;
 
-public class Drive extends AbstractDrive {
+public class EncoderDrive extends AbstractDrive {
 
-    public Drive(HardwareMap hardwareMap, LinearOpMode linearOpMode) {
+    public EncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode) {
         super(linearOpMode, hardwareMap);
     }
 
