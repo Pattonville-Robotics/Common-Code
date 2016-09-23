@@ -16,6 +16,7 @@ public class BeaconColorSensorTest extends LinearOpMode {
 
     BeaconColorSensor beaconColorSensor;
     ColorSensor colorSensor;
+    AllianceColor color;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -26,7 +27,13 @@ public class BeaconColorSensorTest extends LinearOpMode {
 
         while(opModeIsActive()){
 
-            beaconColorSensor.determineColor(new Runnable() {
+            if(gamepad1.a && color == AllianceColor.BLUE){
+                color = AllianceColor.RED;
+            }else if(gamepad1.a && color == AllianceColor.RED){
+                color = AllianceColor.BLUE;
+            }
+
+            beaconColorSensor.determineColor(color, new Runnable() {
                 @Override
                 public void run() {
                     telemetry.addData("RESULT", "Found Blue");
@@ -43,13 +50,24 @@ public class BeaconColorSensorTest extends LinearOpMode {
                 }
             });
 
+            telemetry.addData("Red", beaconColorSensor.red());
+            telemetry.addData("Blue", beaconColorSensor.blue());
+            telemetry.addData("Green", beaconColorSensor.green());
+            telemetry.addData("Dominant", beaconColorSensor.dominantColor());
+
+            telemetry.addData("Looking", "Looking");
+
+            telemetry.update();
+            idle();
+
         }
 
     }
 
     public void initialize(){
-        colorSensor = hardwareMap.colorSensor.get("color_sensor");
-        beaconColorSensor = new BeaconColorSensor(colorSensor, false);
+        colorSensor = hardwareMap.colorSensor.get("color sensor");
+        beaconColorSensor = new BeaconColorSensor(colorSensor);
+        color = AllianceColor.BLUE;
     }
 
 }

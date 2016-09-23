@@ -12,10 +12,10 @@ public class BeaconColorSensor {
 
     private ColorSensor colorSensor;
 
-    public BeaconColorSensor(ColorSensor colorSensor, Boolean led){
+    public BeaconColorSensor(ColorSensor colorSensor){
 
         this.colorSensor = colorSensor;
-        this.colorSensor.enableLed(led);
+        this.colorSensor.enableLed(false);
 
     }
 
@@ -25,6 +25,7 @@ public class BeaconColorSensor {
 
         switch(allianceColor){
             case BLUE:
+
                 if(dominantColor == ColorSensorColor.BLUE){
                     ifPositiveID.run();
                 }else if(dominantColor == ColorSensorColor.RED){
@@ -32,8 +33,11 @@ public class BeaconColorSensor {
                 }else{
                     ifNeither.run();
                 }
+
                 break;
+
             case RED:
+
                 if(dominantColor == ColorSensorColor.RED){
                     ifPositiveID.run();
                 }else if(dominantColor == ColorSensorColor.BLUE){
@@ -41,28 +45,30 @@ public class BeaconColorSensor {
                 }else{
                     ifNeither.run();
                 }
+
                 break;
+
         }
 
     }
 
-    private int red(){
+    public int red(){
         return colorSensor.red();
     }
 
-    private int green(){
+    public int green(){
         return colorSensor.green();
     }
 
-    private int blue(){
+    public int blue(){
         return colorSensor.blue();
     }
 
-    private int alpha(){
+    public int alpha(){
         return colorSensor.alpha();
     }
 
-    private ColorSensorColor dominantColor(){
+    public ColorSensorColor dominantColor(){
 
         if(blue() > red() && blue() > green()){
             return ColorSensorColor.BLUE;
