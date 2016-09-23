@@ -9,7 +9,7 @@ import org.pattonvillerobotics.commoncode.enums.Direction;
 /**
  * Created by Mitchell on 9/9/2016.
  */
-public abstract class AbstractDrive {
+public abstract class AbstractDrive implements Drive {
 
     public DcMotor leftDriveMotor;
     public DcMotor rightDriveMotor;
@@ -70,13 +70,18 @@ public abstract class AbstractDrive {
         moveFreely(left, right);
     }
 
+    @Override
     public void stop() {
         moveFreely(0, 0);
     }
 
     public abstract void moveInches(Direction direction, double inches, double power);
 
-    protected abstract void sleep(long milli);
+    public void sleep(long milli) throws InterruptedException {
+        this.linearOpMode.sleep(milli);
+    }
 
-    public abstract void telemetry(String tag, String message);
+    public void telemetry(String tag, String message) {
+        this.linearOpMode.telemetry.addData(tag, message);
+    }
 }

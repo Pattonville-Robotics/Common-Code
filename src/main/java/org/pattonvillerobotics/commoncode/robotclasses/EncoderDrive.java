@@ -52,18 +52,4 @@ public class EncoderDrive extends AbstractDrive {
         }
         stop();
     }
-
-    @Override
-    protected void sleep(long milli) {
-        try {
-            linearOpMode.sleep(milli);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void telemetry(String tag, String message) {
-        this.linearOpMode.telemetry.addData(tag, message);
-    }
 }
