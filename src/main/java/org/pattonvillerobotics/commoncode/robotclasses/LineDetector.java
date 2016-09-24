@@ -13,7 +13,7 @@ public class LineDetector {
     public static final double WHITE_TAPE_REFLETCIVITY = 255;
     public static final double FLOOR_TILE_REFLECTIVITY = 0;
     public static final double RED_TAPE_REFLECTIVITY = 100;
-    public static final double BLUE_TAPE_REFLECTIVITY = 200;
+    public static final double BLUE_TAPE_REFLECTIVITY = 201;
 
     public OpticalDistanceSensor ods;
 
