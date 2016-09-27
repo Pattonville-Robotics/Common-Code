@@ -11,7 +11,7 @@ import org.pattonvillerobotics.commoncode.robotclasses.BeaconColorSensor;
  * Created by developer on 9/10/16.
  */
 
-@TeleOp(name = "Color Sensor Test", group = "Common")
+@TeleOp(name = "Partial Color Sensor Test", group = "Common")
 public class BeaconColorSensorTest extends LinearOpMode {
 
     BeaconColorSensor beaconColorSensor;
@@ -65,6 +65,7 @@ public class BeaconColorSensorTest extends LinearOpMode {
     }
 
     public void initialize(){
+
         colorSensor = hardwareMap.colorSensor.get("color sensor");
         beaconColorSensor = new BeaconColorSensor(colorSensor);
         color = AllianceColor.BLUE;
