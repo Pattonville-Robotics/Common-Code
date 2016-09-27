@@ -1,5 +1,7 @@
 package org.pattonvillerobotics.commoncode.robotclasses;
 
+import org.apache.commons.math3.util.FastMath;
+
 /**
  * Created by skaggsm on 9/22/16.
  */
@@ -26,6 +28,14 @@ public class RobotParameters {
         return wheelRadius;
     }
 
+    public double getWheelCircumference() {
+        return getWheelRadius() * 2 * FastMath.PI;
+    }
+
+    public double getWheelBaseCircumference() {
+        return getWheelBaseRadius() * 2 * FastMath.PI;
+    }
+
     public double getDriveGearRatio() {
         return driveGearRatio;
     }
@@ -38,7 +48,7 @@ public class RobotParameters {
         return encodersEnabled;
     }
 
-    public class Builder {
+    public static class Builder {
         private double wheelBaseRadius;
         private double wheelRadius;
         private double driveGearRatio = 1;

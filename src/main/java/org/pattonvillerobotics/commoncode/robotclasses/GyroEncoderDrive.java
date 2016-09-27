@@ -14,8 +14,8 @@ public class GyroEncoderDrive extends EncoderDrive {
 
     public ModernRoboticsI2cGyro gyroSensor = null;
 
-    public GyroEncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode) {
-        super(hardwareMap, linearOpMode);
+    public GyroEncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, RobotParameters robotParameters) {
+        super(hardwareMap, linearOpMode, robotParameters);
 
         gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
         gyroSensor.calibrate();
@@ -48,7 +48,7 @@ public class GyroEncoderDrive extends EncoderDrive {
 
         telemetry("Headings", "Current Heading: " + currentHeading + "& Target Heading: " + targetHeading);
 
-        while(currentHeading > targetHeading + ANGLE_THRESHOLD || currentHeading > targetHeading - ANGLE_THRESHOLD){
+        while (currentHeading > targetHeading + ANGLE_THRESHOLD || currentHeading > targetHeading - ANGLE_THRESHOLD) {
 
             while (currentHeading > targetHeading - ANGLE_THRESHOLD) {
                 telemetry("Turning Direction", "Left");

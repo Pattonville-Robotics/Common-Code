@@ -8,8 +8,8 @@ import org.pattonvillerobotics.commoncode.enums.Direction;
 
 public class EncoderDrive extends AbstractDrive {
 
-    public EncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode) {
-        super(linearOpMode, hardwareMap);
+    public EncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, RobotParameters robotParameters) {
+        super(linearOpMode, hardwareMap, robotParameters);
     }
 
     @Override

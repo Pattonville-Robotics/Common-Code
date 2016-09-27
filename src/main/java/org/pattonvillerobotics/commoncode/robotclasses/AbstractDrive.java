@@ -15,16 +15,18 @@ public abstract class AbstractDrive implements Drive {
     public DcMotor rightDriveMotor;
     public LinearOpMode linearOpMode;
     public HardwareMap hardwareMap;
+    private RobotParameters robotParameters;
 
-    public AbstractDrive(LinearOpMode linearOpMode, HardwareMap hardwareMap) {
+    public AbstractDrive(LinearOpMode linearOpMode, HardwareMap hardwareMap, RobotParameters robotParameters) {
         this.leftDriveMotor = hardwareMap.dcMotor.get("left_drive_motor");
         this.rightDriveMotor = hardwareMap.dcMotor.get("right_drive_motor");
         this.linearOpMode = linearOpMode;
         this.hardwareMap = hardwareMap;
+        this.robotParameters = robotParameters;
     }
 
-    public static double inchesToTicks(double inches) {
-        return inches; //TODO Write for each team, using RobotParameters class? Pass a class representing all robot-specific sizes, etc?
+    public double inchesToTicks(double inches) {
+        return RobotParameters.TICKS_PER_REVOLUTION * inches / robotParameters.getWheelCircumference();
     }
 
     public void moveFreely(double left_power, double right_power) {
