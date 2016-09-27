@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 
 public class SimpleDrive extends AbstractDrive {
-    public SimpleDrive(LinearOpMode linearOpMode, HardwareMap hardwareMap, RobotParameters robotParameters) {
-        super(linearOpMode, hardwareMap, robotParameters);
+    public SimpleDrive(LinearOpMode linearOpMode, HardwareMap hardwareMap) {
+        super(linearOpMode, hardwareMap);
     }
 }
