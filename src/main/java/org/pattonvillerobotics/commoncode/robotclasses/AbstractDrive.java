@@ -23,10 +23,29 @@ public abstract class AbstractDrive implements Drive {
         this.linearOpMode = linearOpMode;
         this.hardwareMap = hardwareMap;
         this.robotParameters = robotParameters;
+
+        this.leftDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.rightDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
+    /**
+     * NOT REVERSIBLE WITH <code>degreesToInches</code>!
+     *
+     * @param inches the number of inches to be covered by a single wheel
+     * @return the number of encoder ticks to achieve that
+     */
     public double inchesToTicks(double inches) {
         return RobotParameters.TICKS_PER_REVOLUTION * inches / robotParameters.getWheelCircumference();
+    }
+
+    /**
+     * NOT REVERSIBLE WITH <code>inchesToTicks</code>!
+     *
+     * @param degrees the number of degrees to turn the robot
+     * @return the number of inches each wheel has to travel
+     */
+    public double degreesToInches(double degrees) {
+        return robotParameters.getWheelBaseCircumference() * degrees / 360;
     }
 
     public void moveFreely(double left_power, double right_power) {
@@ -76,8 +95,6 @@ public abstract class AbstractDrive implements Drive {
     public void stop() {
         moveFreely(0, 0);
     }
-
-    public abstract void moveInches(Direction direction, double inches, double power);
 
     public void sleep(long milli) throws InterruptedException {
         this.linearOpMode.sleep(milli);
