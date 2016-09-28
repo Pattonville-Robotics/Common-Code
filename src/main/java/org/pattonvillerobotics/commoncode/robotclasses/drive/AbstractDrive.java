@@ -1,10 +1,11 @@
-package org.pattonvillerobotics.commoncode.robotclasses;
+package org.pattonvillerobotics.commoncode.robotclasses.drive;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.pattonvillerobotics.commoncode.enums.Direction;
+import org.pattonvillerobotics.commoncode.robotclasses.drive.Drive;
 
 /**
  * Created by Mitchell on 9/9/2016.

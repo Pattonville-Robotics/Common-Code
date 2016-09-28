@@ -1,4 +1,4 @@
-package org.pattonvillerobotics.commoncode.robotclasses;
+package org.pattonvillerobotics.commoncode.robotclasses.drive;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;

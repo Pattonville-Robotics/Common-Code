@@ -1,4 +1,4 @@
-package org.pattonvillerobotics.commoncode.robotclasses;
+package org.pattonvillerobotics.commoncode.robotclasses.drive;
 
 /**
  * Created by skaggsm on 9/23/16.

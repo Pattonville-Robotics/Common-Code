@@ -1,4 +1,4 @@
-package org.pattonvillerobotics.commoncode.robotclasses;
+package org.pattonvillerobotics.commoncode.robotclasses.drive;
 
 import android.util.Log;
 
@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.pattonvillerobotics.commoncode.enums.Direction;
+import org.pattonvillerobotics.commoncode.robotclasses.drive.RobotParameters;
 
 public class GyroEncoderDrive extends EncoderDrive {
 
