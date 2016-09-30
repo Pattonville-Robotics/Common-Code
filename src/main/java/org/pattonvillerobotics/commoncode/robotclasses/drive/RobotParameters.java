@@ -9,8 +9,16 @@ import org.apache.commons.math3.util.FastMath;
 public class RobotParameters {
     public static final int TICKS_PER_REVOLUTION = 1440;
 
+    /**
+     * Provided values
+     */
     private final double wheelBaseRadius, wheelRadius, driveGearRatio;
     private final boolean gyroEnabled, encodersEnabled;
+
+    /**
+     * Cached computed values, never change since the class is final
+     */
+    private final double wheelCircumference, wheelBaseCircumference;
 
     private RobotParameters(double wheelBaseRadius, double wheelRadius, double driveGearRatio, boolean gyroEnabled, boolean encodersEnabled) {
         this.wheelBaseRadius = wheelBaseRadius;
@@ -18,6 +26,9 @@ public class RobotParameters {
         this.driveGearRatio = driveGearRatio;
         this.gyroEnabled = gyroEnabled;
         this.encodersEnabled = encodersEnabled;
+
+        this.wheelCircumference = wheelRadius * 2 * FastMath.PI;
+        this.wheelBaseCircumference = wheelBaseRadius * 2 * FastMath.PI;
     }
 
     public double getWheelBaseRadius() {
@@ -29,11 +40,11 @@ public class RobotParameters {
     }
 
     public double getWheelCircumference() {
-        return getWheelRadius() * 2 * FastMath.PI;
+        return wheelCircumference;
     }
 
     public double getWheelBaseCircumference() {
-        return getWheelBaseRadius() * 2 * FastMath.PI;
+        return wheelBaseCircumference;
     }
 
     public double getDriveGearRatio() {

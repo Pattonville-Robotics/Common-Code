@@ -3,8 +3,8 @@ package org.pattonvillerobotics.commoncode.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.pattonvillerobotics.commoncode.enums.Direction;
-import org.pattonvillerobotics.commoncode.robotclasses.GyroEncoderDrive;
-import org.pattonvillerobotics.commoncode.robotclasses.RobotParameters;
+import org.pattonvillerobotics.commoncode.robotclasses.drive.GyroEncoderDrive;
+import org.pattonvillerobotics.commoncode.robotclasses.drive.RobotParameters;
 
 /**
  * Created by developer on 7/31/16.
