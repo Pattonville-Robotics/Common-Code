@@ -6,6 +6,8 @@ import org.apache.commons.math3.util.FastMath;
  * Created by skaggsm on 9/22/16.
  */
 
+
+
 public class RobotParameters {
     public static final int TICKS_PER_REVOLUTION = 1440;
 
