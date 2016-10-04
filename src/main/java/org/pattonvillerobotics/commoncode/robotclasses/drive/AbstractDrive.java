@@ -26,7 +26,7 @@ public abstract class AbstractDrive implements Drive {
         this.leftDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.rightDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        this.leftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.rightDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void moveFreely(double left_power, double right_power) {
