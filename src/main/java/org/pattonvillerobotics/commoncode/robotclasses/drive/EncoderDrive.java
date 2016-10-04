@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.util.FastMath;
 import org.pattonvillerobotics.commoncode.enums.Direction;
-import org.pattonvillerobotics.commoncode.robotclasses.drive.RobotParameters;
 
 public class EncoderDrive extends AbstractComplexDrive {
 
@@ -49,6 +48,8 @@ public class EncoderDrive extends AbstractComplexDrive {
 
         while (leftDriveMotor.getCurrentPosition() != targetPositionLeft || rightDriveMotor.getCurrentPosition() != targetPositionRight) {
             move(direction, power);
+            if (linearOpMode.isStopRequested())
+                break;
         }
         stop();
     }
@@ -90,6 +91,8 @@ public class EncoderDrive extends AbstractComplexDrive {
 
         while (!reachedTarget(leftDriveMotor.getCurrentPosition(), targetPositionLeft, rightDriveMotor.getCurrentPosition(), targetPositionRight)) {
             move(direction, power);
+            if (linearOpMode.isStopRequested())
+                break;
         }
         stop();
     }
