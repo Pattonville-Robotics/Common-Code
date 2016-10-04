@@ -2,10 +2,10 @@ package org.pattonvillerobotics.commoncode.robotclasses.drive;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.pattonvillerobotics.commoncode.enums.Direction;
-import org.pattonvillerobotics.commoncode.robotclasses.drive.Drive;
 
 /**
  * Created by Mitchell on 9/9/2016.
@@ -25,6 +25,8 @@ public abstract class AbstractDrive implements Drive {
 
         this.leftDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.rightDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        this.leftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void moveFreely(double left_power, double right_power) {
