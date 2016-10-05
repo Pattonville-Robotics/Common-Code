@@ -11,6 +11,8 @@ public class EncoderDrive extends AbstractComplexDrive {
 
     public EncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, RobotParameters robotParameters) {
         super(linearOpMode, hardwareMap, robotParameters);
+        if (!robotParameters.areEncodersEnabled())
+            throw new IllegalArgumentException("Robot must have encoders enabled to use EncoderDrive! If encoders are present, call encodersEnabled(true) when building.");
     }
 
     @Override
@@ -37,7 +39,7 @@ public class EncoderDrive extends AbstractComplexDrive {
                 break;
             }
             default:
-                throw new IllegalArgumentException("Direction must be FORWARDS or BACKWARDS!");
+                throw new IllegalArgumentException("Direction must be Direction.FORWARDS or Direction.BACKWARDS!");
         }
 
         leftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -80,7 +82,7 @@ public class EncoderDrive extends AbstractComplexDrive {
                 break;
             }
             default:
-                throw new IllegalArgumentException("Direction must be LEFT or RIGHT!");
+                throw new IllegalArgumentException("Direction must be Direction.LEFT or Direction.RIGHT!");
         }
 
         leftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -98,6 +100,6 @@ public class EncoderDrive extends AbstractComplexDrive {
     }
 
     private boolean reachedTarget(int currentPositionLeft, int targetPositionLeft, int currentPositionRight, int targetPositionRight) {
-        return FastMath.abs(currentPositionLeft - targetPositionLeft) < 8 && FastMath.abs(currentPositionRight - targetPositionRight) < 8;
+        return FastMath.abs(currentPositionLeft - targetPositionLeft) < 16 && FastMath.abs(currentPositionRight - targetPositionRight) < 16;
     }
 }
