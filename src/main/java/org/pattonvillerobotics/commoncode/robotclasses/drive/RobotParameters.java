@@ -18,7 +18,7 @@ public class RobotParameters {
     /**
      * Cached computed values, never change since the class is final
      */
-    private final double wheelCircumference, wheelBaseCircumference;
+    private final double wheelCircumference, wheelBaseCircumference, adjustedTicksPerRevolution;
 
     private RobotParameters(double wheelBaseRadius, double wheelRadius, double driveGearRatio, boolean gyroEnabled, boolean encodersEnabled) {
         this.wheelBaseRadius = wheelBaseRadius;
@@ -29,6 +29,7 @@ public class RobotParameters {
 
         this.wheelCircumference = wheelRadius * 2 * FastMath.PI;
         this.wheelBaseCircumference = wheelBaseRadius * 2 * FastMath.PI;
+        this.adjustedTicksPerRevolution = TICKS_PER_REVOLUTION / driveGearRatio;
     }
 
     public double getWheelBaseRadius() {
@@ -37,6 +38,10 @@ public class RobotParameters {
 
     public double getWheelRadius() {
         return wheelRadius;
+    }
+
+    public double getAdjustedTicksPerRevolution() {
+        return adjustedTicksPerRevolution;
     }
 
     public double getWheelCircumference() {
@@ -55,7 +60,7 @@ public class RobotParameters {
         return gyroEnabled;
     }
 
-    public boolean isEncodersEnabled() {
+    public boolean areEncodersEnabled() {
         return encodersEnabled;
     }
 
