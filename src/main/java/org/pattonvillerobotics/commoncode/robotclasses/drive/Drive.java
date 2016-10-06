@@ -1,12 +1,14 @@
 package org.pattonvillerobotics.commoncode.robotclasses.drive;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 /**
  * Created by skaggsm on 9/23/16.
  */
 
 public interface Drive {
 
-    void telemetry(String tag, String message);
+    Telemetry.Item telemetry(String tag, String message);
 
     void sleep(long milli) throws InterruptedException;
 
