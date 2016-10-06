@@ -4,8 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.pattonvillerobotics.commoncode.enums.Direction;
-import org.pattonvillerobotics.commoncode.robotclasses.drive.AbstractDrive;
-import org.pattonvillerobotics.commoncode.robotclasses.drive.RobotParameters;
 
 /**
  * Created by skaggsm on 9/27/16.
@@ -26,8 +24,8 @@ public abstract class AbstractComplexDrive extends AbstractDrive {
      * @param inches the number of inches to be covered by a single wheel
      * @return the number of encoder ticks to achieve that
      */
-    public double inchesToTicks(double inches) {
-        return RobotParameters.TICKS_PER_REVOLUTION * inches / robotParameters.getWheelCircumference();
+    protected double inchesToTicks(double inches) {
+        return robotParameters.getAdjustedTicksPerRevolution() * inches / robotParameters.getWheelCircumference();
     }
 
     /**
@@ -36,7 +34,7 @@ public abstract class AbstractComplexDrive extends AbstractDrive {
      * @param degrees the number of degrees to turn the robot
      * @return the number of inches each wheel has to travel
      */
-    public double degreesToInches(double degrees) {
+    protected double degreesToInches(double degrees) {
         return robotParameters.getWheelBaseCircumference() * degrees / 360;
     }
 
