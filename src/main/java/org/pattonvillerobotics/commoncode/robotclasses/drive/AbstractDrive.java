@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.pattonvillerobotics.commoncode.enums.Direction;
 
 /**
@@ -27,6 +28,13 @@ public abstract class AbstractDrive implements Drive {
         this.rightDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         this.rightDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        resetMotorEncoders();
+    }
+
+    public void resetMotorEncoders() {
+        this.leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.rightDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void moveFreely(double left_power, double right_power) {
@@ -81,7 +89,7 @@ public abstract class AbstractDrive implements Drive {
         this.linearOpMode.sleep(milli);
     }
 
-    public void telemetry(String tag, String message) {
-        this.linearOpMode.telemetry.addData(tag, message);
+    public Telemetry.Item telemetry(String tag, String message) {
+        return this.linearOpMode.telemetry.addData(tag, message);
     }
 }
