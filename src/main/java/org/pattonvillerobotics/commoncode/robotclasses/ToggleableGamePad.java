@@ -2,6 +2,10 @@ package org.pattonvillerobotics.commoncode.robotclasses;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+/**
+ * @deprecated Use ListenableGamepad instead!
+ */
+@Deprecated
 public class ToggleableGamePad extends Gamepad {
 
     public boolean buttonPressed, systemActive;
