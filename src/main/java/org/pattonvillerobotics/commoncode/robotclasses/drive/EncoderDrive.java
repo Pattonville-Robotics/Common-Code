@@ -10,6 +10,8 @@ import org.pattonvillerobotics.commoncode.enums.Direction;
 
 public class EncoderDrive extends AbstractComplexDrive {
 
+    public static final int TARGET_REACHED_THRESHOLD = 16;
+
     public EncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, RobotParameters robotParameters) {
         super(linearOpMode, hardwareMap, robotParameters);
         if (!robotParameters.areEncodersEnabled())
@@ -63,7 +65,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         Telemetry.Item distance = telemetry("DistanceL: -1 DistanceR: -1");
 
         move(direction, power);
-        while (leftDriveMotor.getCurrentPosition() != targetPositionLeft || rightDriveMotor.getCurrentPosition() != targetPositionRight) {
+        while (!reachedTarget(leftDriveMotor.getCurrentPosition(), targetPositionLeft, rightDriveMotor.getCurrentPosition(), targetPositionRight)) {
             Thread.yield();
             if (linearOpMode.isStopRequested())
                 break;
@@ -134,6 +136,6 @@ public class EncoderDrive extends AbstractComplexDrive {
     }
 
     private boolean reachedTarget(int currentPositionLeft, int targetPositionLeft, int currentPositionRight, int targetPositionRight) {
-        return FastMath.abs(currentPositionLeft - targetPositionLeft) < 16 && FastMath.abs(currentPositionRight - targetPositionRight) < 16;
+        return FastMath.abs(currentPositionLeft - targetPositionLeft) < TARGET_REACHED_THRESHOLD && FastMath.abs(currentPositionRight - targetPositionRight) < TARGET_REACHED_THRESHOLD;
     }
 }
