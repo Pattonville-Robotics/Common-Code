@@ -1,5 +1,7 @@
 package org.pattonvillerobotics.commoncode.robotclasses.drive;
 
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 import org.apache.commons.math3.util.FastMath;
 
 /**
@@ -15,13 +17,14 @@ public class RobotParameters {
     private final double wheelBaseRadius, wheelRadius, driveGearRatio;
     private final boolean gyroEnabled, encodersEnabled;
     private final int dcMotorMaxSpeed;
+    private final DcMotorSimple.Direction leftDriveMotorDirection, rightDriveMotorDirection;
 
     /**
      * Cached computed values, never change since the class is final
      */
     private final double wheelCircumference, wheelBaseCircumference, adjustedTicksPerRevolution;
 
-    private RobotParameters(double wheelBaseRadius, double wheelRadius, double driveGearRatio, boolean gyroEnabled, boolean encodersEnabled, int dcMotorMaxSpeed) {
+    private RobotParameters(double wheelBaseRadius, double wheelRadius, double driveGearRatio, boolean gyroEnabled, boolean encodersEnabled, int dcMotorMaxSpeed, DcMotorSimple.Direction leftDriveMotorDirection, DcMotorSimple.Direction rightDriveMotorDirection) {
         this.wheelBaseRadius = wheelBaseRadius;
         this.wheelRadius = wheelRadius;
         this.driveGearRatio = driveGearRatio;
@@ -32,6 +35,8 @@ public class RobotParameters {
         this.wheelCircumference = wheelRadius * 2 * FastMath.PI;
         this.wheelBaseCircumference = wheelBaseRadius * 2 * FastMath.PI;
         this.adjustedTicksPerRevolution = TICKS_PER_REVOLUTION / driveGearRatio;
+        this.leftDriveMotorDirection = leftDriveMotorDirection;
+        this.rightDriveMotorDirection = rightDriveMotorDirection;
     }
 
     public double getWheelBaseRadius() {
@@ -62,6 +67,14 @@ public class RobotParameters {
         return gyroEnabled;
     }
 
+    public DcMotorSimple.Direction getLeftDriveMotorDirection() {
+        return leftDriveMotorDirection;
+    }
+
+    public DcMotorSimple.Direction getRightDriveMotorDirection() {
+        return rightDriveMotorDirection;
+    }
+
     public boolean areEncodersEnabled() {
         return encodersEnabled;
     }
@@ -77,6 +90,8 @@ public class RobotParameters {
         private boolean gyroEnabled = false;
         private boolean encodersEnabled = false;
         private int dcMotorMaxSpeed = TICKS_PER_REVOLUTION * 2;
+        private DcMotorSimple.Direction leftDriveMotorDirection = DcMotorSimple.Direction.FORWARD;
+        private DcMotorSimple.Direction rightDriveMotorDirection = DcMotorSimple.Direction.REVERSE;
 
         public Builder() {
         }
@@ -111,6 +126,16 @@ public class RobotParameters {
             return this;
         }
 
+        public Builder leftDriveMotorDirection(DcMotorSimple.Direction leftDriveMotorDirection) {
+            this.leftDriveMotorDirection = leftDriveMotorDirection;
+            return this;
+        }
+
+        public Builder rightDriveMotorDirection(DcMotorSimple.Direction rightDriveMotorDirection) {
+            this.rightDriveMotorDirection = rightDriveMotorDirection;
+            return this;
+        }
+
         public RobotParameters build() {
             if (wheelBaseRadius <= 0)
                 throw new IllegalArgumentException("wheelBaseRadius must be > 0");
@@ -118,7 +143,7 @@ public class RobotParameters {
                 throw new IllegalArgumentException("wheelRadius must be > 0");
             if (dcMotorMaxSpeed <= 0 && encodersEnabled)
                 throw new IllegalArgumentException("dcMotorMaxSpeed must be > 0 when encoders are used");
-            return new RobotParameters(wheelBaseRadius, wheelRadius, driveGearRatio, gyroEnabled, encodersEnabled, dcMotorMaxSpeed);
+            return new RobotParameters(wheelBaseRadius, wheelRadius, driveGearRatio, gyroEnabled, encodersEnabled, dcMotorMaxSpeed, leftDriveMotorDirection, rightDriveMotorDirection);
         }
     }
 }
