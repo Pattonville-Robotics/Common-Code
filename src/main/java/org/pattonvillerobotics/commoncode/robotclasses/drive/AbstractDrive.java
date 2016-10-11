@@ -27,14 +27,10 @@ public abstract class AbstractDrive implements Drive {
         this.leftDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.rightDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        this.leftDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.rightDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         this.rightDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        resetMotorEncoders();
-    }
-
-    public void resetMotorEncoders() {
-        this.leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.rightDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void moveFreely(double left_power, double right_power) {

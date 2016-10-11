@@ -47,6 +47,9 @@ public class EncoderDrive extends AbstractComplexDrive {
                 throw new IllegalArgumentException("Direction must be Direction.FORWARDS or Direction.BACKWARDS!");
         }
 
+        DcMotor.RunMode leftDriveMotorMode = leftDriveMotor.getMode();
+        DcMotor.RunMode rightDriveMotorMode = rightDriveMotor.getMode();
+
         leftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -68,6 +71,9 @@ public class EncoderDrive extends AbstractComplexDrive {
             linearOpMode.telemetry.update();
         }
         stop();
+
+        leftDriveMotor.setMode(leftDriveMotorMode); // Restore the prior mode
+        rightDriveMotor.setMode(rightDriveMotorMode);
     }
 
     @Override
@@ -98,6 +104,9 @@ public class EncoderDrive extends AbstractComplexDrive {
                 throw new IllegalArgumentException("Direction must be Direction.LEFT or Direction.RIGHT!");
         }
 
+        DcMotor.RunMode leftDriveMotorMode = leftDriveMotor.getMode();
+        DcMotor.RunMode rightDriveMotorMode = rightDriveMotor.getMode();
+
         leftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -119,6 +128,9 @@ public class EncoderDrive extends AbstractComplexDrive {
             linearOpMode.telemetry.update();
         }
         stop();
+
+        leftDriveMotor.setMode(leftDriveMotorMode); // Restore the prior mode
+        rightDriveMotor.setMode(rightDriveMotorMode);
     }
 
     private boolean reachedTarget(int currentPositionLeft, int targetPositionLeft, int currentPositionRight, int targetPositionRight) {
