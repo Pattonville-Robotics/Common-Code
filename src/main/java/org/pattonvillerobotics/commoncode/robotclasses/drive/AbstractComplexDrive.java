@@ -17,6 +17,7 @@ public abstract class AbstractComplexDrive extends AbstractDrive {
     public AbstractComplexDrive(LinearOpMode linearOpMode, HardwareMap hardwareMap, RobotParameters robotParameters) {
         super(linearOpMode, hardwareMap);
         this.robotParameters = robotParameters;
+
         if (robotParameters.areEncodersEnabled()) {
             this.leftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             this.leftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -24,6 +25,9 @@ public abstract class AbstractComplexDrive extends AbstractDrive {
             this.leftDriveMotor.setMaxSpeed(robotParameters.getDcMotorMaxSpeed());
             this.rightDriveMotor.setMaxSpeed(robotParameters.getDcMotorMaxSpeed());
         }
+
+        this.leftDriveMotor.setDirection(robotParameters.getLeftDriveMotorDirection());
+        this.rightDriveMotor.setDirection(robotParameters.getRightDriveMotorDirection());
     }
 
     /**
