@@ -64,7 +64,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         telemetry("EncoderDelta: " + deltaPosition);
         Telemetry.Item distance = telemetry("DistanceL: -1 DistanceR: -1");
 
-        move(direction, power);
+        move(Direction.FORWARD, power); // To keep power in [0.0, 1.0]. Encoders control direction
         while (!reachedTarget(leftDriveMotor.getCurrentPosition(), targetPositionLeft, rightDriveMotor.getCurrentPosition(), targetPositionRight)) {
             Thread.yield();
             if (linearOpMode.isStopRequested())
@@ -121,7 +121,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         telemetry("EncoderDelta: " + deltaPosition).setRetained(true);
         Telemetry.Item distance = telemetry("DistanceL: DistanceR:");
 
-        move(direction, power);
+        move(Direction.FORWARD, power); // To keep power in [0.0, 1.0]. Encoders control direction
         while (!reachedTarget(leftDriveMotor.getCurrentPosition(), targetPositionLeft, rightDriveMotor.getCurrentPosition(), targetPositionRight)) {
             Thread.yield();
             if (linearOpMode.isStopRequested())
