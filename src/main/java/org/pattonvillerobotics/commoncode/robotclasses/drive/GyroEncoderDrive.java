@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.pattonvillerobotics.commoncode.enums.Direction;
-import org.pattonvillerobotics.commoncode.robotclasses.drive.RobotParameters;
 
 public class GyroEncoderDrive extends EncoderDrive {
 
@@ -22,10 +21,7 @@ public class GyroEncoderDrive extends EncoderDrive {
         gyroSensor.calibrate();
 
         while (gyroSensor.isCalibrating()) {
-            try {
-                linearOpMode.sleep(100);
-            } catch (InterruptedException ignored) {
-            }
+            linearOpMode.sleep(100);
         }
     }
 
