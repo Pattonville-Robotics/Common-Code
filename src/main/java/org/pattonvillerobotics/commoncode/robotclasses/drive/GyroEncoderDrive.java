@@ -20,12 +20,17 @@ public class GyroEncoderDrive extends EncoderDrive {
         gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
         gyroSensor.calibrate();
 
-        while (gyroSensor.isCalibrating()) {
-            linearOpMode.sleep(100);
+        while (gyroSensor.isCalibrating() && !linearOpMode.isStopRequested()) {
+            linearOpMode.idle();
         }
     }
 
-    public void turnDegrees(Direction direction, double angle, double power) {
+    @Override
+    public void rotateDegrees(Direction direction, double degrees, double speed) {
+        this.gyroTurnDegrees(direction, degrees, speed);
+    }
+
+    public void gyroTurnDegrees(Direction direction, double angle, double speed) {
         //Turn Specified Degrees Using Gyro Sensor
 
         double currentHeading = gyroSensor.getIntegratedZValue();
@@ -50,7 +55,7 @@ public class GyroEncoderDrive extends EncoderDrive {
             while (currentHeading > targetHeading - ANGLE_THRESHOLD) {
                 telemetry("Turning Direction", "Left");
 
-                turn(Direction.LEFT, power);
+                turn(Direction.LEFT, speed);
                 currentHeading = gyroSensor.getIntegratedZValue();
 
                 Log.i("GyroHeading", Double.toString(currentHeading));
@@ -59,7 +64,7 @@ public class GyroEncoderDrive extends EncoderDrive {
             while (currentHeading < targetHeading + ANGLE_THRESHOLD) {
                 telemetry("Turning Direction", "Right");
 
-                turn(Direction.RIGHT, power);
+                turn(Direction.RIGHT, speed);
                 currentHeading = gyroSensor.getIntegratedZValue();
 
                 Log.i("GyroHeading", Double.toString(currentHeading));
