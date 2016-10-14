@@ -6,6 +6,8 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.apache.commons.math3.util.FastMath;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.pattonvillerobotics.commoncode.enums.Direction;
 
 public class GyroEncoderDrive extends EncoderDrive {
@@ -26,6 +28,11 @@ public class GyroEncoderDrive extends EncoderDrive {
     }
 
     @Override
+    public Telemetry.Item telemetry(String message) {
+        return super.telemetry("GyroEncoderDrive", message);
+    }
+
+    @Override
     public void rotateDegrees(Direction direction, double degrees, double speed) {
         this.gyroTurnDegrees(direction, degrees, speed);
     }
@@ -35,6 +42,8 @@ public class GyroEncoderDrive extends EncoderDrive {
 
         double currentHeading = gyroSensor.getIntegratedZValue();
         double targetHeading;
+        Direction currentDirection = direction;
+        int numOvershoots = 0;
 
         switch (direction) {
             case LEFT:
@@ -48,28 +57,18 @@ public class GyroEncoderDrive extends EncoderDrive {
 
         }
 
-        telemetry("Headings", "Current Heading: " + currentHeading + "& Target Heading: " + targetHeading);
+        Telemetry.Item headingsTelemetryItem = telemetry("Headings", "Current Heading: " + currentHeading + "& Target Heading: " + targetHeading);
 
-        while (currentHeading > targetHeading + ANGLE_THRESHOLD || currentHeading > targetHeading - ANGLE_THRESHOLD) {
+        while (FastMath.abs(currentHeading - targetHeading) > .01) {
+            Direction newDirection = FastMath.signum(currentHeading - targetHeading) > 0 ? Direction.LEFT : Direction.RIGHT;
+            if (newDirection != currentDirection)
+                numOvershoots++;
+            turn(currentDirection, speed / (numOvershoots + 1));
+            currentHeading = gyroSensor.getIntegratedZValue();
+            headingsTelemetryItem.setValue("Headings", "Current Heading: " + currentHeading + "& Target Heading: " + targetHeading);
 
-            while (currentHeading > targetHeading - ANGLE_THRESHOLD) {
-                telemetry("Turning Direction", "Left");
-
-                turn(Direction.LEFT, speed);
-                currentHeading = gyroSensor.getIntegratedZValue();
-
-                Log.i("GyroHeading", Double.toString(currentHeading));
-            }
-
-            while (currentHeading < targetHeading + ANGLE_THRESHOLD) {
-                telemetry("Turning Direction", "Right");
-
-                turn(Direction.RIGHT, speed);
-                currentHeading = gyroSensor.getIntegratedZValue();
-
-                Log.i("GyroHeading", Double.toString(currentHeading));
-            }
-
+            if (numOvershoots > 5)
+                break;
         }
 
         telemetry("Drive", "Angle obtained, stopping motors.");
