@@ -79,7 +79,7 @@ public class EncoderDrive extends AbstractComplexDrive {
     }
 
     @Override
-    public void rotateDegrees(Direction direction, double degrees, double power) {
+    public void rotateDegrees(Direction direction, double degrees, double speed) {
         //Move specified degrees using motor encoders
 
         int targetPositionLeft;
@@ -115,13 +115,13 @@ public class EncoderDrive extends AbstractComplexDrive {
         leftDriveMotor.setTargetPosition(targetPositionLeft);
         rightDriveMotor.setTargetPosition(targetPositionRight);
 
-        telemetry("Rotating " + degrees + " degrees at power " + power).setRetained(true);
+        telemetry("Rotating " + degrees + " degrees at speed " + speed).setRetained(true);
         telemetry("LMotorT: " + targetPositionLeft).setRetained(true);
         telemetry("RMotorT: " + targetPositionRight).setRetained(true);
         telemetry("EncoderDelta: " + deltaPosition).setRetained(true);
         Telemetry.Item distance = telemetry("DistanceL: DistanceR:");
 
-        move(Direction.FORWARD, power); // To keep power in [0.0, 1.0]. Encoders control direction
+        move(Direction.FORWARD, speed); // To keep speed in [0.0, 1.0]. Encoders control direction
         while (!reachedTarget(leftDriveMotor.getCurrentPosition(), targetPositionLeft, rightDriveMotor.getCurrentPosition(), targetPositionRight)) {
             Thread.yield();
             if (linearOpMode.isStopRequested())
