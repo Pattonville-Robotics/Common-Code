@@ -18,27 +18,27 @@ public class GyroTest extends LinearOpMode {
 
         drive = new GyroEncoderDrive(hardwareMap, this, new RobotParameters.Builder().build());
 
-        drive.turnDegrees(Direction.LEFT, 45, 0.5);
+        drive.rotateDegrees(Direction.LEFT, 45, 0.5);
         drive.stop();
         sleep(1000);
 
-        drive.turnDegrees(Direction.LEFT, 90, 0.5);
+        drive.rotateDegrees(Direction.LEFT, 90, 0.5);
         drive.stop();
         sleep(1000);
 
-        drive.turnDegrees(Direction.RIGHT, 135, 0.5);
+        drive.rotateDegrees(Direction.RIGHT, 135, 0.5);
         drive.stop();
         sleep(1000);
 
-        drive.turnDegrees(Direction.RIGHT, 180, 0.5);
+        drive.rotateDegrees(Direction.RIGHT, 180, 0.5);
         drive.stop();
         sleep(1000);
 
-        drive.turnDegrees(Direction.LEFT, 360, 0.5);
+        drive.rotateDegrees(Direction.LEFT, 360, 0.5);
         drive.stop();
         sleep(1000);
 
-        drive.turnDegrees(Direction.RIGHT, 360, 0.5);
+        drive.rotateDegrees(Direction.RIGHT, 360, 0.5);
         drive.stop();
         sleep(1000);
 
