@@ -10,7 +10,7 @@ import org.pattonvillerobotics.commoncode.enums.ColorSensorColor;
  */
 public class BeaconColorSensor {
 
-    private ColorSensor colorSensor;
+    public ColorSensor colorSensor;
 
     public BeaconColorSensor(ColorSensor colorSensor){
 
