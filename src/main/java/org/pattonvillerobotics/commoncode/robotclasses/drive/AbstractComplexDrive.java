@@ -35,9 +35,14 @@ public abstract class AbstractComplexDrive extends AbstractDrive {
      *
      * @param inches the number of inches to be covered by a single wheel
      * @return the number of encoder ticks to achieve that
+     * @see AbstractComplexDrive#inchesToTicksInverse(int)
      */
-    protected double inchesToTicks(double inches) {
+    public double inchesToTicks(double inches) {
         return robotParameters.getAdjustedTicksPerRevolution() * inches / robotParameters.getWheelCircumference();
+    }
+
+    public double inchesToTicksInverse(int ticks) {
+        return ticks * robotParameters.getWheelCircumference() / robotParameters.getAdjustedTicksPerRevolution();
     }
 
     /**
@@ -45,9 +50,14 @@ public abstract class AbstractComplexDrive extends AbstractDrive {
      *
      * @param degrees the number of degrees to turn the robot
      * @return the number of inches each wheel has to travel
+     * @see AbstractComplexDrive#degreesToInchesInverse(double)
      */
-    protected double degreesToInches(double degrees) {
+    public double degreesToInches(double degrees) {
         return robotParameters.getWheelBaseCircumference() * degrees / 360;
+    }
+
+    public double degreesToInchesInverse(double inches) {
+        return 360 * inches / robotParameters.getWheelBaseCircumference();
     }
 
     public abstract void moveInches(Direction direction, double inches, double power);
