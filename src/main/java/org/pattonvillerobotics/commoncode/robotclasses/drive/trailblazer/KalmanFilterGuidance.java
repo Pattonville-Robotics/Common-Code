@@ -1,5 +1,7 @@
 package org.pattonvillerobotics.commoncode.robotclasses.drive.trailblazer;
 
+import android.util.Log;
+
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -7,6 +9,7 @@ import org.apache.commons.math3.filter.DefaultMeasurementModel;
 import org.apache.commons.math3.filter.MeasurementModel;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.util.FastMath;
@@ -23,13 +26,11 @@ public class KalmanFilterGuidance implements Runnable {
     private static final MeasurementModel ENCODER_MEASUREMENT_MODEL = new DefaultMeasurementModel(
             new Array2DRowRealMatrix(new double[][]{
                     {0, 0, 1, 0, 0, 0, 0, 0},
-                    {0, 0, 0, 1, 0, 0, 0, 0},
-                    {0, 0, 0, 0, 0, 0, 0, 1}
+                    {0, 0, 0, 1, 0, 0, 0, 0}
             }),
             new Array2DRowRealMatrix(new double[][]{
-                    {2, 0, 0},
-                    {0, 2, 0},
-                    {0, 0, 5}
+                    {2, 0},
+                    {0, 2}
             })
     );
     private static final MeasurementModel GYRO_MEASUREMENT_MODEL = new DefaultMeasurementModel(
@@ -37,11 +38,11 @@ public class KalmanFilterGuidance implements Runnable {
                     {0, 0, 0, 0, 0, 0, 0, 1}
             }),
             new Array2DRowRealMatrix(new double[][]{
-                    {10}
+                    {100}
             })
     );
     private static final double S_TO_NS = TimeUnit.SECONDS.toNanos(1);
-    private final KalmanFilter kalmanFilter;
+    public final KalmanFilter kalmanFilter;
     private final Thread encoderThread;
     private final Thread predictThread;
     private final Thread gyroThread;
@@ -53,11 +54,20 @@ public class KalmanFilterGuidance implements Runnable {
 
             @Override
             public void run() {
-                while (linearOpMode.opModeIsActive()) {
+                while (!linearOpMode.isStopRequested()) {
                     synchronized (kalmanFilter) {
                         long nowTimeNS = System.nanoTime();
                         double elapsedTimeS = (nowTimeNS - lastTimeNS) / S_TO_NS;
+                        lastTimeNS = nowTimeNS;
+
+                        Log.e("Predict", "Elapsed time: " + elapsedTimeS);
+
                         kalmanFilter.predictNextState(elapsedTimeS);
+                    }
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -73,10 +83,11 @@ public class KalmanFilterGuidance implements Runnable {
             public void run() {
                 priorLeftEncoderReading = complexDrive.leftDriveMotor.getCurrentPosition();
                 priorRightEncoderReading = complexDrive.rightDriveMotor.getCurrentPosition();
-                while (linearOpMode.opModeIsActive()) {
+                while (!linearOpMode.isStopRequested()) {
                     synchronized (kalmanFilter) {
                         long nowTimeNS = System.nanoTime();
                         double elapsedTimeS = (nowTimeNS - lastTimeNS) / S_TO_NS;
+                        lastTimeNS = nowTimeNS;
 
                         double currentHeading = kalmanFilter.getCurrentState().getEntry(6);
                         //Get new values
@@ -97,27 +108,64 @@ public class KalmanFilterGuidance implements Runnable {
                         double sin = FastMath.sin(FastMath.toRadians(currentHeading));
                         double vx = cos * averageSpeed;
                         double vy = sin * averageSpeed;
-                        double approximateAngularVelocity = complexDrive.degreesToInchesInverse((deltaRightInches - deltaLeftInches) / 2) / elapsedTimeS;
+                        //double approximateAngularVelocity = complexDrive.degreesToInchesInverse((deltaRightInches - deltaLeftInches) / 2) / elapsedTimeS;
 
-                        kalmanFilter.measureAndGetState(ENCODER_MEASUREMENT_MODEL, new ArrayRealVector(new double[]{vx, vy, approximateAngularVelocity}));
+                        RealVector measurement = new ArrayRealVector(new double[]{vx, vy});//, approximateAngularVelocity});
+
+                        Log.e("Encoder", "Updating measurement of " + measurement + " in time " + elapsedTimeS);
+
+                        kalmanFilter.measureAndGetState(ENCODER_MEASUREMENT_MODEL, measurement);
+                    }
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }
         });
         gyroThread = new Thread(new Runnable() {
+            long lastTimeNS = System.nanoTime();
+
             @Override
             public void run() {
-                while (linearOpMode.opModeIsActive()) {
+                while (!linearOpMode.isStopRequested()) {
                     synchronized (kalmanFilter) {
-                        double angularVelocity = gyro.rawZ() / 1000d; //TODO find conversion from raw to true values
-                        kalmanFilter.measureAndGetState(GYRO_MEASUREMENT_MODEL, new ArrayRealVector(new double[]{angularVelocity}));
+                        long nowTimeNS = System.nanoTime();
+                        double elapsedTimeS = (nowTimeNS - lastTimeNS) / S_TO_NS;
+                        lastTimeNS = nowTimeNS;
+                        double angularVelocity = gyro.rawZ() / 52.416666667; //TODO find conversion from raw to true values
+                        RealVector measurement = new ArrayRealVector(new double[]{angularVelocity});
+
+                        Log.e("Gyro", "Updating measurement of " + measurement + " in time " + elapsedTimeS);
+
+                        kalmanFilter.measureAndGetState(GYRO_MEASUREMENT_MODEL, measurement);
+                    }
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }
         });
+        /*
+        SensorManager mSensorManager = (SensorManager) FtcRobotControllerActivity.applicationContext.getSystemService(Context.SENSOR_SERVICE);
+        Sensor mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE_UNCALIBRATED);
+        mSensorManager.registerListener(new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+        }, mSensor, SensorManager.SENSOR_DELAY_FASTEST);
+        */
         /*                                                   x  y  vx vy ax ay θ  ω*/
         RealVector x = new ArrayRealVector(new double[]{0, 0, 0, 0, 0, 0, 0, 0});
-        RealMatrix processNoise = new Array2DRowRealMatrix(new double[][]{});
+        RealMatrix processNoise = MatrixUtils.createRealIdentityMatrix(x.getDimension()).scalarMultiply(0.1);
 /*
         RealMatrix stateTransition = KalmanFilter.getStateTransitionMatrix(.1);
 
@@ -146,5 +194,11 @@ public class KalmanFilterGuidance implements Runnable {
         predictThread.start();
         encoderThread.start();
         gyroThread.start();
+    }
+
+    public void stopThreads() {
+        predictThread.interrupt();
+        encoderThread.interrupt();
+        gyroThread.interrupt();
     }
 }

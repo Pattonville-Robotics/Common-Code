@@ -24,6 +24,16 @@ public class KalmanFilter {
         this.processNoise = processNoise;
         setStateTransitionMatrix(0);
         x = initialStateEstimate;
+        P = new Array2DRowRealMatrix(new double[][]{
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0},
+        });
     }
 
     public static RealMatrix getStateTransitionMatrix(double dt) {
