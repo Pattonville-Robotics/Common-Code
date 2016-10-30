@@ -150,7 +150,7 @@ public class KalmanFilterGuidance implements Runnable {
             }
         });
         /*
-        SensorManager mSensorManager = (SensorManager) FtcRobotControllerActivity.applicationContext.getSystemService(Context.SENSOR_SERVICE);
+        SensorManager mSensorManager = (SensorManager) linearOpMode.hardwareMap.appContext.getSystemService(Context.SENSOR_SERVICE);
         Sensor mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE_UNCALIBRATED);
         mSensorManager.registerListener(new SensorEventListener() {
             @Override
