@@ -17,7 +17,8 @@ public class FeatureDetector {
     private static final int
             GRIDDETECTOR = 1000,
             PYRAMIDDETECTOR = 2000,
-            DYNAMICDETECTOR = 3000;    public static final int
+            DYNAMICDETECTOR = 3000;
+    public static final int
             FAST = 1,
             STAR = 2,
             SIFT = 3,
