@@ -5,6 +5,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
@@ -57,25 +59,95 @@ public class KalmanFilterGuidance implements Runnable {
                     {0, .05}
             })
     );
+    private static final MeasurementModel MAGNETOMETER_MEASUREMENT_MODEL = new DefaultMeasurementModel(
+            new Array2DRowRealMatrix(new double[][]{
+                    {0, 0, 0, 0, 0, 0, 1, 0}
+            }),
+            new Array2DRowRealMatrix(new double[][]{
+                    {25}
+            })
+    );
     public final KalmanFilter kalmanFilter;
-    private final Thread encoderThread;
-    private final Thread predictThread;
-    private final Thread gyroThread;
-    private final Thread accelerometerThread;
+
+    private final Thread encoderThread, predictThread, gyroThread;
+
+    private final HandlerThread accelerometerThread, magnetometerThread;
     private final float[] currentAccelerometerData = new float[3];
-    private final SensorEventListener accelerometerSensorEventListener;
+    private final float[] currentMagnetometerData = new float[3];
+
+    private final SensorEventListener accelerometerSensorEventListener, magnetometerSensorEventListener;
+
     private final SensorManager sensorManager;
-    private final Sensor accelerometerSensor;
+    private final Sensor accelerometerSensor, magnetometerSensor;
 
     public KalmanFilterGuidance(final LinearOpMode linearOpMode, final AbstractComplexDrive complexDrive, final ModernRoboticsI2cGyro gyro) {
 
         sensorManager = (SensorManager) linearOpMode.hardwareMap.appContext.getSystemService(Context.SENSOR_SERVICE);
         accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE_UNCALIBRATED);
+        magnetometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         accelerometerSensorEventListener = new SensorEventListener() {
+            long lastTimeNS = System.nanoTime();
+
             @Override
             public void onSensorChanged(SensorEvent event) {
                 synchronized (currentAccelerometerData) {
                     System.arraycopy(event.values, 0, currentAccelerometerData, 0, 3);
+                }
+                synchronized (kalmanFilter) {
+                    long nowTimeNS = System.nanoTime();
+                    double elapsedTimeS = (nowTimeNS - lastTimeNS) / S_TO_NS;
+                    lastTimeNS = nowTimeNS;
+
+                    RealVector measurement;
+                    double currentHeading = kalmanFilter.getCurrentState().getEntry(6);
+                    double cos = FastMath.cos(FastMath.toRadians(currentHeading));
+                    double sin = FastMath.sin(FastMath.toRadians(currentHeading));
+                    double ax, ay;
+                    ax = cos * event.values[0] / 39.37; // Convert m/s^2 to in/s^2
+                    ay = sin * -event.values[2] / 39.37;
+
+                    measurement = new ArrayRealVector(new double[]{ax, ay});
+
+                    Log.e("Accelerometer", "Updating measurement of " + measurement + " in time " + elapsedTimeS);
+
+                    kalmanFilter.measureAndGetState(ACCELEROMETER_MEASUREMENT_MODEL, measurement);
+                }
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+        };
+        magnetometerSensorEventListener = new SensorEventListener() {
+            long lastTimeNS = System.nanoTime();
+
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                synchronized (currentAccelerometerData) {
+                    System.arraycopy(event.values, 0, currentMagnetometerData, 0, 3);
+                }
+
+                final float[] rotationMatrix = new float[9];
+                synchronized (currentAccelerometerData) {
+                    // Rotation matrix based on current readings from accelerometer and magnetometer.
+                    SensorManager.getRotationMatrix(rotationMatrix, null,
+                            currentAccelerometerData, currentMagnetometerData);
+                }
+                // Express the updated rotation matrix as three orientation angles.
+                final float[] orientationAngles = new float[3];
+                SensorManager.getOrientation(rotationMatrix, orientationAngles);
+
+                synchronized (kalmanFilter) {
+                    long nowTimeNS = System.nanoTime();
+                    double elapsedTimeS = (nowTimeNS - lastTimeNS) / S_TO_NS;
+                    lastTimeNS = nowTimeNS;
+
+                    RealVector measurement = new ArrayRealVector(new double[]{orientationAngles[2]});
+
+                    Log.e("Magnetometer", "Updating measurement of " + measurement + " in time " + elapsedTimeS);
+
+                    //Disabled for the time being since it returns heading instead of angular displacement (Doesn't keep track of >360 degrees)
+                    //kalmanFilter.measureAndGetState(MAGNETOMETER_MEASUREMENT_MODEL, measurement);
                 }
             }
 
@@ -184,55 +256,13 @@ public class KalmanFilterGuidance implements Runnable {
                 }
             }
         });
-        accelerometerThread = new Thread(new Runnable() {
-            long lastTimeNS = System.nanoTime();
+        accelerometerThread = new HandlerThread("Accelerometer Thread");
+        magnetometerThread = new HandlerThread("Magnetometer Thread");
 
-            @Override
-            public void run() {
-                while (!linearOpMode.isStopRequested()) {
-                    synchronized (kalmanFilter) {
-                        long nowTimeNS = System.nanoTime();
-                        double elapsedTimeS = (nowTimeNS - lastTimeNS) / S_TO_NS;
-                        lastTimeNS = nowTimeNS;
-
-                        RealVector measurement;
-                        double currentHeading = kalmanFilter.getCurrentState().getEntry(6);
-                        double cos = FastMath.cos(FastMath.toRadians(currentHeading));
-                        double sin = FastMath.sin(FastMath.toRadians(currentHeading));
-                        double ax, ay;
-                        synchronized (currentAccelerometerData) {
-                            ax = cos * currentAccelerometerData[0] / 39.37; // Convert m/s^2 to in/s^2
-                            ay = sin * -currentAccelerometerData[2] / 39.37;
-                        }
-                        measurement = new ArrayRealVector(new double[]{ax, ay});
-
-                        Log.e("Accelerometer", "Updating measurement of " + measurement + " in time " + elapsedTimeS);
-
-                        kalmanFilter.measureAndGetState(ACCELEROMETER_MEASUREMENT_MODEL, measurement);
-                    }
-                    try {
-                        Thread.sleep(5);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
         /*                                                   x  y  vx vy ax ay θ  ω*/
         RealVector x = new ArrayRealVector(new double[]{0, 0, 0, 0, 0, 0, 0, 0});
         RealMatrix processNoise = MatrixUtils.createRealIdentityMatrix(x.getDimension()).scalarMultiply(0.1);
-/*
-        RealMatrix stateTransition = KalmanFilter.getStateTransitionMatrix(.1);
 
-        RealMatrix control = new Array2DRowRealMatrix(new double[][]{{0}});
-        RealVector initialStateEstimate = new ArrayRealVector(new double[]{});
-        RealMatrix initialErrorCovariance = new Array2DRowRealMatrix(new double[][]{});
-        ProcessModel processModel = new DefaultProcessModel(stateTransition, control, processNoise, initialStateEstimate, initialErrorCovariance);
-
-        RealMatrix measMatrix = new Array2DRowRealMatrix(new double[][]{});
-        RealMatrix measNoise = new Array2DRowRealMatrix(new double[][]{});
-        MeasurementModel measurementModel = new DefaultMeasurementModel(measMatrix, measNoise);
-*/
         kalmanFilter = new KalmanFilter(processNoise, x);
     }
 
@@ -246,11 +276,15 @@ public class KalmanFilterGuidance implements Runnable {
 
     @Override
     public void run() {
-        sensorManager.registerListener(accelerometerSensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_FASTEST);
         predictThread.start();
         encoderThread.start();
         gyroThread.start();
+
         accelerometerThread.start();
+        magnetometerThread.start();
+
+        sensorManager.registerListener(accelerometerSensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_FASTEST, new Handler(accelerometerThread.getLooper()));
+        sensorManager.registerListener(magnetometerSensorEventListener, magnetometerSensor, SensorManager.SENSOR_DELAY_FASTEST, new Handler(magnetometerThread.getLooper()));
     }
 
     public void stop() {
