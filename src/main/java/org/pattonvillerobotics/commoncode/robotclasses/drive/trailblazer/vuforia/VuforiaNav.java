@@ -20,7 +20,7 @@ import java.util.List;
 
 public class VuforiaNav {
 
-    private final double mmPerInch = 25.4;
+    public static final float MM_PER_INCH = 25.4f;
     private VuforiaTrackables beacons;
     private boolean isActivated;
     private VuforiaLocalizerImplSubclass vuforia;
@@ -88,12 +88,12 @@ public class VuforiaNav {
 
     public double getDistance() {
         VectorF translation = lastLocation.getTranslation();
-        return translation.getData()[0] / mmPerInch;
+        return translation.getData()[0] / MM_PER_INCH;
     }
 
     public double getxPos() {
         VectorF translation = lastLocation.getTranslation();
-        return translation.getData()[1] / mmPerInch;
+        return translation.getData()[1] / MM_PER_INCH;
     }
 
     public double getAngle() {
