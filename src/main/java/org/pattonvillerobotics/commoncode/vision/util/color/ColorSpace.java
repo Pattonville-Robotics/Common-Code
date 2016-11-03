@@ -4,7 +4,7 @@
  */
 package org.pattonvillerobotics.commoncode.vision.util.color;
 
-import org.pattonvillerobotics.commoncode.opencv.imgproc.Imgproc;
+import org.opencv.imgproc.Imgproc;
 
 /**
  * Specifies a color space (such as RGB or HSV) and all possible conversions

@@ -4,9 +4,9 @@
  */
 package org.pattonvillerobotics.commoncode.vision.detection.objects;
 
-import org.pattonvillerobotics.commoncode.opencv.core.Core;
-import org.pattonvillerobotics.commoncode.opencv.core.Mat;
-import org.pattonvillerobotics.commoncode.opencv.core.Point;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.pattonvillerobotics.commoncode.vision.util.MathUtil;
 import org.pattonvillerobotics.commoncode.vision.util.color.Color;
 import org.pattonvillerobotics.commoncode.vision.util.color.ColorSpace;

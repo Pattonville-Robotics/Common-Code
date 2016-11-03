@@ -7,7 +7,7 @@
 
 package org.pattonvillerobotics.commoncode.vision.util;
 
-import org.pattonvillerobotics.commoncode.opencv.core.Point;
+import org.opencv.core.Point;
 
 /**
  * Math utilities

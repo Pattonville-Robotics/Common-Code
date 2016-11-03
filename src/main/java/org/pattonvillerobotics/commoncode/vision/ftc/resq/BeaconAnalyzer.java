@@ -9,11 +9,11 @@ package org.pattonvillerobotics.commoncode.vision.ftc.resq;
 
 import android.util.Log;
 
-import org.pattonvillerobotics.commoncode.opencv.core.Mat;
-import org.pattonvillerobotics.commoncode.opencv.core.Point;
-import org.pattonvillerobotics.commoncode.opencv.core.Rect;
-import org.pattonvillerobotics.commoncode.opencv.core.RotatedRect;
-import org.pattonvillerobotics.commoncode.opencv.core.Size;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.RotatedRect;
+import org.opencv.core.Size;
 import org.pattonvillerobotics.commoncode.vision.detection.ColorBlobDetector;
 import org.pattonvillerobotics.commoncode.vision.detection.PrimitiveDetection;
 import org.pattonvillerobotics.commoncode.vision.detection.objects.Contour;

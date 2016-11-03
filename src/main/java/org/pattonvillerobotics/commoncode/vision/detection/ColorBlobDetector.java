@@ -9,11 +9,11 @@
  */
 package org.pattonvillerobotics.commoncode.vision.detection;
 
-import org.pattonvillerobotics.commoncode.opencv.core.Core;
-import org.pattonvillerobotics.commoncode.opencv.core.Mat;
-import org.pattonvillerobotics.commoncode.opencv.core.MatOfPoint;
-import org.pattonvillerobotics.commoncode.opencv.core.Scalar;
-import org.pattonvillerobotics.commoncode.opencv.imgproc.Imgproc;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 import org.pattonvillerobotics.commoncode.vision.detection.objects.Contour;
 import org.pattonvillerobotics.commoncode.vision.image.Drawing;
 import org.pattonvillerobotics.commoncode.vision.util.color.Color;

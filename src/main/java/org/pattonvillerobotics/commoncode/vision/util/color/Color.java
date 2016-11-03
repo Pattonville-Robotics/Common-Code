@@ -4,10 +4,10 @@
  */
 package org.pattonvillerobotics.commoncode.vision.util.color;
 
-import org.pattonvillerobotics.commoncode.opencv.core.CvType;
-import org.pattonvillerobotics.commoncode.opencv.core.Mat;
-import org.pattonvillerobotics.commoncode.opencv.core.Scalar;
-import org.pattonvillerobotics.commoncode.opencv.imgproc.Imgproc;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 /**
  * Implements a color in any color space

@@ -8,10 +8,10 @@
 
 package org.pattonvillerobotics.commoncode.vision.detection;
 
-import org.pattonvillerobotics.commoncode.opencv.core.Mat;
-import org.pattonvillerobotics.commoncode.opencv.core.MatOfPoint;
-import org.pattonvillerobotics.commoncode.opencv.core.MatOfPoint2f;
-import org.pattonvillerobotics.commoncode.opencv.imgproc.Imgproc;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.imgproc.Imgproc;
 import org.pattonvillerobotics.commoncode.vision.detection.objects.Contour;
 import org.pattonvillerobotics.commoncode.vision.detection.objects.Ellipse;
 import org.pattonvillerobotics.commoncode.vision.detection.objects.Rectangle;

@@ -5,9 +5,9 @@
 
 package org.pattonvillerobotics.commoncode.vision.ftc.resq;
 
-import org.pattonvillerobotics.commoncode.opencv.core.Mat;
-import org.pattonvillerobotics.commoncode.opencv.core.Point;
-import org.pattonvillerobotics.commoncode.opencv.core.Size;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Size;
 import org.pattonvillerobotics.commoncode.vision.detection.objects.Contour;
 import org.pattonvillerobotics.commoncode.vision.detection.objects.Ellipse;
 import org.pattonvillerobotics.commoncode.vision.util.MathUtil;

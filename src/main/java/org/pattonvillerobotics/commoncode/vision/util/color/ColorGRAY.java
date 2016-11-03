@@ -4,7 +4,7 @@
  */
 package org.pattonvillerobotics.commoncode.vision.util.color;
 
-import org.pattonvillerobotics.commoncode.opencv.core.Scalar;
+import org.opencv.core.Scalar;
 
 /**
  * Implements a grayscale color

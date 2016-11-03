@@ -7,7 +7,7 @@ package org.pattonvillerobotics.commoncode.vision.android;
 
 import android.content.pm.PackageManager;
 
-import org.pattonvillerobotics.commoncode.opencv.core.Size;
+import org.opencv.core.Size;
 
 import java.util.ArrayList;
 import java.util.List;

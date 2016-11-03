@@ -4,12 +4,12 @@
  */
 package org.pattonvillerobotics.commoncode.vision.detection.objects;
 
-import org.pattonvillerobotics.commoncode.opencv.core.MatOfPoint;
-import org.pattonvillerobotics.commoncode.opencv.core.MatOfPoint2f;
-import org.pattonvillerobotics.commoncode.opencv.core.Point;
-import org.pattonvillerobotics.commoncode.opencv.core.Rect;
-import org.pattonvillerobotics.commoncode.opencv.core.Size;
-import org.pattonvillerobotics.commoncode.opencv.imgproc.Imgproc;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 
 /**
  * Implements a single contour (MatOfPoint) with advanced measurement utilities

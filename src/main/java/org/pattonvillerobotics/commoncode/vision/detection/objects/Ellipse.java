@@ -7,9 +7,9 @@ package org.pattonvillerobotics.commoncode.vision.detection.objects;
 
 import android.annotation.SuppressLint;
 
-import org.pattonvillerobotics.commoncode.opencv.core.Point;
-import org.pattonvillerobotics.commoncode.opencv.core.RotatedRect;
-import org.pattonvillerobotics.commoncode.opencv.core.Size;
+import org.opencv.core.Point;
+import org.opencv.core.RotatedRect;
+import org.opencv.core.Size;
 
 /**
  * Implements a single ellipse (acts like RotatedRect) with advanced measurement utilities

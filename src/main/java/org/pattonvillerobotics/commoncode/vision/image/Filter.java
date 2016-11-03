@@ -4,10 +4,10 @@
  */
 package org.pattonvillerobotics.commoncode.vision.image;
 
-import org.pattonvillerobotics.commoncode.opencv.core.Mat;
-import org.pattonvillerobotics.commoncode.opencv.core.Point;
-import org.pattonvillerobotics.commoncode.opencv.core.Size;
-import org.pattonvillerobotics.commoncode.opencv.imgproc.Imgproc;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 
 /**
  * Implements image filtering algorithms
