@@ -20,7 +20,17 @@ import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.util.FastMath;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.pattonvillerobotics.commoncode.robotclasses.drive.AbstractComplexDrive;
+import org.pattonvillerobotics.commoncode.robotclasses.drive.trailblazer.vuforia.VuforiaNav;
+import org.pattonvillerobotics.commoncode.robotclasses.drive.trailblazer.vuforia.VuforiaParameters;
 
 import java.util.concurrent.TimeUnit;
 
@@ -67,6 +77,18 @@ public class KalmanFilterGuidance implements Runnable {
                     {25}
             })
     );
+    private static final MeasurementModel VUFORIA_MEASUREMENT_MODEL = new DefaultMeasurementModel(
+            new Array2DRowRealMatrix(new double[][]{
+                    {1, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 1, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 1, 0}
+            }),
+            new Array2DRowRealMatrix(new double[][]{
+                    {5, 0, 0},
+                    {0, 5, 0},
+                    {0, 0, 5}
+            })
+    );
     public final KalmanFilter kalmanFilter;
 
     private final Thread encoderThread, predictThread, gyroThread;
@@ -80,8 +102,42 @@ public class KalmanFilterGuidance implements Runnable {
     private final SensorManager sensorManager;
     private final Sensor accelerometerSensor, magnetometerSensor;
 
-    public KalmanFilterGuidance(final LinearOpMode linearOpMode, final AbstractComplexDrive complexDrive, final ModernRoboticsI2cGyro gyro) {
+    private VuforiaNav vuforiaNav;
+    private Thread vuforiaNavThread;
 
+    public KalmanFilterGuidance(final LinearOpMode linearOpMode, final AbstractComplexDrive complexDrive, final ModernRoboticsI2cGyro gyro, VuforiaParameters vuforiaParameters, double gyroDriftCalibration) {
+        vuforiaNav = new VuforiaNav(vuforiaParameters);
+        vuforiaNavThread = new Thread(new Runnable() {
+            long lastTimeNS = System.nanoTime();
+
+            @Override
+            public void run() {
+                while (!linearOpMode.isStopRequested()) {
+                    long nowTimeNS = System.nanoTime();
+                    double elapsedTimeS = (nowTimeNS - lastTimeNS) / S_TO_NS;
+                    lastTimeNS = nowTimeNS;
+
+                    for (VuforiaTrackable trackable : vuforiaNav.getBeacons()) {
+                        VuforiaTrackableDefaultListener listener = ((VuforiaTrackableDefaultListener) trackable.getListener());
+                        OpenGLMatrix matrix = listener.getUpdatedRobotLocation();
+                        if (matrix != null) {
+                            synchronized (kalmanFilter) {
+                                VectorF translation = matrix.getTranslation();
+                                Orientation orientation = Orientation.getOrientation(matrix, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+                                RealVector measurement = new ArrayRealVector(new double[]{translation.get(0) / VuforiaNav.MM_PER_INCH, translation.get(1) / VuforiaNav.MM_PER_INCH, orientation.thirdAngle});
+                                Log.e("Vuforia", "Updating measurement of " + measurement + " in time " + elapsedTimeS);
+                                kalmanFilter.measureAndGetState(VUFORIA_MEASUREMENT_MODEL, measurement);
+                            }
+                        }
+                    }
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
         sensorManager = (SensorManager) linearOpMode.hardwareMap.appContext.getSystemService(Context.SENSOR_SERVICE);
         accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE_UNCALIBRATED);
         magnetometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
@@ -281,16 +337,27 @@ public class KalmanFilterGuidance implements Runnable {
         gyroThread.start();
 
         accelerometerThread.start();
-        magnetometerThread.start();
+        //magnetometerThread.start();
 
         sensorManager.registerListener(accelerometerSensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_FASTEST, new Handler(accelerometerThread.getLooper()));
-        sensorManager.registerListener(magnetometerSensorEventListener, magnetometerSensor, SensorManager.SENSOR_DELAY_FASTEST, new Handler(magnetometerThread.getLooper()));
+        //sensorManager.registerListener(magnetometerSensorEventListener, magnetometerSensor, SensorManager.SENSOR_DELAY_FASTEST, new Handler(magnetometerThread.getLooper()));
+
+        vuforiaNav.activate();
+        vuforiaNavThread.start();
     }
 
     public void stop() {
         predictThread.interrupt();
         encoderThread.interrupt();
         gyroThread.interrupt();
+
+        accelerometerThread.interrupt();
+        //magnetometerThread.interrupt();
+
         sensorManager.unregisterListener(accelerometerSensorEventListener, accelerometerSensor);
+        //sensorManager.unregisterListener(magnetometerSensorEventListener, magnetometerSensor);
+
+        vuforiaNav.deactivate();
+        vuforiaNavThread.interrupt();
     }
 }

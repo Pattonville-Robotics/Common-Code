@@ -2,6 +2,7 @@ package org.pattonvillerobotics.commoncode.robotclasses.drive.trailblazer.vufori
 
 import android.graphics.Bitmap;
 
+import com.vuforia.HINT;
 import com.vuforia.Image;
 
 import org.apache.commons.math3.util.FastMath;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -32,6 +34,7 @@ public class VuforiaNav {
         this.parameters.cameraDirection = parameters.getCameraDirection();
         this.parameters.vuforiaLicenseKey = parameters.getLicenseKey();
         this.parameters.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
+        this.parameters.useExtendedTracking = true;
         vuforia = new VuforiaLocalizerImplSubclass(this.parameters);
         beacons = vuforia.loadTrackablesFromAsset("FTC_2016-17");
 
@@ -65,6 +68,12 @@ public class VuforiaNav {
     public void activate() {
         beacons.activate();
         isActivated = true;
+
+        try {
+            Class.forName("com.vuforia.VuforiaJNI").getDeclaredMethod("setHint", long.class, int.class).invoke(null, HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 4);
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     public void deactivate() {
