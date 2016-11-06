@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import com.vuforia.HINT;
 import com.vuforia.Image;
+import com.vuforia.Vuforia;
 
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -13,7 +14,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -69,11 +69,7 @@ public class VuforiaNav {
         beacons.activate();
         isActivated = true;
 
-        try {
-            Class.forName("com.vuforia.VuforiaJNI").getDeclaredMethod("setHint", long.class, int.class).invoke(null, HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 4);
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 4);
     }
 
     public void deactivate() {
