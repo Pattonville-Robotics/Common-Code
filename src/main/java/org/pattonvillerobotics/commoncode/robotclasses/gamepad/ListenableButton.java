@@ -55,8 +55,9 @@ public class ListenableButton {
         notifyListeners();
     }
 
-    public void addListener(ButtonState buttonState, ButtonListener buttonListener) {
+    public ListenableButton addListener(ButtonState buttonState, ButtonListener buttonListener) {
         listeners.get(buttonState).add(buttonListener);
+        return this;
     }
 
     public boolean removeListener(ButtonState buttonState, ButtonListener buttonListener) {
