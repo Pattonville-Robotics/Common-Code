@@ -12,6 +12,14 @@ public class EncoderDrive extends AbstractComplexDrive {
 
     public static final int TARGET_REACHED_THRESHOLD = 16;
 
+    /**
+     * sets up Drive object with custom RobotParameters useful for doing calculations with encoders
+     *
+     * @param hardwareMap a hardwaremap
+     * @param linearOpMode a linearopmode
+     * @param robotParameters a RobotParameters containing robot specific calculations for
+     *                        wheel radius and wheel base radius
+     */
     public EncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, RobotParameters robotParameters) {
         super(linearOpMode, hardwareMap, robotParameters);
         if (!robotParameters.areEncodersEnabled())
@@ -22,6 +30,13 @@ public class EncoderDrive extends AbstractComplexDrive {
         return super.telemetry("EncoderDrive", message);
     }
 
+    /**
+     * drives a specific number of inches in a given direction
+     *
+     * @param direction the direction (forward or backward) to drive in
+     * @param inches the number of inches to drive
+     * @param power the power with which to drive
+     */
     @Override
     public void moveInches(Direction direction, double inches, double power) {
         //Move Specified Inches Using Motor Encoders
@@ -78,6 +93,13 @@ public class EncoderDrive extends AbstractComplexDrive {
         rightDriveMotor.setMode(rightDriveMotorMode);
     }
 
+    /**
+     * turns the robot a certain number of degrees in a given direction
+     *
+     * @param direction the direction (left or right) to turn in
+     * @param degrees the number of degrees to turn
+     * @param speed the speed at which to turn
+     */
     @Override
     public void rotateDegrees(Direction direction, double degrees, double speed) {
         //Move specified degrees using motor encoders
@@ -135,6 +157,16 @@ public class EncoderDrive extends AbstractComplexDrive {
         rightDriveMotor.setMode(rightDriveMotorMode);
     }
 
+    /**
+     * determines whether or not the robot has reached its target encoder position within a
+     * certain threshold
+     *
+     * @param currentPositionLeft the current position of the left encoder
+     * @param targetPositionLeft the target position of the left encoder
+     * @param currentPositionRight the current position of the right encoder
+     * @param targetPositionRight the target position of the right encoder
+     * @return
+     */
     private boolean reachedTarget(int currentPositionLeft, int targetPositionLeft, int currentPositionRight, int targetPositionRight) {
         return FastMath.abs(currentPositionLeft - targetPositionLeft) < TARGET_REACHED_THRESHOLD && FastMath.abs(currentPositionRight - targetPositionRight) < TARGET_REACHED_THRESHOLD;
     }
