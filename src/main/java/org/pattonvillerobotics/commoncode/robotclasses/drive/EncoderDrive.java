@@ -15,8 +15,8 @@ public class EncoderDrive extends AbstractComplexDrive {
     /**
      * sets up Drive object with custom RobotParameters useful for doing calculations with encoders
      *
-     * @param hardwareMap a hardwaremap
-     * @param linearOpMode a linearopmode
+     * @param hardwareMap     a hardwaremap
+     * @param linearOpMode    a linearopmode
      * @param robotParameters a RobotParameters containing robot specific calculations for
      *                        wheel radius and wheel base radius
      */
@@ -34,8 +34,8 @@ public class EncoderDrive extends AbstractComplexDrive {
      * drives a specific number of inches in a given direction
      *
      * @param direction the direction (forward or backward) to drive in
-     * @param inches the number of inches to drive
-     * @param power the power with which to drive
+     * @param inches    the number of inches to drive
+     * @param power     the power with which to drive
      */
     @Override
     public void moveInches(Direction direction, double inches, double power) {
@@ -97,8 +97,8 @@ public class EncoderDrive extends AbstractComplexDrive {
      * turns the robot a certain number of degrees in a given direction
      *
      * @param direction the direction (left or right) to turn in
-     * @param degrees the number of degrees to turn
-     * @param speed the speed at which to turn
+     * @param degrees   the number of degrees to turn
+     * @param speed     the speed at which to turn
      */
     @Override
     public void rotateDegrees(Direction direction, double degrees, double speed) {
@@ -137,11 +137,14 @@ public class EncoderDrive extends AbstractComplexDrive {
         leftDriveMotor.setTargetPosition(targetPositionLeft);
         rightDriveMotor.setTargetPosition(targetPositionRight);
 
-        telemetry("Rotating " + degrees + " degrees at speed " + speed).setRetained(true);
-        telemetry("LMotorT: " + targetPositionLeft).setRetained(true);
-        telemetry("RMotorT: " + targetPositionRight).setRetained(true);
-        telemetry("EncoderDelta: " + deltaPosition).setRetained(true);
-        Telemetry.Item distance = telemetry("DistanceL: DistanceR:");
+        Telemetry.Item[] items = new Telemetry.Item[]{
+                telemetry("Rotating " + degrees + " degrees at speed " + speed).setRetained(true),
+                telemetry("LMotorT: " + targetPositionLeft).setRetained(true),
+                telemetry("RMotorT: " + targetPositionRight).setRetained(true),
+                telemetry("EncoderDelta: " + deltaPosition).setRetained(true),
+                telemetry("DistanceL: DistanceR:")
+        };
+        Telemetry.Item distance = items[4];
 
         move(Direction.FORWARD, speed); // To keep speed in [0.0, 1.0]. Encoders control direction
         while (!reachedTarget(leftDriveMotor.getCurrentPosition(), targetPositionLeft, rightDriveMotor.getCurrentPosition(), targetPositionRight)) {
@@ -155,16 +158,19 @@ public class EncoderDrive extends AbstractComplexDrive {
 
         leftDriveMotor.setMode(leftDriveMotorMode); // Restore the prior mode
         rightDriveMotor.setMode(rightDriveMotorMode);
+
+        for (Telemetry.Item i : items)
+            i.setRetained(false);
     }
 
     /**
      * determines whether or not the robot has reached its target encoder position within a
      * certain threshold
      *
-     * @param currentPositionLeft the current position of the left encoder
-     * @param targetPositionLeft the target position of the left encoder
+     * @param currentPositionLeft  the current position of the left encoder
+     * @param targetPositionLeft   the target position of the left encoder
      * @param currentPositionRight the current position of the right encoder
-     * @param targetPositionRight the target position of the right encoder
+     * @param targetPositionRight  the target position of the right encoder
      * @return
      */
     private boolean reachedTarget(int currentPositionLeft, int targetPositionLeft, int currentPositionRight, int targetPositionRight) {

@@ -101,6 +101,10 @@ public class VuforiaNav {
         return translation.getData();
     }
 
+    public OpenGLMatrix getLastLocation() {
+        return lastLocation;
+    }
+
     public double getxPos() {
         VectorF translation = lastLocation.getTranslation();
         return translation.getData()[1] / MM_PER_INCH;
