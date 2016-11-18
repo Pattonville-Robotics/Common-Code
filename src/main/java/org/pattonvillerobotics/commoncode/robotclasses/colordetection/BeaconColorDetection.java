@@ -122,14 +122,14 @@ public class BeaconColorDetection {
      * @param frame the bitmap that is analyzed
      * @return {@link Beacon.BeaconAnalysis} of the frame.
      */
-    public Beacon.BeaconAnalysis analyzeFrame(Bitmap frame) {
+    public Beacon.BeaconAnalysis analyzeFrame(Bitmap frame, ScreenOrientation screenOrientation) {
         Mat rgba = new Mat();
         Mat gray = new Mat();
 
         Utils.bitmapToMat(frame, rgba);
         Imgproc.cvtColor(rgba, gray, Imgproc.COLOR_RGBA2GRAY);
 
-        this.analysis = beacon.analyzeFrame(rgba, gray, ScreenOrientation.LANDSCAPE_REVERSE);
+        this.analysis = beacon.analyzeFrame(rgba, gray, screenOrientation);
         return this.analysis;
     }
 
