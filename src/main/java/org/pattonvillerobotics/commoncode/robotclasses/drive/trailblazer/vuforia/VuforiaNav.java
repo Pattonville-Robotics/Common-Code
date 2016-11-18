@@ -96,6 +96,11 @@ public class VuforiaNav {
         return translation.getData()[0] / MM_PER_INCH;
     }
 
+    public float[] getLocation() {
+        VectorF translation = lastLocation.getTranslation();
+        return translation.getData();
+    }
+
     public double getxPos() {
         VectorF translation = lastLocation.getTranslation();
         return translation.getData()[1] / MM_PER_INCH;
