@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.pattonvillerobotics.commoncode.enums.Direction;
@@ -33,9 +34,9 @@ public abstract class AbstractDrive implements Drive {
         this.rightDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    public void moveFreely(double left_power, double right_power) {
-        leftDriveMotor.setPower(left_power);
-        rightDriveMotor.setPower(right_power);
+    public void moveFreely(double leftPower, double rightPower) {
+        leftDriveMotor.setPower(Range.clip(leftPower, -1, 1));
+        rightDriveMotor.setPower(Range.clip(rightPower, -1, 1));
     }
 
     public void move(Direction direction, double power) {
