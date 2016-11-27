@@ -140,7 +140,7 @@ public class BeaconColorDetection {
      * @return the {@link ColorSensorColor} of the left side of the beacon
      */
     public AllianceColor getLeftColor() {
-        return getAnalysis().isLeftBlue() ? AllianceColor.BLUE : AllianceColor.RED;
+        return toAllianceColor(getAnalysis().getStateLeft());
     }
 
 
@@ -150,6 +150,19 @@ public class BeaconColorDetection {
      * @return the {@link ColorSensorColor} of the left side of the beacon
      */
     public AllianceColor getRightColor() {
-        return getAnalysis().isRightBlue() ? AllianceColor.BLUE : AllianceColor.RED;
+        return toAllianceColor(getAnalysis().getStateRight());
+    }
+
+    public AllianceColor toAllianceColor(Beacon.BeaconColor beaconColor) {
+        switch (beaconColor) {
+            case RED_BRIGHT:
+            case RED:
+                return AllianceColor.RED;
+            case BLUE_BRIGHT:
+            case BLUE:
+                return AllianceColor.BLUE;
+            default:
+                return AllianceColor.UNKNOWN;
+        }
     }
 }
