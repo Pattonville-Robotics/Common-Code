@@ -322,6 +322,15 @@ public final class Beacon {
             this.rightButton = rightButton;
         }
 
+        public BeaconAnalysis(BeaconColor left, BeaconColor right) {
+            this.left = left;
+            this.right = right;
+            this.confidence = 0.0f;
+            this.location = new Rectangle();
+            this.leftButton = null;
+            this.rightButton = null;
+        }
+
         /**
          * Get the ellipse containing the left button, if found
          *
