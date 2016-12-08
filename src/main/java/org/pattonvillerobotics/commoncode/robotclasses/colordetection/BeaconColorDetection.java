@@ -160,6 +160,12 @@ public class BeaconColorDetection {
         return this.analysis;
     }
 
+
+    /**
+     * @param rgba - image to be analyzed
+     * @param sensorArea - area of image to analyzed
+     * @return {@link Beacon.BeaconColor} analyzed from the area.
+     */
     public Beacon.BeaconColor analyzeRect(Mat rgba, Rect sensorArea) {
         Mat sensorImage = new Mat(rgba, sensorArea);
         Mat hsv = new Mat();
@@ -214,5 +220,9 @@ public class BeaconColorDetection {
             default:
                 return ColorSensorColor.GREEN;
         }
+    }
+
+    public void useSimpleDetection(boolean usingSimpleDetection) {
+        this.usingSimpleDetection = usingSimpleDetection;
     }
 }
