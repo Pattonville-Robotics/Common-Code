@@ -35,8 +35,8 @@ public abstract class AbstractDrive implements Drive {
     }
 
     public void moveFreely(double leftPower, double rightPower) {
-        leftDriveMotor.setPower(Range.clip(leftPower, -1, 1));
-        rightDriveMotor.setPower(Range.clip(rightPower, -1, 1));
+        leftDriveMotor.setPower(leftPower);
+        rightDriveMotor.setPower(rightPower);
     }
 
     public void move(Direction direction, double power) {
