@@ -9,6 +9,10 @@ import com.vuforia.Vuforia;
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
@@ -53,18 +57,27 @@ public class VuforiaNav {
         return beacons;
     }
 
+    /**
+     * @param locations - a list of the places on the field where the beacons are located
+     */
     private void setBeaconLocations(List<OpenGLMatrix> locations) {
         for (int i = 0; i < beacons.size(); i++) {
             beacons.get(i).setLocation(locations.get(i));
         }
     }
 
+    /**
+     * @param location - location of the phone on the robot
+     */
     private void setPhoneInformation(OpenGLMatrix location) {
         for (VuforiaTrackable beacon : beacons) {
             ((VuforiaTrackableDefaultListener) beacon.getListener()).setPhoneInformation(location, parameters.cameraDirection);
         }
     }
 
+    /**
+     * called to begin tracking
+     */
     public void activate() {
         beacons.activate();
         isActivated = true;
@@ -77,6 +90,9 @@ public class VuforiaNav {
         isActivated = false;
     }
 
+    /**
+     * @return {@link OpenGLMatrix} location of the current beacon being tracked
+     */
     public OpenGLMatrix getNearestBeaconLocation() {
         if (!isActivated) {
             throw new IllegalStateException("Vuforia must be activated to track beacons.");
@@ -91,11 +107,17 @@ public class VuforiaNav {
         return null;
     }
 
+    /**
+     * @return the most recent tracked distance vertically off the picture
+     */
     public double getDistance() {
         VectorF translation = lastLocation.getTranslation();
         return translation.getData()[0] / MM_PER_INCH;
     }
 
+    /**
+     * @return the most recent position data of the robot
+     */
     public float[] getLocation() {
         VectorF translation = lastLocation.getTranslation();
         return translation.getData();
@@ -105,6 +127,9 @@ public class VuforiaNav {
         return lastLocation;
     }
 
+    /**
+     * @return the most recently tracked distance horizontally off the picture
+     */
     public double getxPos() {
         VectorF translation = lastLocation.getTranslation();
         return translation.getData()[1] / MM_PER_INCH;
@@ -114,6 +139,17 @@ public class VuforiaNav {
         return FastMath.toDegrees(FastMath.atan(getDistance() / getxPos()));
     }
 
+    /**
+     * @return most recently tracked angle from the phone to the picture
+     */
+    public double getHeading() {
+        return Orientation.getOrientation(getLastLocation(), AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
+    }
+
+
+    /**
+     * @return {@link Bitmap} of the most recent frame from vuforia
+     */
     public Bitmap getImage() {
         Image img = vuforia.getImage();
 
