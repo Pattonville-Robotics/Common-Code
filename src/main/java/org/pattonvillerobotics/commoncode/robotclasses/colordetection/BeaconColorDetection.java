@@ -9,9 +9,12 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-import org.pattonvillerobotics.commoncode.enums.AllianceColor;
 import org.pattonvillerobotics.commoncode.enums.ColorSensorColor;
 import org.pattonvillerobotics.commoncode.vision.ftc.resq.Beacon;
 import org.pattonvillerobotics.commoncode.vision.util.ScreenOrientation;
@@ -28,8 +31,16 @@ public class BeaconColorDetection {
     private Beacon beacon;
     private Beacon.BeaconAnalysis analysis = new Beacon.BeaconAnalysis();
     private boolean openCvInitialized = false;
+    private boolean usingSimpleDetection;
 
     public BeaconColorDetection(HardwareMap hardwareMap) {
+        initOpenCv(hardwareMap);
+        beacon = new Beacon();
+        setAnalysisMethod(Beacon.AnalysisMethod.FAST);
+    }
+
+    public BeaconColorDetection(HardwareMap hardwareMap, boolean usingSimpleDetection) {
+        this.usingSimpleDetection = usingSimpleDetection;
         initOpenCv(hardwareMap);
         beacon = new Beacon();
         setAnalysisMethod(Beacon.AnalysisMethod.FAST);
@@ -128,9 +139,54 @@ public class BeaconColorDetection {
 
         Utils.bitmapToMat(frame, rgba);
         Imgproc.cvtColor(rgba, gray, Imgproc.COLOR_RGBA2GRAY);
+        if(usingSimpleDetection) {
 
-        this.analysis = beacon.analyzeFrame(rgba, gray, screenOrientation);
+            int sensorSize = 100;
+            double width = rgba.width();
+            double height = rgba.height();
+
+            Rect sensorAreaLeft = new Rect(new Point(((width - sensorSize) / 2) - 100, ((height - sensorSize) / 2) - 100),
+                    new Point(((width + sensorSize) / 2) - 100, ((height + sensorSize) / 2) - 100));
+
+            Rect sensorAreaRight = new Rect(new Point(((width - sensorSize) / 2) + 100, ((height - sensorSize) / 2) + 100),
+                    new Point(((width + sensorSize) / 2) + 100, ((height + sensorSize) / 2) + 100));
+
+
+            this.analysis = new Beacon.BeaconAnalysis(analyzeRect(rgba, sensorAreaLeft), analyzeRect(rgba, sensorAreaRight));
+
+        } else {
+            this.analysis = beacon.analyzeFrame(rgba, gray, screenOrientation);
+        }
         return this.analysis;
+    }
+
+
+    /**
+     * @param rgba - image to be analyzed
+     * @param sensorArea - area of image to analyzed
+     * @return {@link Beacon.BeaconColor} analyzed from the area.
+     */
+    public Beacon.BeaconColor analyzeRect(Mat rgba, Rect sensorArea) {
+        Mat sensorImage = new Mat(rgba, sensorArea);
+        Mat hsv = new Mat();
+        Imgproc.cvtColor(sensorImage, hsv, Imgproc.COLOR_RGB2HSV);
+
+        Scalar averageColor = Core.mean(hsv);
+
+        int hue = (int)averageColor.val[0];
+        int saturation = (int)averageColor.val[1];
+        int brightness = (int)averageColor.val[2];
+
+        if((hue > 140 || hue < 40) && (saturation < 200 && saturation > 100) &&
+                (brightness < 255 && brightness > 50)) {
+            return Beacon.BeaconColor.RED;
+        } else if((hue < 120 && hue > 80) && (saturation < 200 && saturation > 30) &&
+                (brightness < 255 && brightness > 50)) {
+            return Beacon.BeaconColor.BLUE;
+        } else {
+            return Beacon.BeaconColor.UNKNOWN;
+        }
+
     }
 
 
@@ -139,8 +195,8 @@ public class BeaconColorDetection {
      *
      * @return the {@link ColorSensorColor} of the left side of the beacon
      */
-    public AllianceColor getLeftColor() {
-        return toAllianceColor(getAnalysis().getStateLeft());
+    public ColorSensorColor getLeftColor() {
+        return toColorSensorColor(getAnalysis().getStateLeft());
     }
 
 
@@ -149,20 +205,24 @@ public class BeaconColorDetection {
      *
      * @return the {@link ColorSensorColor} of the left side of the beacon
      */
-    public AllianceColor getRightColor() {
-        return toAllianceColor(getAnalysis().getStateRight());
+    public ColorSensorColor getRightColor() {
+        return toColorSensorColor(getAnalysis().getStateRight());
     }
 
-    public AllianceColor toAllianceColor(Beacon.BeaconColor beaconColor) {
+    public ColorSensorColor toColorSensorColor(Beacon.BeaconColor beaconColor) {
         switch (beaconColor) {
             case RED_BRIGHT:
             case RED:
-                return AllianceColor.RED;
+                return ColorSensorColor.RED;
             case BLUE_BRIGHT:
             case BLUE:
-                return AllianceColor.BLUE;
+                return ColorSensorColor.BLUE;
             default:
-                return AllianceColor.UNKNOWN;
+                return ColorSensorColor.GREEN;
         }
+    }
+
+    public void useSimpleDetection(boolean usingSimpleDetection) {
+        this.usingSimpleDetection = usingSimpleDetection;
     }
 }
