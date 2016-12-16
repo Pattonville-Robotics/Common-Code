@@ -134,4 +134,7 @@ public class VuforiaNav {
         }
     }
 
+    public boolean isActivated() {
+        return isActivated;
+    }
 }
