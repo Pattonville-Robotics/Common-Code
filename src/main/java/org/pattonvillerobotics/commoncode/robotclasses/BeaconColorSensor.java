@@ -131,9 +131,7 @@ public class BeaconColorSensor {
 
         }else{
             return null;
-
         }
-
     }
 
     /**
@@ -159,5 +157,4 @@ public class BeaconColorSensor {
 
         }
     }
-
 }
