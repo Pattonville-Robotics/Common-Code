@@ -1,7 +1,5 @@
 package org.pattonvillerobotics.commoncode.robotclasses;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import org.pattonvillerobotics.commoncode.enums.AllianceColor;
@@ -144,17 +142,14 @@ public class BeaconColorSensor {
      * @see ColorSensorColor
      * @see AllianceColor
      */
-    public AllianceColor toAllianceColor(ColorSensorColor colorSensorColor) {
-
+    public static AllianceColor toAllianceColor(ColorSensorColor colorSensorColor) {
         switch (colorSensorColor) {
             case RED:
                 return AllianceColor.RED;
             case BLUE:
                 return AllianceColor.BLUE;
             default:
-                Log.i("toAllianceColor", "Default is BLUE");
-                return AllianceColor.BLUE;
-
+                throw new IllegalArgumentException("ColorSensorColor must be blue or red in order to convert to AllianceColor!");
         }
     }
 }

@@ -108,7 +108,7 @@ public class VuforiaNav {
     }
 
     /**
-     * @return the most recent tracked distance vertically off the picture
+     * @return the most recent tracked distance perpendicular to the picture
      */
     public double getDistance() {
         VectorF translation = lastLocation.getTranslation();
@@ -134,6 +134,7 @@ public class VuforiaNav {
         VectorF translation = lastLocation.getTranslation();
         return translation.getData()[1] / MM_PER_INCH;
     }
+
 
     public double getAngle() {
         return FastMath.toDegrees(FastMath.atan(getDistance() / getxPos()));
