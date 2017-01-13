@@ -129,9 +129,27 @@ public class BeaconColorSensor {
 
         }else{
             return null;
-
         }
-
     }
 
+    /**
+     * converts a ColorSensorColor to an AllianceColor
+     *
+     * @param colorSensorColor the ColorSensorColor to convert
+     *
+     * @return the corresponding AllianceColor
+     *
+     * @see ColorSensorColor
+     * @see AllianceColor
+     */
+    public static AllianceColor toAllianceColor(ColorSensorColor colorSensorColor) {
+        switch (colorSensorColor) {
+            case RED:
+                return AllianceColor.RED;
+            case BLUE:
+                return AllianceColor.BLUE;
+            default:
+                throw new IllegalArgumentException("ColorSensorColor must be blue or red in order to convert to AllianceColor!");
+        }
+    }
 }
