@@ -1,6 +1,7 @@
 package org.pattonvillerobotics.commoncode.robotclasses;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.pattonvillerobotics.commoncode.enums.AllianceColor;
 import org.pattonvillerobotics.commoncode.enums.ColorSensorColor;
@@ -32,6 +33,10 @@ public class BeaconColorSensor {
         this.colorSensor = colorSensor;
         this.colorSensor.enableLed(false);
 
+    }
+
+    public BeaconColorSensor(HardwareMap hardwareMap) {
+        this(hardwareMap.colorSensor.get("color_sensor"));
     }
 
     /**
