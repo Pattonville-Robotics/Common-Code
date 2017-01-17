@@ -23,11 +23,11 @@ public class BeaconColorSensor {
 
     /**
      * sets up a new BeaconColorSensor with a color sensor objects and disables the LED to
-     * enable passive mode for reaing of the beacon.
+     * enable passive mode for reading of the beacon.
      *
      * @param colorSensor a color sensor object from which to get data
      */
-    public BeaconColorSensor(ColorSensor colorSensor){
+    public BeaconColorSensor(ColorSensor colorSensor) {
 
         this.colorSensor = colorSensor;
         this.colorSensor.enableLed(false);
@@ -35,110 +35,10 @@ public class BeaconColorSensor {
     }
 
     /**
-     * reads the color of the beacon's right side then acts on that value given the alliance
-     * color, and thus the color it should be looking for
-     *
-     * @param allianceColor the alliance color, which dictates the color the robot
-     *                      should be looking for
-     * @param ifPositiveID the function to run if a positive color ID is found on the
-     *                     right side of the beacon
-     * @param ifNegativeID the functions to run if a negative color ID is found on the
-     *                     right side of the beacon
-     * @param ifNeither the function to run if the color sensor can not find a color
-     */
-    public void determineColor(AllianceColor allianceColor, Runnable ifPositiveID, Runnable ifNegativeID, Runnable ifNeither){
-
-        ColorSensorColor dominantColor = dominantColor();
-
-        switch(allianceColor){
-            case BLUE:
-
-                if(dominantColor == ColorSensorColor.BLUE){
-                    ifPositiveID.run();
-                }else if(dominantColor == ColorSensorColor.RED){
-                    ifNegativeID.run();
-                }else{
-                    ifNeither.run();
-                }
-
-                break;
-
-            case RED:
-
-                if(dominantColor == ColorSensorColor.RED){
-                    ifPositiveID.run();
-                }else if(dominantColor == ColorSensorColor.BLUE){
-                    ifNegativeID.run();
-                }else{
-                    ifNeither.run();
-                }
-
-                break;
-        }
-
-    }
-
-    /**
-     * gets the red color found by the color sensor
-     * @return the red value
-     */
-    public int red(){
-        return colorSensor.red();
-    }
-
-    /**
-     * gets the green color found by the color sensor
-     * @return the green value
-     */
-    public int green(){
-        return colorSensor.green();
-    }
-
-    /**
-     * gets the blue color found by the color sensor
-     * @return the blue value
-     */
-    public int blue(){
-        return colorSensor.blue();
-    }
-
-    /**
-     * gets the alpha color found by the color sensor
-     * @return the alpha value
-     */
-    public int alpha(){
-        return colorSensor.alpha();
-    }
-
-    /**
-     * determines the dominant color found by the color sensor on one side of the beacon
-     * @return the dominant color
-     *
-     * @see ColorSensorColor
-     */
-    public ColorSensorColor dominantColor(){
-
-        if(blue() > red() && blue() > green()){
-            return ColorSensorColor.BLUE;
-
-        }else if(red() > blue() && red() > green()){
-            return ColorSensorColor.RED;
-
-        }else if(green() > blue() && green() > red()){
-            return ColorSensorColor.GREEN;
-
-        }else{
-            return null;
-        }
-    }
-
-    /**
      * converts a ColorSensorColor to an AllianceColor
      *
      * @param colorSensorColor the ColorSensorColor to convert
-     *
      * @return the corresponding AllianceColor
-     *
      * @see ColorSensorColor
      * @see AllianceColor
      */
@@ -150,6 +50,108 @@ public class BeaconColorSensor {
                 return AllianceColor.BLUE;
             default:
                 throw new IllegalArgumentException("ColorSensorColor must be blue or red in order to convert to AllianceColor!");
+        }
+    }
+
+    /**
+     * reads the color of the beacon's right side then acts on that value given the alliance
+     * color, and thus the color it should be looking for
+     *
+     * @param allianceColor the alliance color, which dictates the color the robot
+     *                      should be looking for
+     * @param ifPositiveID  the function to run if a positive color ID is found on the
+     *                      right side of the beacon
+     * @param ifNegativeID  the functions to run if a negative color ID is found on the
+     *                      right side of the beacon
+     * @param ifNeither     the function to run if the color sensor can not find a color
+     */
+    public void determineColor(AllianceColor allianceColor, Runnable ifPositiveID, Runnable ifNegativeID, Runnable ifNeither) {
+
+        ColorSensorColor dominantColor = dominantColor();
+
+        switch (allianceColor) {
+            case BLUE:
+
+                if (dominantColor == ColorSensorColor.BLUE) {
+                    ifPositiveID.run();
+                } else if (dominantColor == ColorSensorColor.RED) {
+                    ifNegativeID.run();
+                } else {
+                    ifNeither.run();
+                }
+
+                break;
+
+            case RED:
+
+                if (dominantColor == ColorSensorColor.RED) {
+                    ifPositiveID.run();
+                } else if (dominantColor == ColorSensorColor.BLUE) {
+                    ifNegativeID.run();
+                } else {
+                    ifNeither.run();
+                }
+
+                break;
+        }
+
+    }
+
+    /**
+     * gets the red color found by the color sensor
+     *
+     * @return the red value
+     */
+    public int red() {
+        return colorSensor.red();
+    }
+
+    /**
+     * gets the green color found by the color sensor
+     *
+     * @return the green value
+     */
+    public int green() {
+        return colorSensor.green();
+    }
+
+    /**
+     * gets the blue color found by the color sensor
+     *
+     * @return the blue value
+     */
+    public int blue() {
+        return colorSensor.blue();
+    }
+
+    /**
+     * gets the alpha color found by the color sensor
+     *
+     * @return the alpha value
+     */
+    public int alpha() {
+        return colorSensor.alpha();
+    }
+
+    /**
+     * determines the dominant color found by the color sensor on one side of the beacon
+     *
+     * @return the dominant color
+     * @see ColorSensorColor
+     */
+    public ColorSensorColor dominantColor() {
+
+        if (blue() > red() && blue() > green()) {
+            return ColorSensorColor.BLUE;
+
+        } else if (red() > blue() && red() > green()) {
+            return ColorSensorColor.RED;
+
+        } else if (green() > blue() && green() > red()) {
+            return ColorSensorColor.GREEN;
+
+        } else {
+            return null;
         }
     }
 }
