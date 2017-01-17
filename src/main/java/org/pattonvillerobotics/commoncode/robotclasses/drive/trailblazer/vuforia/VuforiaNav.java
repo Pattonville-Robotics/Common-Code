@@ -1,6 +1,7 @@
 package org.pattonvillerobotics.commoncode.robotclasses.drive.trailblazer.vuforia;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.vuforia.HINT;
 import com.vuforia.Image;
@@ -27,6 +28,7 @@ import java.util.List;
 public class VuforiaNav {
 
     public static final float MM_PER_INCH = 25.4f;
+    private static final String TAG = "VuforiaNav";
     private VuforiaTrackables beacons;
     private boolean isActivated;
     private VuforiaLocalizerImplSubclass vuforia;
@@ -119,8 +121,13 @@ public class VuforiaNav {
      * @return the most recent position data of the robot
      */
     public float[] getLocation() {
-        VectorF translation = lastLocation.getTranslation();
-        return translation.getData();
+        if (lastLocation != null) {
+            VectorF translation = lastLocation.getTranslation();
+            if (translation != null)
+                return translation.getData();
+        }
+        Log.w(TAG, "No target found.");
+        return new float[3];
     }
 
     public OpenGLMatrix getLastLocation() {
