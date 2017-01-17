@@ -141,13 +141,15 @@ public class BeaconColorSensor {
      */
     public ColorSensorColor dominantColor() {
 
-        if (blue() > red() && blue() > green()) {
+        int blue = blue(), red = red(), green = green();
+
+        if (blue > red && blue > green) {
             return ColorSensorColor.BLUE;
 
-        } else if (red() > blue() && red() > green()) {
+        } else if (red > blue && red > green) {
             return ColorSensorColor.RED;
 
-        } else if (green() > blue() && green() > red()) {
+        } else if (green > blue && green > red) {
             return ColorSensorColor.GREEN;
 
         } else {
