@@ -1,5 +1,7 @@
 package org.pattonvillerobotics.commoncode.robotclasses.drive;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -11,6 +13,7 @@ import org.pattonvillerobotics.commoncode.enums.Direction;
 public class EncoderDrive extends AbstractComplexDrive {
 
     public static final int TARGET_REACHED_THRESHOLD = 16;
+    private static final String TAG = "EncoderDrive";
 
     /**
      * sets up Drive object with custom RobotParameters useful for doing calculations with encoders
@@ -64,12 +67,18 @@ public class EncoderDrive extends AbstractComplexDrive {
                 throw new IllegalArgumentException("Direction must be Direction.FORWARDS or Direction.BACKWARDS!");
         }
 
+        Log.e(TAG, "Getting motor modes");
         DcMotor.RunMode leftDriveMotorMode = leftDriveMotor.getMode();
         DcMotor.RunMode rightDriveMotorMode = rightDriveMotor.getMode();
 
+        Log.e(TAG, "Setting motor modes");
         leftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        Log.e(TAG, "Setting motor power high");
+        move(Direction.FORWARD, power); // To keep power in [0.0, 1.0]. Encoders control direction
+
+        Log.e(TAG, "Setting target position");
         leftDriveMotor.setTargetPosition(targetPositionLeft);
         rightDriveMotor.setTargetPosition(targetPositionRight);
 
@@ -77,16 +86,17 @@ public class EncoderDrive extends AbstractComplexDrive {
         telemetry("LMotorT: " + targetPositionLeft);
         telemetry("RMotorT: " + targetPositionRight);
         telemetry("EncoderDelta: " + deltaPosition);
-        Telemetry.Item distance = telemetry("DistanceL: -1 DistanceR: -1");
+        Telemetry.Item distance = telemetry("DistanceL: N/A DistanceR: N/A");
 
-        move(Direction.FORWARD, power); // To keep power in [0.0, 1.0]. Encoders control direction
         while (!reachedTarget(leftDriveMotor.getCurrentPosition(), targetPositionLeft, rightDriveMotor.getCurrentPosition(), targetPositionRight) && !linearOpMode.isStopRequested()) {
             Thread.yield();
             distance.setValue("DistanceL: " + leftDriveMotor.getCurrentPosition() + " DistanceR: " + rightDriveMotor.getCurrentPosition());
             linearOpMode.telemetry.update();
         }
+        Log.e(TAG, "Setting motor power low");
         stop();
 
+        Log.e(TAG, "Restoring motor mode");
         leftDriveMotor.setMode(leftDriveMotorMode); // Restore the prior mode
         rightDriveMotor.setMode(rightDriveMotorMode);
     }
