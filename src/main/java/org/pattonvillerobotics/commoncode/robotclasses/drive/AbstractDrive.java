@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.pattonvillerobotics.commoncode.enums.Direction;
@@ -82,7 +81,7 @@ public abstract class AbstractDrive implements Drive {
         moveFreely(0, 0);
     }
 
-    public void sleep(long milli) throws InterruptedException {
+    public void sleep(long milli) {
         this.linearOpMode.sleep(milli);
     }
 
