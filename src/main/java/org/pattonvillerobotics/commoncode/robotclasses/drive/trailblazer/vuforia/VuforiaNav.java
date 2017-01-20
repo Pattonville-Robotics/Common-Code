@@ -127,7 +127,7 @@ public class VuforiaNav {
                 return translation.getData();
         }
         Log.w(TAG, "No target found.");
-        return new float[3];
+        return null;
     }
 
     public OpenGLMatrix getLastLocation() {
