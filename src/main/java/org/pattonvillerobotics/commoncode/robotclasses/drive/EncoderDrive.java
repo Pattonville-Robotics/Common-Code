@@ -103,6 +103,8 @@ public class EncoderDrive extends AbstractComplexDrive {
             leftDriveMotor.setMode(leftDriveMotorMode); // Restore the prior mode
         if (rightDriveMotorMode != DcMotor.RunMode.RUN_TO_POSITION)
             rightDriveMotor.setMode(rightDriveMotorMode);
+
+        sleep(500);
     }
 
     /**
@@ -175,6 +177,8 @@ public class EncoderDrive extends AbstractComplexDrive {
 
         for (Telemetry.Item i : items)
             i.setRetained(false);
+
+        sleep(500);
     }
 
     /**
