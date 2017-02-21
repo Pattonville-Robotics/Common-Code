@@ -114,6 +114,7 @@ public class VuforiaNav {
         for (VuforiaTrackable beacon : beacons) {
             if (beaconVisible(beacon)) {
                 lastLocation = ((VuforiaTrackableDefaultListener) beacon.getListener()).getRobotLocation();
+                return lastLocation;
             }
         }
         return null;
