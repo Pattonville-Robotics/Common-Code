@@ -7,6 +7,7 @@ import com.vuforia.HINT;
 import com.vuforia.Image;
 import com.vuforia.Vuforia;
 
+import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -153,6 +154,10 @@ public class VuforiaNav {
         return translation.getData()[1] / MM_PER_INCH;
     }
 
+    public double distanceFromBeacon() {
+        return FastMath.hypot(getXPos(), getYPos());
+    }
+
     /**
      * @return most recent orientation in relation to the wall the beacon is on
      */
@@ -160,6 +165,9 @@ public class VuforiaNav {
         return Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
     }
 
+    public double angleToBeacon() {
+        return FastMath.toDegrees(-FastMath.atan(getYPos()/getXPos())) - getOrientation();
+    }
 
     /**
      * @return {@link Bitmap} of the most recent frame from vuforia
