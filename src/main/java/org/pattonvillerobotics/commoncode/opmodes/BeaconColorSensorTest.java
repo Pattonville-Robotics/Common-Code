@@ -65,8 +65,7 @@ public class BeaconColorSensorTest extends LinearOpMode {
     }
 
     public void initialize(){
-
-        colorSensor = hardwareMap.colorSensor.get("color sensor");
+        colorSensor = hardwareMap.colorSensor.get("color_sensor");
         beaconColorSensor = new BeaconColorSensor(colorSensor);
         color = AllianceColor.BLUE;
     }

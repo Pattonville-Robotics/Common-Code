@@ -30,6 +30,7 @@ public class VuforiaNav {
     public static final float MM_PER_INCH = 25.4f;
     private static final String TAG = "VuforiaNav";
     private VuforiaTrackables beacons;
+    private VuforiaTrackable blue1, blue2, red1, red2;
     private boolean isActivated;
     private VuforiaLocalizerImplSubclass vuforia;
     private OpenGLMatrix lastLocation;
@@ -48,6 +49,11 @@ public class VuforiaNav {
         beacons.get(1).setName("Tools");
         beacons.get(2).setName("Lego");
         beacons.get(3).setName("Gears");
+
+        blue1 = beacons.get(0);
+        blue2 = beacons.get(2);
+        red1 = beacons.get(3);
+        red2 = beacons.get(1);
 
         setPhoneInformation(parameters.getPhoneLocation());
         setBeaconLocations(parameters.getBeaconLocations());
@@ -78,7 +84,7 @@ public class VuforiaNav {
     }
 
     /**
-     * called to begin tracking
+     * activate beacon tracking
      */
     public void activate() {
         beacons.activate();
@@ -92,6 +98,13 @@ public class VuforiaNav {
         isActivated = false;
     }
 
+    public boolean beaconVisible(VuforiaTrackable trackable) {
+        if (!isActivated) {
+            throw new IllegalStateException("Vuforia must be activated to track beacons.");
+        }
+        return ((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible();
+    }
+
     /**
      * @return {@link OpenGLMatrix} location of the current beacon being tracked
      */
@@ -100,10 +113,9 @@ public class VuforiaNav {
             throw new IllegalStateException("Vuforia must be activated to track beacons.");
         }
         for (VuforiaTrackable beacon : beacons) {
-            OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) beacon.getListener()).getUpdatedRobotLocation();
-            if (robotLocationTransform != null) {
-                lastLocation = robotLocationTransform;
-                return robotLocationTransform;
+            if (beaconVisible(beacon)) {
+                lastLocation = ((VuforiaTrackableDefaultListener) beacon.getListener()).getUpdatedRobotLocation();
+                return lastLocation;
             }
         }
         return null;
@@ -112,7 +124,7 @@ public class VuforiaNav {
     /**
      * @return the most recent tracked distance perpendicular to the picture
      */
-    public double getDistance() {
+    public double getXPos() {
         VectorF translation = lastLocation.getTranslation();
         return translation.getData()[0] / MM_PER_INCH;
     }
@@ -137,23 +149,25 @@ public class VuforiaNav {
     /**
      * @return the most recently tracked distance horizontally off the picture
      */
-    public double getxPos() {
+    public double getYPos() {
         VectorF translation = lastLocation.getTranslation();
         return translation.getData()[1] / MM_PER_INCH;
     }
 
-
-    public double getAngle() {
-        return FastMath.toDegrees(FastMath.atan(getDistance() / getxPos()));
+    public double distanceFromBeacon() {
+        return FastMath.hypot(getXPos(), getYPos());
     }
 
     /**
-     * @return most recently tracked angle from the phone to the picture
+     * @return most recent orientation in relation to the wall the beacon is on
      */
-    public double getHeading() {
-        return Orientation.getOrientation(getLastLocation(), AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
+    public double getOrientation() {
+        return Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
     }
 
+    public double angleToBeacon() {
+        return FastMath.toDegrees(-FastMath.atan(getYPos()/getXPos())) - getOrientation();
+    }
 
     /**
      * @return {@link Bitmap} of the most recent frame from vuforia

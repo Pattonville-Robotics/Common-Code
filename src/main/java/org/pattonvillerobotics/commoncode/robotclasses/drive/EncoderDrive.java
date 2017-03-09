@@ -47,29 +47,30 @@ public class EncoderDrive extends AbstractComplexDrive {
         int targetPositionLeft;
         int targetPositionRight;
 
-        int startPositionLeft = leftDriveMotor.getCurrentPosition();
-        int startPositionRight = rightDriveMotor.getCurrentPosition();
+        Log.e(TAG, "Getting motor modes");
+        DcMotor.RunMode leftDriveMotorMode = leftDriveMotor.getMode();
+        DcMotor.RunMode rightDriveMotorMode = rightDriveMotor.getMode();
+
+        leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         int deltaPosition = (int) FastMath.round(inchesToTicks(inches));
 
         switch (direction) {
             case FORWARD: {
-                targetPositionLeft = startPositionLeft + deltaPosition;
-                targetPositionRight = startPositionRight + deltaPosition;
+                targetPositionLeft = deltaPosition;
+                targetPositionRight = deltaPosition;
                 break;
             }
             case BACKWARD: {
-                targetPositionLeft = startPositionLeft - deltaPosition;
-                targetPositionRight = startPositionRight - deltaPosition;
+                targetPositionLeft = -deltaPosition;
+                targetPositionRight = -deltaPosition;
                 break;
             }
             default:
                 throw new IllegalArgumentException("Direction must be Direction.FORWARDS or Direction.BACKWARDS!");
         }
-
-        Log.e(TAG, "Getting motor modes");
-        DcMotor.RunMode leftDriveMotorMode = leftDriveMotor.getMode();
-        DcMotor.RunMode rightDriveMotorMode = rightDriveMotor.getMode();
 
         Log.e(TAG, "Setting motor modes");
         if (leftDriveMotorMode != DcMotor.RunMode.RUN_TO_POSITION)
@@ -90,10 +91,24 @@ public class EncoderDrive extends AbstractComplexDrive {
         telemetry("EncoderDelta: " + deltaPosition);
         Telemetry.Item distance = telemetry("DistanceL: N/A DistanceR: N/A");
 
-        while (!reachedTarget(leftDriveMotor.getCurrentPosition(), targetPositionLeft, rightDriveMotor.getCurrentPosition(), targetPositionRight) && !linearOpMode.isStopRequested()) {
+        int oldLeftPosition = leftDriveMotor.getCurrentPosition();
+        int oldRightPosition = rightDriveMotor.getCurrentPosition();
+
+        while ((leftDriveMotor.isBusy() || rightDriveMotor.isBusy()) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
             Thread.yield();
             distance.setValue("DistanceL: " + leftDriveMotor.getCurrentPosition() + " DistanceR: " + rightDriveMotor.getCurrentPosition());
             linearOpMode.telemetry.update();
+
+            /*if(leftDriveMotor.getCurrentPosition() == oldLeftPosition || rightDriveMotor.getCurrentPosition() == oldRightPosition){
+                moveFreely(0, 0);
+                linearOpMode.sleep(5);
+                moveFreely(1.0, 1.0);
+                linearOpMode.sleep(5);
+            }
+
+            oldLeftPosition = leftDriveMotor.getCurrentPosition();
+            oldRightPosition = rightDriveMotor.getCurrentPosition();*/
+
         }
         Log.e(TAG, "Setting motor power low");
         stop();
@@ -104,7 +119,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         if (rightDriveMotorMode != DcMotor.RunMode.RUN_TO_POSITION)
             rightDriveMotor.setMode(rightDriveMotorMode);
 
-        sleep(500);
+        sleep(20);
     }
 
     /**
@@ -121,29 +136,31 @@ public class EncoderDrive extends AbstractComplexDrive {
         int targetPositionLeft;
         int targetPositionRight;
 
-        int startPositionLeft = leftDriveMotor.getCurrentPosition();
-        int startPositionRight = rightDriveMotor.getCurrentPosition();
+        Log.e(TAG, "Getting motor modes");
+        DcMotor.RunMode leftDriveMotorMode = leftDriveMotor.getMode();
+        DcMotor.RunMode rightDriveMotorMode = rightDriveMotor.getMode();
+
+        leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         double inches = degreesToInches(degrees);
         int deltaPosition = (int) FastMath.round(inchesToTicks(inches));
 
         switch (direction) {
             case LEFT: {
-                targetPositionLeft = startPositionLeft - deltaPosition;
-                targetPositionRight = startPositionRight + deltaPosition;
+                targetPositionLeft = -deltaPosition;
+                targetPositionRight = deltaPosition;
                 break;
             }
             case RIGHT: {
-                targetPositionLeft = startPositionLeft + deltaPosition;
-                targetPositionRight = startPositionRight - deltaPosition;
+                targetPositionLeft = deltaPosition;
+                targetPositionRight = -deltaPosition;
                 break;
             }
             default:
                 throw new IllegalArgumentException("Direction must be Direction.LEFT or Direction.RIGHT!");
         }
-
-        DcMotor.RunMode leftDriveMotorMode = leftDriveMotor.getMode();
-        DcMotor.RunMode rightDriveMotorMode = rightDriveMotor.getMode();
 
         if (leftDriveMotorMode != DcMotor.RunMode.RUN_TO_POSITION)
             leftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -162,11 +179,25 @@ public class EncoderDrive extends AbstractComplexDrive {
         };
         Telemetry.Item distance = items[4];
 
+        int oldLeftPosition = leftDriveMotor.getCurrentPosition();
+        int oldRightPosition = rightDriveMotor.getCurrentPosition();
+
         move(Direction.FORWARD, speed); // To keep speed in [0.0, 1.0]. Encoders control direction
-        while (!reachedTarget(leftDriveMotor.getCurrentPosition(), targetPositionLeft, rightDriveMotor.getCurrentPosition(), targetPositionRight) && !linearOpMode.isStopRequested()) {
+        while ((leftDriveMotor.isBusy() || rightDriveMotor.isBusy()) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
             Thread.yield();
             distance.setValue("DistanceL: " + leftDriveMotor.getCurrentPosition() + " DistanceR: " + rightDriveMotor.getCurrentPosition());
             linearOpMode.telemetry.update();
+
+            /*if(leftDriveMotor.getCurrentPosition() == oldLeftPosition || rightDriveMotor.getCurrentPosition() == oldRightPosition){
+                moveFreely(0, 0);
+                linearOpMode.sleep(5);
+                moveFreely(1.0, 1.0);
+                linearOpMode.sleep(5);
+            }
+
+            oldLeftPosition = leftDriveMotor.getCurrentPosition();
+            oldRightPosition = rightDriveMotor.getCurrentPosition();*/
+
         }
         stop();
 
@@ -178,7 +209,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         for (Telemetry.Item i : items)
             i.setRetained(false);
 
-        sleep(500);
+        sleep(20);
     }
 
     /**
