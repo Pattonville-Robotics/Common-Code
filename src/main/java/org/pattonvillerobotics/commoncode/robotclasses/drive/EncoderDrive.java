@@ -2,6 +2,8 @@ package org.pattonvillerobotics.commoncode.robotclasses.drive;
 
 import android.util.Log;
 
+import com.annimon.stream.function.Consumer;
+import com.annimon.stream.function.Function;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -11,8 +13,31 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.pattonvillerobotics.commoncode.enums.Direction;
 
 public class EncoderDrive extends AbstractComplexDrive {
-
     public static final int TARGET_REACHED_THRESHOLD = 16;
+    protected static final Consumer<DcMotor> RUN_MODE_RUN_USING_ENCODER_SETTER = new Consumer<DcMotor>() {
+        @Override
+        public void accept(DcMotor dcMotor) {
+            dcMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+    };
+    protected static final Consumer<DcMotor> RUN_MODE_RUN_TO_POSITION_SETTER = new Consumer<DcMotor>() {
+        @Override
+        public void accept(DcMotor dcMotor) {
+            dcMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+    };
+    protected static final Consumer<DcMotor> RUN_MODE_STOP_AND_RESET_ENCODER_SETTER = new Consumer<DcMotor>() {
+        @Override
+        public void accept(DcMotor dcMotor) {
+            dcMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+    };
+    protected static final Function<DcMotor, Boolean> IS_BUSY_FUNCTION = new Function<DcMotor, Boolean>() {
+        @Override
+        public Boolean apply(DcMotor dcMotor) {
+            return dcMotor.isBusy();
+        }
+    };
     private static final String TAG = "EncoderDrive";
     private DcMotor.RunMode leftDriveSavedMotorMode, rightDriveSavedMotorMode;
 
@@ -75,10 +100,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         }
 
         Log.e(TAG, "Setting motor modes");
-        if (leftDriveMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION)
-            leftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        if (rightDriveMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION)
-            rightDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorsRunToPosition();
 
         Log.e(TAG, "Setting motor power high");
         move(Direction.FORWARD, power); // To keep power in [0.0, 1.0]. Encoders control direction
@@ -107,10 +129,8 @@ public class EncoderDrive extends AbstractComplexDrive {
     }
 
     protected void restoreMotorModes() {
-        if (leftDriveMotor.getMode() != leftDriveSavedMotorMode)
-            leftDriveMotor.setMode(leftDriveSavedMotorMode);
-        if (rightDriveMotor.getMode() != rightDriveSavedMotorMode)
-            rightDriveMotor.setMode(rightDriveSavedMotorMode);
+        leftDriveMotor.setMode(leftDriveSavedMotorMode);
+        rightDriveMotor.setMode(rightDriveSavedMotorMode);
     }
 
     protected void storeMotorModes() {
@@ -161,10 +181,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         }
 
         Log.e(TAG, "Setting motor modes");
-        if (leftDriveMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION)
-            leftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        if (rightDriveMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION)
-            rightDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorsRunToPosition();
 
         setMotorTargets(targetPositionLeft, targetPositionRight);
 
@@ -192,6 +209,13 @@ public class EncoderDrive extends AbstractComplexDrive {
             i.setRetained(false);
 
         sleep(100);
+    }
+
+    protected void setMotorsRunToPosition() {
+        if (leftDriveMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION)
+            leftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        if (rightDriveMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION)
+            rightDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     protected void setMotorTargets(int targetPositionLeft, int targetPositionRight) {
