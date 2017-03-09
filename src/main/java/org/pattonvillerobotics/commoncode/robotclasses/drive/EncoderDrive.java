@@ -48,8 +48,8 @@ public class EncoderDrive extends AbstractComplexDrive {
         int targetPositionRight;
 
         Log.e(TAG, "Getting motor modes");
-        DcMotor.RunMode leftDriveMotorMode = leftDriveMotor.getMode();
-        DcMotor.RunMode rightDriveMotorMode = rightDriveMotor.getMode();
+        DcMotor.RunMode leftDriveMotorModeInitial = leftDriveMotor.getMode();
+        DcMotor.RunMode rightDriveMotorModeInitial = rightDriveMotor.getMode();
 
         leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -73,9 +73,9 @@ public class EncoderDrive extends AbstractComplexDrive {
         }
 
         Log.e(TAG, "Setting motor modes");
-        if (leftDriveMotorMode != DcMotor.RunMode.RUN_TO_POSITION)
+        if (leftDriveMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION)
             leftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        if (rightDriveMotorMode != DcMotor.RunMode.RUN_TO_POSITION)
+        if (rightDriveMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION)
             rightDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         Log.e(TAG, "Setting motor power high");
@@ -91,8 +91,8 @@ public class EncoderDrive extends AbstractComplexDrive {
         telemetry("EncoderDelta: " + deltaPosition);
         Telemetry.Item distance = telemetry("DistanceL: N/A DistanceR: N/A");
 
-        int oldLeftPosition = leftDriveMotor.getCurrentPosition();
-        int oldRightPosition = rightDriveMotor.getCurrentPosition();
+        //int oldLeftPosition = leftDriveMotor.getCurrentPosition();
+        //int oldRightPosition = rightDriveMotor.getCurrentPosition();
 
         while ((leftDriveMotor.isBusy() || rightDriveMotor.isBusy()) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
             Thread.yield();
@@ -114,12 +114,12 @@ public class EncoderDrive extends AbstractComplexDrive {
         stop();
 
         Log.e(TAG, "Restoring motor mode");
-        if (leftDriveMotorMode != DcMotor.RunMode.RUN_TO_POSITION)
-            leftDriveMotor.setMode(leftDriveMotorMode); // Restore the prior mode
-        if (rightDriveMotorMode != DcMotor.RunMode.RUN_TO_POSITION)
-            rightDriveMotor.setMode(rightDriveMotorMode);
+        if (leftDriveMotor.getMode() != leftDriveMotorModeInitial)
+            leftDriveMotor.setMode(leftDriveMotorModeInitial); // Restore the prior mode
+        if (rightDriveMotor.getMode() != rightDriveMotorModeInitial)
+            rightDriveMotor.setMode(rightDriveMotorModeInitial);
 
-        sleep(20);
+        sleep(100);
     }
 
     /**
@@ -137,8 +137,8 @@ public class EncoderDrive extends AbstractComplexDrive {
         int targetPositionRight;
 
         Log.e(TAG, "Getting motor modes");
-        DcMotor.RunMode leftDriveMotorMode = leftDriveMotor.getMode();
-        DcMotor.RunMode rightDriveMotorMode = rightDriveMotor.getMode();
+        DcMotor.RunMode leftDriveMotorModeInitial = leftDriveMotor.getMode();
+        DcMotor.RunMode rightDriveMotorModeInitial = rightDriveMotor.getMode();
 
         leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -162,9 +162,10 @@ public class EncoderDrive extends AbstractComplexDrive {
                 throw new IllegalArgumentException("Direction must be Direction.LEFT or Direction.RIGHT!");
         }
 
-        if (leftDriveMotorMode != DcMotor.RunMode.RUN_TO_POSITION)
+        Log.e(TAG, "Setting motor modes");
+        if (leftDriveMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION)
             leftDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        if (rightDriveMotorMode != DcMotor.RunMode.RUN_TO_POSITION)
+        if (rightDriveMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION)
             rightDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         leftDriveMotor.setTargetPosition(targetPositionLeft);
@@ -179,8 +180,8 @@ public class EncoderDrive extends AbstractComplexDrive {
         };
         Telemetry.Item distance = items[4];
 
-        int oldLeftPosition = leftDriveMotor.getCurrentPosition();
-        int oldRightPosition = rightDriveMotor.getCurrentPosition();
+        //int oldLeftPosition = leftDriveMotor.getCurrentPosition();
+        //int oldRightPosition = rightDriveMotor.getCurrentPosition();
 
         move(Direction.FORWARD, speed); // To keep speed in [0.0, 1.0]. Encoders control direction
         while ((leftDriveMotor.isBusy() || rightDriveMotor.isBusy()) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
@@ -201,15 +202,16 @@ public class EncoderDrive extends AbstractComplexDrive {
         }
         stop();
 
-        if (leftDriveMotorMode != DcMotor.RunMode.RUN_TO_POSITION)
-            leftDriveMotor.setMode(leftDriveMotorMode); // Restore the prior mode
-        if (rightDriveMotorMode != DcMotor.RunMode.RUN_TO_POSITION)
-            rightDriveMotor.setMode(rightDriveMotorMode);
+        Log.e(TAG, "Restoring motor mode");
+        if (leftDriveMotor.getMode() != leftDriveMotorModeInitial)
+            leftDriveMotor.setMode(leftDriveMotorModeInitial); // Restore the prior mode
+        if (rightDriveMotor.getMode() != rightDriveMotorModeInitial)
+            rightDriveMotor.setMode(rightDriveMotorModeInitial);
 
         for (Telemetry.Item i : items)
             i.setRetained(false);
 
-        sleep(20);
+        sleep(100);
     }
 
     /**
