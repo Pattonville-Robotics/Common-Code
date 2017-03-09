@@ -209,6 +209,7 @@ public class EncoderDrive extends AbstractComplexDrive {
      * @param targetPositionRight  the target position of the right encoder
      * @return
      */
+    @Deprecated
     protected boolean reachedTarget(int currentPositionLeft, int targetPositionLeft, int currentPositionRight, int targetPositionRight) {
         return FastMath.abs(currentPositionLeft - targetPositionLeft) < TARGET_REACHED_THRESHOLD && FastMath.abs(currentPositionRight - targetPositionRight) < TARGET_REACHED_THRESHOLD;
     }
