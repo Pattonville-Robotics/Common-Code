@@ -20,7 +20,7 @@ public abstract class AbstractComplexDrive extends AbstractDrive {
 
         if (robotParameters.areEncodersEnabled()) {
             this.leftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            this.leftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            this.rightDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             this.leftDriveMotor.setMaxSpeed(robotParameters.getDcMotorMaxSpeed());
             this.rightDriveMotor.setMaxSpeed(robotParameters.getDcMotorMaxSpeed());
