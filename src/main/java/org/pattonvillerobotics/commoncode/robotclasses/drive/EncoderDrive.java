@@ -33,6 +33,10 @@ public class EncoderDrive extends AbstractComplexDrive {
         return super.telemetry("EncoderDrive", message);
     }
 
+    protected boolean isMovingToPosition() {
+        return leftDriveMotor.isBusy() || rightDriveMotor.isBusy();
+    }
+
     /**
      * drives a specific number of inches in a given direction
      *
@@ -51,9 +55,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         DcMotor.RunMode leftDriveMotorModeInitial = leftDriveMotor.getMode();
         DcMotor.RunMode rightDriveMotorModeInitial = rightDriveMotor.getMode();
 
-        leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        resetMotorEncoders();
 
         int deltaPosition = (int) FastMath.round(inchesToTicks(inches));
 
@@ -82,8 +84,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         move(Direction.FORWARD, power); // To keep power in [0.0, 1.0]. Encoders control direction
 
         Log.e(TAG, "Setting target position");
-        leftDriveMotor.setTargetPosition(targetPositionLeft);
-        rightDriveMotor.setTargetPosition(targetPositionRight);
+        setMotorTargets(targetPositionLeft, targetPositionRight);
 
         telemetry("Moving " + inches + " inches at power " + power);
         telemetry("LMotorT: " + targetPositionLeft);
@@ -94,7 +95,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         //int oldLeftPosition = leftDriveMotor.getCurrentPosition();
         //int oldRightPosition = rightDriveMotor.getCurrentPosition();
 
-        while ((leftDriveMotor.isBusy() || rightDriveMotor.isBusy()) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
+        while (isMovingToPosition() && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
             Thread.yield();
             distance.setValue("DistanceL: " + leftDriveMotor.getCurrentPosition() + " DistanceR: " + rightDriveMotor.getCurrentPosition());
             linearOpMode.telemetry.update();
@@ -122,6 +123,11 @@ public class EncoderDrive extends AbstractComplexDrive {
         sleep(100);
     }
 
+    protected void resetMotorEncoders() {
+        leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
     /**
      * turns the robot a certain number of degrees in a given direction
      *
@@ -140,9 +146,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         DcMotor.RunMode leftDriveMotorModeInitial = leftDriveMotor.getMode();
         DcMotor.RunMode rightDriveMotorModeInitial = rightDriveMotor.getMode();
 
-        leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        resetMotorEncoders();
 
         double inches = degreesToInches(degrees);
         int deltaPosition = (int) FastMath.round(inchesToTicks(inches));
@@ -168,8 +172,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         if (rightDriveMotor.getMode() != DcMotor.RunMode.RUN_TO_POSITION)
             rightDriveMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftDriveMotor.setTargetPosition(targetPositionLeft);
-        rightDriveMotor.setTargetPosition(targetPositionRight);
+        setMotorTargets(targetPositionLeft, targetPositionRight);
 
         Telemetry.Item[] items = new Telemetry.Item[]{
                 telemetry("Rotating " + degrees + " degrees at speed " + speed).setRetained(true),
@@ -212,6 +215,11 @@ public class EncoderDrive extends AbstractComplexDrive {
             i.setRetained(false);
 
         sleep(100);
+    }
+
+    protected void setMotorTargets(int targetPositionLeft, int targetPositionRight) {
+        leftDriveMotor.setTargetPosition(targetPositionLeft);
+        rightDriveMotor.setTargetPosition(targetPositionRight);
     }
 
     /**
