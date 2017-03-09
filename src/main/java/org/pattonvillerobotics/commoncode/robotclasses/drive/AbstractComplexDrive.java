@@ -12,7 +12,7 @@ import org.pattonvillerobotics.commoncode.enums.Direction;
 
 public abstract class AbstractComplexDrive extends AbstractDrive {
 
-    protected RobotParameters robotParameters;
+    protected final RobotParameters robotParameters;
 
     public AbstractComplexDrive(LinearOpMode linearOpMode, HardwareMap hardwareMap, RobotParameters robotParameters) {
         super(linearOpMode, hardwareMap);
