@@ -20,7 +20,7 @@ public abstract class AbstractDrive implements Drive {
             dcMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
     };
-    protected static final Consumer<DcMotor> RUN_MODE_SETTER = new Consumer<DcMotor>() {
+    protected static final Consumer<DcMotor> RUN_MODE_RUN_WITHOUT_ENCODER_SETTER = new Consumer<DcMotor>() {
         @Override
         public void accept(DcMotor dcMotor) {
             dcMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -48,8 +48,8 @@ public abstract class AbstractDrive implements Drive {
         ZERO_POWER_BEHAVIOR_SETTER.accept(this.leftDriveMotor);
         ZERO_POWER_BEHAVIOR_SETTER.accept(this.rightDriveMotor);
 
-        RUN_MODE_SETTER.accept(this.leftDriveMotor);
-        RUN_MODE_SETTER.accept(this.rightDriveMotor);
+        RUN_MODE_RUN_WITHOUT_ENCODER_SETTER.accept(this.leftDriveMotor);
+        RUN_MODE_RUN_WITHOUT_ENCODER_SETTER.accept(this.rightDriveMotor);
 
         DIRECTION_SETTER.accept(this.rightDriveMotor);
     }
