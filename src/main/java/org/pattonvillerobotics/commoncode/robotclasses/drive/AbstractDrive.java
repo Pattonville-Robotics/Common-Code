@@ -13,8 +13,8 @@ import org.pattonvillerobotics.commoncode.enums.Direction;
  */
 public abstract class AbstractDrive implements Drive {
 
-    public DcMotor leftDriveMotor;
-    public DcMotor rightDriveMotor;
+    public final DcMotor leftDriveMotor;
+    public final DcMotor rightDriveMotor;
     public LinearOpMode linearOpMode;
     public HardwareMap hardwareMap;
 
