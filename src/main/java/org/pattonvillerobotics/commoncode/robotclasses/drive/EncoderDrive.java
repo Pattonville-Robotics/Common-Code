@@ -94,7 +94,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         //int oldLeftPosition = leftDriveMotor.getCurrentPosition();
         //int oldRightPosition = rightDriveMotor.getCurrentPosition();
 
-        while ((leftDriveMotor.isBusy() || rightDriveMotor.isBusy()) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
+        while ((leftDriveMotor.isBusy() || rightDriveMotor.isBusy()) || !reachedTarget(leftDriveMotor.getCurrentPosition(), targetPositionLeft, rightDriveMotor.getCurrentPosition(), targetPositionRight) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
             Thread.yield();
             distance.setValue("DistanceL: " + leftDriveMotor.getCurrentPosition() + " DistanceR: " + rightDriveMotor.getCurrentPosition());
             linearOpMode.telemetry.update();
@@ -184,7 +184,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         //int oldRightPosition = rightDriveMotor.getCurrentPosition();
 
         move(Direction.FORWARD, speed); // To keep speed in [0.0, 1.0]. Encoders control direction
-        while ((leftDriveMotor.isBusy() || rightDriveMotor.isBusy()) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
+        while ((leftDriveMotor.isBusy() || rightDriveMotor.isBusy()) && !reachedTarget(leftDriveMotor.getCurrentPosition(), targetPositionLeft, rightDriveMotor.getCurrentPosition(), targetPositionRight) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
             Thread.yield();
             distance.setValue("DistanceL: " + leftDriveMotor.getCurrentPosition() + " DistanceR: " + rightDriveMotor.getCurrentPosition());
             linearOpMode.telemetry.update();
