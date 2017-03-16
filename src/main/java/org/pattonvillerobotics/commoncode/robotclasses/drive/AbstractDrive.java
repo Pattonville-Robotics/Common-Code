@@ -1,5 +1,6 @@
 package org.pattonvillerobotics.commoncode.robotclasses.drive;
 
+import com.annimon.stream.function.Consumer;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -13,24 +14,44 @@ import org.pattonvillerobotics.commoncode.enums.Direction;
  */
 public abstract class AbstractDrive implements Drive {
 
-    public DcMotor leftDriveMotor;
-    public DcMotor rightDriveMotor;
-    public LinearOpMode linearOpMode;
-    public HardwareMap hardwareMap;
+    protected static final Consumer<DcMotor> ZERO_POWER_BEHAVIOR_SETTER = new Consumer<DcMotor>() {
+        @Override
+        public void accept(DcMotor dcMotor) {
+            dcMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
+    };
+    protected static final Consumer<DcMotor> RUN_MODE_RUN_WITHOUT_ENCODER_SETTER = new Consumer<DcMotor>() {
+        @Override
+        public void accept(DcMotor dcMotor) {
+            dcMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+    };
+    protected static final Consumer<DcMotor> DIRECTION_SETTER = new Consumer<DcMotor>() {
+        @Override
+        public void accept(DcMotor dcMotor) {
+            dcMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
+    };
+
+    public final DcMotor leftDriveMotor, rightDriveMotor;
+    public final LinearOpMode linearOpMode;
+    public final HardwareMap hardwareMap;
 
     public AbstractDrive(LinearOpMode linearOpMode, HardwareMap hardwareMap) {
         this.leftDriveMotor = hardwareMap.dcMotor.get("left_drive_motor");
         this.rightDriveMotor = hardwareMap.dcMotor.get("right_drive_motor");
+
         this.linearOpMode = linearOpMode;
         this.hardwareMap = hardwareMap;
 
-        this.leftDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.rightDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        this.leftDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        this.rightDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        ZERO_POWER_BEHAVIOR_SETTER.accept(this.leftDriveMotor);
+        ZERO_POWER_BEHAVIOR_SETTER.accept(this.rightDriveMotor);
 
-        this.rightDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        RUN_MODE_RUN_WITHOUT_ENCODER_SETTER.accept(this.leftDriveMotor);
+        RUN_MODE_RUN_WITHOUT_ENCODER_SETTER.accept(this.rightDriveMotor);
+
+        DIRECTION_SETTER.accept(this.rightDriveMotor);
     }
 
     public void moveFreely(double leftPower, double rightPower) {
@@ -39,7 +60,6 @@ public abstract class AbstractDrive implements Drive {
     }
 
     public void move(Direction direction, double power) {
-
         double motorPower;
 
         switch (direction) {

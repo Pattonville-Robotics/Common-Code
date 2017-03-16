@@ -12,7 +12,7 @@ import org.pattonvillerobotics.commoncode.enums.Direction;
 
 public abstract class AbstractComplexDrive extends AbstractDrive {
 
-    protected RobotParameters robotParameters;
+    protected final RobotParameters robotParameters;
 
     public AbstractComplexDrive(LinearOpMode linearOpMode, HardwareMap hardwareMap, RobotParameters robotParameters) {
         super(linearOpMode, hardwareMap);
@@ -20,7 +20,7 @@ public abstract class AbstractComplexDrive extends AbstractDrive {
 
         if (robotParameters.areEncodersEnabled()) {
             this.leftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            this.leftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            this.rightDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             this.leftDriveMotor.setMaxSpeed(robotParameters.getDcMotorMaxSpeed());
             this.rightDriveMotor.setMaxSpeed(robotParameters.getDcMotorMaxSpeed());
