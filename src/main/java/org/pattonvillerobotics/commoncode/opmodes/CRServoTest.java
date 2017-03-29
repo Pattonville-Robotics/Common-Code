@@ -11,7 +11,7 @@ import org.pattonvillerobotics.commoncode.robotclasses.gamepad.ListenableGamepad
 /**
  * Created by bahrg on 3/16/17.
  */
-@TeleOp(name = "CRServoTest")
+@TeleOp(name = "CRServoTest1")
 public class CRServoTest extends LinearOpMode {
 
     private CRServo crServo;
