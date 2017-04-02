@@ -199,7 +199,7 @@ public class EncoderDrive extends AbstractComplexDrive {
         Telemetry.Item distance = items[4];
 
         move(Direction.FORWARD, speed); // To keep speed in [0.0, 1.0]. Encoders control direction
-        while ((leftDriveMotor.isBusy() || rightDriveMotor.isBusy()) && !reachedTarget(leftDriveMotor.getCurrentPosition(), targetPositionLeft, rightDriveMotor.getCurrentPosition(), targetPositionRight) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
+        while (!reachedTarget(leftDriveMotor.getCurrentPosition(), targetPositionLeft, rightDriveMotor.getCurrentPosition(), targetPositionRight) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
             Thread.yield();
             distance.setValue("DistanceL: " + leftDriveMotor.getCurrentPosition() + " DistanceR: " + rightDriveMotor.getCurrentPosition());
             linearOpMode.telemetry.update();
