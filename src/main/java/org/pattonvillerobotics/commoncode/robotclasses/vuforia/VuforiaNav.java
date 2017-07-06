@@ -1,4 +1,4 @@
-package org.pattonvillerobotics.commoncode.robotclasses.drive.trailblazer.vuforia;
+package org.pattonvillerobotics.commoncode.robotclasses.vuforia;
 
 import android.graphics.Bitmap;
 import android.util.Log;

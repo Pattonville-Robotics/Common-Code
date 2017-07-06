@@ -1,4 +1,4 @@
-package org.pattonvillerobotics.commoncode.robotclasses.drive.trailblazer.vuforia;
+package org.pattonvillerobotics.commoncode.robotclasses.vuforia;
 
 import android.support.annotation.IdRes;
 

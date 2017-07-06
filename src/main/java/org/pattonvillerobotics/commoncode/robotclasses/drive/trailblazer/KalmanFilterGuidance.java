@@ -29,8 +29,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.pattonvillerobotics.commoncode.robotclasses.drive.AbstractComplexDrive;
-import org.pattonvillerobotics.commoncode.robotclasses.drive.trailblazer.vuforia.VuforiaNav;
-import org.pattonvillerobotics.commoncode.robotclasses.drive.trailblazer.vuforia.VuforiaParameters;
+import org.pattonvillerobotics.commoncode.robotclasses.vuforia.VuforiaNav;
+import org.pattonvillerobotics.commoncode.robotclasses.vuforia.VuforiaParameters;
 
 import java.util.concurrent.TimeUnit;
 
