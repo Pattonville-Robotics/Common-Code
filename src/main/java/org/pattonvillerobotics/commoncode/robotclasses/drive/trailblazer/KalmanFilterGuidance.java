@@ -29,7 +29,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.pattonvillerobotics.commoncode.robotclasses.drive.AbstractComplexDrive;
-import org.pattonvillerobotics.commoncode.robotclasses.vuforia.VuforiaNav;
+import org.pattonvillerobotics.commoncode.robotclasses.vuforia.VuforiaNavigation;
 import org.pattonvillerobotics.commoncode.robotclasses.vuforia.VuforiaParameters;
 
 import java.util.concurrent.TimeUnit;
@@ -102,11 +102,11 @@ public class KalmanFilterGuidance implements Runnable {
     private final SensorManager sensorManager;
     private final Sensor accelerometerSensor, magnetometerSensor;
 
-    private VuforiaNav vuforiaNav;
+    private VuforiaNavigation vuforiaNav;
     private Thread vuforiaNavThread;
 
     public KalmanFilterGuidance(final LinearOpMode linearOpMode, final AbstractComplexDrive complexDrive, final ModernRoboticsI2cGyro gyro, VuforiaParameters vuforiaParameters, double gyroDriftCalibration) {
-        vuforiaNav = new VuforiaNav(vuforiaParameters);
+        vuforiaNav = new VuforiaNavigation(vuforiaParameters);
         vuforiaNavThread = new Thread(new Runnable() {
             long lastTimeNS = System.nanoTime();
 
@@ -117,14 +117,14 @@ public class KalmanFilterGuidance implements Runnable {
                     double elapsedTimeS = (nowTimeNS - lastTimeNS) / S_TO_NS;
                     lastTimeNS = nowTimeNS;
 
-                    for (VuforiaTrackable trackable : vuforiaNav.getBeacons()) {
+                    for (VuforiaTrackable trackable : vuforiaNav.getTrackables()) {
                         VuforiaTrackableDefaultListener listener = ((VuforiaTrackableDefaultListener) trackable.getListener());
                         OpenGLMatrix matrix = listener.getUpdatedRobotLocation();
                         if (matrix != null) {
                             synchronized (kalmanFilter) {
                                 VectorF translation = matrix.getTranslation();
                                 Orientation orientation = Orientation.getOrientation(matrix, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
-                                RealVector measurement = new ArrayRealVector(new double[]{translation.get(0) / VuforiaNav.MM_PER_INCH, translation.get(1) / VuforiaNav.MM_PER_INCH, orientation.thirdAngle});
+                                RealVector measurement = new ArrayRealVector(new double[]{translation.get(0) / VuforiaNavigation.MM_PER_INCH, translation.get(1) / VuforiaNavigation.MM_PER_INCH, orientation.thirdAngle});
                                 Log.e("Vuforia", "Updating measurement of " + measurement + " in time " + elapsedTimeS);
                                 kalmanFilter.measureAndGetState(VUFORIA_MEASUREMENT_MODEL, measurement);
                             }
@@ -342,7 +342,7 @@ public class KalmanFilterGuidance implements Runnable {
         sensorManager.registerListener(accelerometerSensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_FASTEST, new Handler(accelerometerThread.getLooper()));
         //sensorManager.registerListener(magnetometerSensorEventListener, magnetometerSensor, SensorManager.SENSOR_DELAY_FASTEST, new Handler(magnetometerThread.getLooper()));
 
-        vuforiaNav.activate();
+        vuforiaNav.activateTracking();
         vuforiaNavThread.start();
     }
 
@@ -357,7 +357,7 @@ public class KalmanFilterGuidance implements Runnable {
         sensorManager.unregisterListener(accelerometerSensorEventListener, accelerometerSensor);
         //sensorManager.unregisterListener(magnetometerSensorEventListener, magnetometerSensor);
 
-        vuforiaNav.deactivate();
+        vuforiaNav.deactivateTracking();
         vuforiaNavThread.interrupt();
     }
 }

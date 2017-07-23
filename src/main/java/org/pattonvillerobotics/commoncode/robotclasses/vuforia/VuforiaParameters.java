@@ -19,16 +19,16 @@ import java.util.List;
 public class VuforiaParameters {
 
     private OpenGLMatrix phoneLocation;
-    private List<OpenGLMatrix> beaconLocations;
+    private List<OpenGLMatrix> trackableLocations;
     private int cameraMonitorViewId;
     private VuforiaLocalizer.CameraDirection cameraDirection;
     private String licenseKey;
 
-    private VuforiaParameters(String licenseKey, VuforiaLocalizer.CameraDirection cameraDirection, OpenGLMatrix phoneLocation, List<OpenGLMatrix> beaconLocations, @IdRes int cameraMonitorViewId) {
+    private VuforiaParameters(String licenseKey, VuforiaLocalizer.CameraDirection cameraDirection, OpenGLMatrix phoneLocation, List<OpenGLMatrix> trackableLocations, @IdRes int cameraMonitorViewId) {
         this.licenseKey = licenseKey;
         this.phoneLocation = phoneLocation;
         this.cameraDirection = cameraDirection;
-        this.beaconLocations = beaconLocations;
+        this.trackableLocations = trackableLocations;
         this.cameraMonitorViewId = cameraMonitorViewId;
     }
 
@@ -40,8 +40,8 @@ public class VuforiaParameters {
         return phoneLocation;
     }
 
-    public List<OpenGLMatrix> getBeaconLocations() {
-        return beaconLocations;
+    public List<OpenGLMatrix> getTrackableLocations() {
+        return trackableLocations;
     }
 
     public VuforiaLocalizer.CameraDirection getCameraDirection() {
@@ -56,7 +56,7 @@ public class VuforiaParameters {
         private String licenseKey;
         private VuforiaLocalizer.CameraDirection cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         private OpenGLMatrix phoneLocation = createMatrix(0, 0, 0, AxesOrder.XYZ, 0, 0, 0);
-        private List<OpenGLMatrix> beaconLocations = new ArrayList<>();
+        private List<OpenGLMatrix> trackableLocations = new ArrayList<>();
         private
         @IdRes
         int cameraMonitorViewId = -1;
@@ -97,8 +97,8 @@ public class VuforiaParameters {
          * @param c
          * @return this
          */
-        public Builder addBeaconLocation(float x, float y, float z, AxesOrder o, float a, float b, float c) {
-            this.beaconLocations.add(createMatrix(x, y, z, o, a, b, c));
+        public Builder addTrackableLocation(float x, float y, float z, AxesOrder o, float a, float b, float c) {
+            this.trackableLocations.add(createMatrix(x, y, z, o, a, b, c));
             return this;
         }
 
@@ -106,7 +106,7 @@ public class VuforiaParameters {
             if (licenseKey == null) {
                 throw new IllegalArgumentException("Must provide a license key.");
             }
-            return new VuforiaParameters(licenseKey, cameraDirection, phoneLocation, beaconLocations, cameraMonitorViewId);
+            return new VuforiaParameters(licenseKey, cameraDirection, phoneLocation, trackableLocations, cameraMonitorViewId);
         }
 
         public Builder cameraMonitorViewId(int cameraMonitorViewId) {
