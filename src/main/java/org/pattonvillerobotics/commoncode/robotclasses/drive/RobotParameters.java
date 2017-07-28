@@ -18,7 +18,6 @@ public class RobotParameters {
      */
     private final double wheelBaseRadius, wheelRadius, driveGearRatio;
     private final boolean gyroEnabled, encodersEnabled;
-    private final int dcMotorMaxSpeed;
     private final DcMotorSimple.Direction leftDriveMotorDirection, rightDriveMotorDirection;
 
     /**
@@ -26,13 +25,12 @@ public class RobotParameters {
      */
     private final double wheelCircumference, wheelBaseCircumference, adjustedTicksPerRevolution;
 
-    private RobotParameters(double wheelBaseRadius, double wheelRadius, double driveGearRatio, boolean gyroEnabled, boolean encodersEnabled, int dcMotorMaxSpeed, DcMotorSimple.Direction leftDriveMotorDirection, DcMotorSimple.Direction rightDriveMotorDirection) {
+    private RobotParameters(double wheelBaseRadius, double wheelRadius, double driveGearRatio, boolean gyroEnabled, boolean encodersEnabled, DcMotorSimple.Direction leftDriveMotorDirection, DcMotorSimple.Direction rightDriveMotorDirection) {
         this.wheelBaseRadius = wheelBaseRadius;
         this.wheelRadius = wheelRadius;
         this.driveGearRatio = driveGearRatio;
         this.gyroEnabled = gyroEnabled;
         this.encodersEnabled = encodersEnabled;
-        this.dcMotorMaxSpeed = dcMotorMaxSpeed;
 
         this.wheelCircumference = wheelRadius * 2 * FastMath.PI;
         this.wheelBaseCircumference = wheelBaseRadius * 2 * FastMath.PI;
@@ -81,17 +79,12 @@ public class RobotParameters {
         return encodersEnabled;
     }
 
-    public int getDcMotorMaxSpeed() {
-        return dcMotorMaxSpeed;
-    }
-
     public static class Builder {
         private double wheelBaseRadius;
         private double wheelRadius;
         private double driveGearRatio = 1;
         private boolean gyroEnabled = false;
         private boolean encodersEnabled = false;
-        private int dcMotorMaxSpeed = TICKS_PER_REVOLUTION * 2;
         private DcMotorSimple.Direction leftDriveMotorDirection = DcMotorSimple.Direction.FORWARD;
         private DcMotorSimple.Direction rightDriveMotorDirection = DcMotorSimple.Direction.REVERSE;
 
@@ -123,11 +116,6 @@ public class RobotParameters {
             return this;
         }
 
-        public Builder dcMotorMaxSpeed(int dcMotorMaxSpeed) {
-            this.dcMotorMaxSpeed = dcMotorMaxSpeed;
-            return this;
-        }
-
         public Builder leftDriveMotorDirection(DcMotorSimple.Direction leftDriveMotorDirection) {
             this.leftDriveMotorDirection = leftDriveMotorDirection;
             return this;
@@ -143,9 +131,7 @@ public class RobotParameters {
                 throw new IllegalArgumentException("wheelBaseRadius must be > 0");
             if (wheelRadius <= 0)
                 throw new IllegalArgumentException("wheelRadius must be > 0");
-            if (dcMotorMaxSpeed <= 0 && encodersEnabled)
-                throw new IllegalArgumentException("dcMotorMaxSpeed must be > 0 when encoders are used");
-            return new RobotParameters(wheelBaseRadius, wheelRadius, driveGearRatio, gyroEnabled, encodersEnabled, dcMotorMaxSpeed, leftDriveMotorDirection, rightDriveMotorDirection);
+            return new RobotParameters(wheelBaseRadius, wheelRadius, driveGearRatio, gyroEnabled, encodersEnabled, leftDriveMotorDirection, rightDriveMotorDirection);
         }
     }
 }

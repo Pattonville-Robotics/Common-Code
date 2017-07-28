@@ -38,15 +38,6 @@ public class QuadEncoderDrive extends EncoderDrive {
         if (robotParameters.areEncodersEnabled()) {
             this.secondaryLeftDriveMotor.ifPresent(RUN_MODE_RUN_USING_ENCODER_SETTER);
             this.secondaryRightDriveMotor.ifPresent(RUN_MODE_RUN_USING_ENCODER_SETTER);
-
-            Consumer<DcMotor> maxSpeedSetter = new Consumer<DcMotor>() {
-                @Override
-                public void accept(DcMotor dcMotor) {
-                    dcMotor.setMaxSpeed(robotParameters.getDcMotorMaxSpeed());
-                }
-            };
-            this.secondaryLeftDriveMotor.ifPresent(maxSpeedSetter);
-            this.secondaryRightDriveMotor.ifPresent(maxSpeedSetter);
         }
 
         this.secondaryLeftDriveMotor.ifPresent(new Consumer<DcMotor>() {
