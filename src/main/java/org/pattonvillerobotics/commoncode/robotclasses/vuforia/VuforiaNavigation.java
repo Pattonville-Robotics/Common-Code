@@ -1,7 +1,6 @@
 package org.pattonvillerobotics.commoncode.robotclasses.vuforia;
 
 import android.graphics.Bitmap;
-import android.graphics.ImageFormat;
 
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
@@ -21,10 +20,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import java.util.List;
-
-/**
- * Created by greg on 7/23/2017.
- */
 
 public class VuforiaNavigation {
 
@@ -57,6 +52,10 @@ public class VuforiaNavigation {
 
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true);
         vuforia.setFrameQueueCapacity(1);
+
+        lastTrackedLocation = OpenGLMatrix
+                .translation(0, 0, 0)
+                .multiplied(Orientation.getRotationMatrix(AxesReference.EXTRINSIC, AxesOrder.XYX, AngleUnit.DEGREES, 0, 0, 0));
     }
 
     private void setTrackableLocation(List<OpenGLMatrix> locations) {
@@ -72,7 +71,7 @@ public class VuforiaNavigation {
     }
 
     public void activateTracking() {
-        trackables.activate();
+        if(trackables != null) trackables.activate();
     }
 
     public void deactivateTracking() {
@@ -87,13 +86,18 @@ public class VuforiaNavigation {
         return ((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible();
     }
 
-    public OpenGLMatrix getNearestTrackableLocation() {
+    public OpenGLMatrix getVisibleTrackableLocation() {
         for(VuforiaTrackable trackable : trackables) {
-            lastTrackedLocation = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
-            return lastTrackedLocation;
+            if(trackableIsVisible(trackable)) {
+                OpenGLMatrix trackedLocation = ((VuforiaTrackableDefaultListener) trackable.getListener()).getRobotLocation();
+                if(trackedLocation != null) lastTrackedLocation = trackedLocation;
+                return lastTrackedLocation;
+            }
         }
         return null;
     }
+
+
 
     public double getRobotX() {
         VectorF translation = lastTrackedLocation.getTranslation();
@@ -119,15 +123,15 @@ public class VuforiaNavigation {
     /**
      * @return Angle between x axis and line formed between robot and trackable
      */
-    public double getTargetBearing() {
+    public double getTrackableBearing() {
         return FastMath.toDegrees(-FastMath.asin(getRobotY()/getDistanceFromTrackable()));
     }
 
     /**
      * @return angle robot needs to rotate to face trackable
      */
-    public double getAngleToTarget() {
-        return getTargetBearing() - getRobotBearing();
+    public double getAngleToTrackable() {
+        return getTrackableBearing() - getRobotBearing();
     }
 
     public Bitmap getImage() {
