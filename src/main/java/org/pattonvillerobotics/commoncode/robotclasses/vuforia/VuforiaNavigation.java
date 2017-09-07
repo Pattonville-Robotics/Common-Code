@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
@@ -29,6 +30,7 @@ public class VuforiaNavigation {
     private VuforiaTrackables trackables;
     private VuforiaLocalizer vuforia;
     private VuforiaLocalizer.Parameters parameters;
+    private VuforiaTrackable relicTemplate;
 
     private OpenGLMatrix lastTrackedLocation;
 
@@ -40,12 +42,8 @@ public class VuforiaNavigation {
         this.parameters.useExtendedTracking = true;
 
         vuforia = ClassFactory.createVuforiaLocalizer(this.parameters);
-        trackables = vuforia.loadTrackablesFromAsset("FTC_2016-17");
-
-        trackables.get(0).setName("Wheels");
-        trackables.get(1).setName("Tools");
-        trackables.get(2).setName("Lego");
-        trackables.get(3).setName("Gears");
+        trackables = vuforia.loadTrackablesFromAsset("RelicVuMark");
+        relicTemplate = trackables.get(0);
 
         setTrackableLocation(parameters.getTrackableLocations());
         setPhoneLocation(parameters.getPhoneLocation());
@@ -84,6 +82,10 @@ public class VuforiaNavigation {
 
     private boolean trackableIsVisible(VuforiaTrackable trackable) {
         return ((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible();
+    }
+
+    public RelicRecoveryVuMark getCurrentVisibleRelic() {
+        return RelicRecoveryVuMark.from(relicTemplate);
     }
 
     public OpenGLMatrix getVisibleTrackableLocation() {
