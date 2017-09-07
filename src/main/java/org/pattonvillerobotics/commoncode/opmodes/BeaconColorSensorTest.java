@@ -1,5 +1,6 @@
 package org.pattonvillerobotics.commoncode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -12,6 +13,7 @@ import org.pattonvillerobotics.commoncode.robotclasses.BeaconColorSensor;
  */
 
 @TeleOp(name = "Partial Color Sensor Test", group = "Common")
+@Disabled
 public class BeaconColorSensorTest extends LinearOpMode {
 
     BeaconColorSensor beaconColorSensor;

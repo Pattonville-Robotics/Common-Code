@@ -1,5 +1,6 @@
 package org.pattonvillerobotics.commoncode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -12,6 +13,7 @@ import org.pattonvillerobotics.commoncode.robotclasses.gamepad.ListenableGamepad
  * Created by bahrg on 3/16/17.
  */
 @TeleOp(name = "CRServoTest1")
+@Disabled
 public class CRServoTest extends LinearOpMode {
 
     private CRServo crServo;

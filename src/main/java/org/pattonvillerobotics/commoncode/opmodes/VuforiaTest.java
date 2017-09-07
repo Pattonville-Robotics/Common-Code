@@ -26,6 +26,7 @@ public class VuforiaTest extends LinearOpMode {
         Telemetry.Item vuforiaRobotBearing = telemetry.addData("Robot Bearing", "0").setRetained(true);
         Telemetry.Item vuforiaTrackableBearing = telemetry.addData("Trackable Bearing", "0").setRetained(true);
         Telemetry.Item vuforiaAngleToTrackable = telemetry.addData("Angle To Trackable", "0").setRetained(true);
+        Telemetry.Item currentRelic = telemetry.addData("Current Relic", "").setRetained(true);
 
         vuforia.activateTracking();
         waitForStart();
@@ -33,6 +34,7 @@ public class VuforiaTest extends LinearOpMode {
         while(opModeIsActive()) {
             vuforia.getVisibleTrackableLocation();
 
+            currentRelic.setValue(vuforia.getCurrentVisibleRelic());
             vuforiaX.setValue(vuforia.getRobotX());
             vuforiaY.setValue(vuforia.getRobotY());
             vuforiaDistance.setValue(vuforia.getDistanceFromTrackable());
