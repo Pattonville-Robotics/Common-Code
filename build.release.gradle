@@ -1,11 +1,12 @@
 dependencies {
     compile project(':FtcRobotController')
-    compile(name: 'RobotCore-release', ext: 'aar')
-    compile(name: 'Hardware-release', ext: 'aar')
-    compile(name: 'FtcCommon-release', ext: 'aar')
-    compile(name: 'ModernRobotics-release', ext: 'aar')
-    compile(name: 'Analytics-release', ext: 'aar')
-    compile(name: 'WirelessP2p-release', ext: 'aar')
+    compile (name:'Inspection-release', ext: 'aar')
+    compile (name:'Blocks-release', ext: 'aar')
+    compile (name:'RobotCore-release', ext: 'aar')
+    compile (name:'Hardware-release', ext: 'aar')
+    compile (name:'FtcCommon-release', ext: 'aar')
+    compile (name:'Analytics-release', ext:'aar')
+    compile (name:'WirelessP2p-release', ext:'aar')
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-math3
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
