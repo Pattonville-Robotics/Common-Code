@@ -28,7 +28,6 @@ public class EncoderTest extends LinearOpMode {
         testMotor.setPower(0.5);
 
         while (!reachedTarget(testMotor.getCurrentPosition(), 360) && !this.isStopRequested() && this.opModeIsActive()) {
-
         }
 
         testMotor.setPower(0);
