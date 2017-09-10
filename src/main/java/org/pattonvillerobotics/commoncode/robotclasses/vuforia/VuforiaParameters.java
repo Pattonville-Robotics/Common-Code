@@ -101,15 +101,10 @@ public class VuforiaParameters {
         public VuforiaParameters build() {
             if (trackableLocations.size() == 0) {
                 OpenGLMatrix trackableOrientation = createMatrix(0, 0, 150, AxesOrder.XYZ, 90, 0, -90);
-                for(int i = 0; i < 4; i++) {
-                    trackableLocations.add(trackableOrientation);
-                }
+                trackableLocations.add(trackableOrientation);
             }
             if (licenseKey == null) {
                 throw new IllegalArgumentException("Must provide a license key.");
-            }
-            if(trackableLocations.size() < 4 || trackableLocations.size() > 4) {
-                throw new IllegalArgumentException("Must provide only 4 trackable locations.");
             }
             return new VuforiaParameters(licenseKey, cameraDirection, phoneLocation, trackableLocations, cameraMonitorViewId);
         }
