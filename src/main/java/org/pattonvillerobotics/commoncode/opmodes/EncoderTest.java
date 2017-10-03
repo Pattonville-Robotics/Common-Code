@@ -4,10 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.apache.commons.math3.util.FastMath;
-
-import static org.pattonvillerobotics.commoncode.robotclasses.drive.EncoderDrive.TARGET_REACHED_THRESHOLD;
-
 /**
  * Created by skaggsw on 9/7/17.
  */
@@ -23,20 +19,24 @@ public class EncoderTest extends LinearOpMode {
 
         testMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        testMotor.setTargetPosition(360);
+        testMotor.setTargetPosition(3000);
+
+        waitForStart();
 
         testMotor.setPower(0.5);
 
-        while (!reachedTarget(testMotor.getCurrentPosition(), 360) && !this.isStopRequested() && this.opModeIsActive()) {
+        while (testMotor.isBusy() && !this.isStopRequested() && this.opModeIsActive()) {
+            idle();
+        }
+
+        testMotor.setTargetPosition(0);
+
+        while (testMotor.isBusy() && !this.isStopRequested() && this.opModeIsActive()) {
             idle();
         }
 
         testMotor.setPower(0);
 
-    }
-
-    protected boolean reachedTarget(int currentPositionLeft, int targetPositionLeft) {
-        return FastMath.abs(currentPositionLeft - targetPositionLeft) < TARGET_REACHED_THRESHOLD;
     }
 
 }
