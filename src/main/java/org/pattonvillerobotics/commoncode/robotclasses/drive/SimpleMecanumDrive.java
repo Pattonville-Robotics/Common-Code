@@ -16,6 +16,7 @@ public class SimpleMecanumDrive extends AbstractDrive {
     private final double COS135 = FastMath.cos(FastMath.toRadians(135));
     private final double SIN135 = -COS135;
     private final double DEG45 = FastMath.PI / 4;
+    private final double COS45 = FastMath.cos(DEG45);
 
     public SimpleMecanumDrive(LinearOpMode linearOpMode, HardwareMap hardwareMap) {
         super(linearOpMode, hardwareMap);
@@ -47,8 +48,10 @@ public class SimpleMecanumDrive extends AbstractDrive {
      * @param rotation rate of rotation
      */
     public void moveFreely(double angle, double speed, double rotation) {
-        final double xcomponent = COS135 * (FastMath.cos(angle + DEG45));
-        final double ycomponent = SIN135 * (FastMath.sin(angle + DEG45));
+        double xcomponent = COS135 * (FastMath.cos(angle + DEG45));
+        double ycomponent = SIN135 * (FastMath.sin(angle + DEG45));
+
+
 
         super.leftDriveMotor.setPower(speed * ycomponent + rotation);
         super.rightDriveMotor.setPower(speed * xcomponent + rotation);

@@ -45,9 +45,13 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
      * @param speed    speed to go
      * @param rotation rate of rotation
      */
-    public void moveFreely(double angle, final double speed, final double rotation) {
-        final double xcomponent = COS135 * (FastMath.cos(angle + DEG45));
-        final double ycomponent = SIN135 * (FastMath.sin(angle + DEG45));
+    public void moveFreely(double angle, double speed, double rotation) {
+        double xcomponent = COS135 * (FastMath.cos(angle + DEG45));
+        double ycomponent = SIN135 * (FastMath.sin(angle + DEG45));
+
+        double scale = 1. / FastMath.max(FastMath.abs(xcomponent), FastMath.abs(ycomponent));
+        xcomponent *= scale;
+        ycomponent *= scale;
 
         super.leftDriveMotor.setPower(speed * ycomponent + rotation);
         super.rightDriveMotor.setPower(speed * xcomponent + rotation);
