@@ -39,7 +39,7 @@ public class VuforiaNavigation {
         this.parameters.cameraDirection = parameters.getCameraDirection();
         this.parameters.vuforiaLicenseKey = parameters.getLicenseKey();
         this.parameters.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
-        this.parameters.useExtendedTracking = true;
+        this.parameters.useExtendedTracking = false;
 
         vuforia = ClassFactory.createVuforiaLocalizer(this.parameters);
         trackables = vuforia.loadTrackablesFromAsset("RelicVuMark");
