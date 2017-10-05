@@ -13,4 +13,7 @@ public class JewelColorDetector extends ImageProcessor {
     public JewelColorDetector(HardwareMap hardwareMap) {
         super(hardwareMap);
     }
+
+    //TODO: Blob detection
+    //TODO: convert to hsv to detect color
 }
