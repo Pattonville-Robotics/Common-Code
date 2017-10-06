@@ -60,4 +60,21 @@ public class SimpleMecanumDrive extends AbstractDrive {
         this.leftRearMotor.setPower(speed * xcomponent - rotation);
         this.rightRearMotor.setPower(speed * ycomponent - rotation);
     }
+
+    /**
+     * drives a mecanum drive train based on input of two joysticks
+     *
+     * @param x joystick x-position
+     * @param y joystick y-position
+     * @param rotation x-position of the other joystick
+     */
+    public void driveWithJoysticks(double x, double y, double rotation) {
+
+        double angle = FastMath.atan2(y, x);
+        double speed = FastMath.hypot(x, y);
+
+        moveFreely(angle, speed, rotation);
+
+    }
+
 }
