@@ -23,8 +23,8 @@ public class QuadEncoderDrive extends EncoderDrive {
     public QuadEncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, final RobotParameters robotParameters) {
         super(hardwareMap, linearOpMode, robotParameters);
 
-        this.secondaryLeftDriveMotor = Optional.ofNullable(hardwareMap.dcMotor.get("left_drive_motor_2"));
-        this.secondaryRightDriveMotor = Optional.ofNullable(hardwareMap.dcMotor.get("right_drive_motor_2"));
+        this.secondaryLeftDriveMotor = Optional.ofNullable(hardwareMap.dcMotor.get("left_rear_motor"));
+        this.secondaryRightDriveMotor = Optional.ofNullable(hardwareMap.dcMotor.get("right_rear_motor"));
 
         this.secondaryLeftDriveMotor.ifPresent(ZERO_POWER_BEHAVIOR_SETTER);
         this.secondaryRightDriveMotor.ifPresent(ZERO_POWER_BEHAVIOR_SETTER);
