@@ -49,9 +49,9 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         double xcomponent = COS135 * (FastMath.cos(angle + DEG45));
         double ycomponent = SIN135 * (FastMath.sin(angle + DEG45));
 
-        double scale = 1. / FastMath.max(FastMath.abs(xcomponent), FastMath.abs(ycomponent));
-        xcomponent *= scale;
-        ycomponent *= scale;
+//        double scale = 1. / FastMath.max(FastMath.abs(xcomponent), FastMath.abs(ycomponent));
+//        xcomponent *= scale;
+//        ycomponent *= scale;
 
         super.leftDriveMotor.setPower(speed * ycomponent + rotation);
         super.rightDriveMotor.setPower(speed * xcomponent + rotation);
