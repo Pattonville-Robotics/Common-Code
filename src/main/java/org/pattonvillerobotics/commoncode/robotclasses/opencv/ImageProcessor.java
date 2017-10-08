@@ -4,9 +4,10 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.opencvlib.android.BaseLoaderCallback;
-import org.opencvlib.android.LoaderCallbackInterface;
-import org.opencvlib.android.OpenCVLoader;
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+
 
 /**
  * Created by greg on 10/4/2017.
