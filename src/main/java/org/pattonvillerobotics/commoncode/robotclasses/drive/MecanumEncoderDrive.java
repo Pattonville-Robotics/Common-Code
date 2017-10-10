@@ -3,6 +3,7 @@ package org.pattonvillerobotics.commoncode.robotclasses.drive;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.util.FastMath;
@@ -26,6 +27,12 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         if (!super.secondaryLeftDriveMotor.isPresent() || !super.secondaryRightDriveMotor.isPresent()) {
             throw new IllegalArgumentException("Mecanum drive requires all 4 motors to be present!");
         }
+
+        // using pid mode
+        this.secondaryLeftDriveMotor.get().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.secondaryRightDriveMotor.get().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.rightDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.leftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
 

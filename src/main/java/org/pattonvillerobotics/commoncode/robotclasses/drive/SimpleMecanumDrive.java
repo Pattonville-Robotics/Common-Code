@@ -27,8 +27,11 @@ public class SimpleMecanumDrive extends AbstractDrive {
         ZERO_POWER_BEHAVIOR_SETTER.accept(this.leftRearMotor);
         ZERO_POWER_BEHAVIOR_SETTER.accept(this.rightRearMotor);
 
-        RUN_MODE_RUN_WITHOUT_ENCODER_SETTER.accept(this.leftRearMotor);
-        RUN_MODE_RUN_WITHOUT_ENCODER_SETTER.accept(this.rightRearMotor);
+        // using pid mode
+        this.leftRearMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.rightRearMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.rightDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.leftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
@@ -70,7 +73,6 @@ public class SimpleMecanumDrive extends AbstractDrive {
      */
     public void driveWithJoysticks(double x, double y, double rotation) {
         double[] coords = toPolar(x, y);
-
         moveFreely(coords[1], coords[0], rotation);
     }
 
