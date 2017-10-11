@@ -3,6 +3,7 @@ package org.pattonvillerobotics.commoncode.robotclasses.drive;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -20,6 +21,7 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
     private final double COS135 = FastMath.cos((3*FastMath.PI)/4);
     private final double SIN135 = -COS135;
     private final double DEG45 = FastMath.PI / 4;
+    private DcMotor leftRearMotor, rightRearMotor;
 
     public MecanumEncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, RobotParameters robotParameters) {
         super(hardwareMap, linearOpMode, robotParameters);
@@ -28,8 +30,11 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
             throw new IllegalArgumentException("Mecanum drive requires all 4 motors to be present!");
         }
 
-        this.secondaryLeftDriveMotor.get().setDirection(DcMotorSimple.Direction.FORWARD);
-        this.secondaryRightDriveMotor.get().setDirection(DcMotorSimple.Direction.FORWARD);
+        this.leftRearMotor = secondaryLeftDriveMotor.get();
+        this.rightRearMotor = secondaryRightDriveMotor.get();
+
+        this.leftRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.rightRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         this.leftDriveMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         this.rightDriveMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
@@ -60,8 +65,8 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
 
         super.leftDriveMotor.setPower((speed * ycomponent) + rotation);
         super.rightDriveMotor.setPower((speed * xcomponent) + rotation);
-        this.secondaryLeftDriveMotor.get().setPower((speed * xcomponent) - rotation);
-        this.secondaryRightDriveMotor.get().setPower((speed * ycomponent) - rotation);
+        this.leftRearMotor.setPower((speed * xcomponent) - rotation);
+        this.rightRearMotor.setPower((speed * ycomponent) - rotation);
     }
 
     /**
@@ -211,7 +216,7 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         while (isMovingToPosition() && !motorsReachedTarget(targetPositionLeft, targetPositionRight, targetPositionLeftRear, targetPositionRightRear) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
             Thread.yield();
             distance.setValue("DistanceLF: " + leftDriveMotor.getCurrentPosition() + " DistanceRF: " + rightDriveMotor.getCurrentPosition());
-            distanceRear.setValue("DistanceLR: " + secondaryLeftDriveMotor.get().getCurrentPosition() + " DistanceRR: " + secondaryRightDriveMotor.get().getCurrentPosition());
+            distanceRear.setValue("DistanceLR: " + leftRearMotor.getCurrentPosition() + " DistanceRR: " + rightRearMotor.getCurrentPosition());
             linearOpMode.telemetry.update();
         }
         stop();
@@ -268,12 +273,12 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
     protected void setMotorTargets(int targetPositionLeft, int targetPositionRight, int targetPositionLeftRear, int targetPositionRightRear) {
         leftDriveMotor.setTargetPosition(targetPositionLeft);
         rightDriveMotor.setTargetPosition(targetPositionRight);
-        secondaryLeftDriveMotor.get().setTargetPosition(targetPositionLeftRear);
-        secondaryRightDriveMotor.get().setTargetPosition(targetPositionRightRear);
+        leftRearMotor.setTargetPosition(targetPositionLeftRear);
+        rightRearMotor.setTargetPosition(targetPositionRightRear);
     }
 
     protected boolean motorsReachedTarget(int targetPositionLeft, int targetPositionRight, int targetPositionLeftRear, int targetPositionRightRear) {
         return reachedTarget(leftDriveMotor.getCurrentPosition(), targetPositionLeft, rightDriveMotor.getCurrentPosition(), targetPositionRight) &&
-                reachedTarget(secondaryLeftDriveMotor.get().getCurrentPosition(), targetPositionLeftRear, secondaryRightDriveMotor.get().getCurrentPosition(), targetPositionRightRear);
+                reachedTarget(leftRearMotor.getCurrentPosition(), targetPositionLeftRear, rightRearMotor.getCurrentPosition(), targetPositionRightRear);
     }
 }
