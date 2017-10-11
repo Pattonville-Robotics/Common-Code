@@ -2,6 +2,7 @@ package org.pattonvillerobotics.commoncode.robotclasses.drive;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.util.FastMath;
@@ -13,10 +14,9 @@ public class SimpleMecanumDrive extends AbstractDrive {
 
     public final DcMotor leftRearMotor, rightRearMotor;
 
-    private final double COS135 = FastMath.cos(FastMath.toRadians(135));
+    private final double COS135 = FastMath.cos((3*FastMath.PI)/4);
     private final double SIN135 = -COS135;
     private final double DEG45 = FastMath.PI / 4;
-    private final double COS45 = FastMath.cos(DEG45);
 
     public SimpleMecanumDrive(LinearOpMode linearOpMode, HardwareMap hardwareMap) {
         super(linearOpMode, hardwareMap);
@@ -27,11 +27,10 @@ public class SimpleMecanumDrive extends AbstractDrive {
         ZERO_POWER_BEHAVIOR_SETTER.accept(this.leftRearMotor);
         ZERO_POWER_BEHAVIOR_SETTER.accept(this.rightRearMotor);
 
-        // using pid mode
-        this.leftRearMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.rightRearMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.rightDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.leftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.leftRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.rightRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.leftDriveMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.rightDriveMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     /**
@@ -58,10 +57,10 @@ public class SimpleMecanumDrive extends AbstractDrive {
 //        xcomponent *= scale;
 //        ycomponent *= scale;
 
-        super.leftDriveMotor.setPower(speed * ycomponent + rotation);
-        super.rightDriveMotor.setPower(speed * xcomponent + rotation);
-        this.leftRearMotor.setPower(speed * xcomponent - rotation);
-        this.rightRearMotor.setPower(speed * ycomponent - rotation);
+        super.leftDriveMotor.setPower((speed * ycomponent) + rotation);
+        super.rightDriveMotor.setPower((speed * xcomponent) + rotation);
+        this.leftRearMotor.setPower((speed * xcomponent) - rotation);
+        this.rightRearMotor.setPower((speed * ycomponent) - rotation);
     }
 
     /**

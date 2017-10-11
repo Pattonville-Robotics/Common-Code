@@ -3,7 +3,7 @@ package org.pattonvillerobotics.commoncode.robotclasses.drive;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.util.FastMath;
@@ -17,7 +17,7 @@ import org.pattonvillerobotics.commoncode.enums.Direction;
 public class MecanumEncoderDrive extends QuadEncoderDrive {
 
     private static final String TAG = "MecanumEncoderDrive";
-    private final double COS135 = FastMath.cos(FastMath.toRadians(135));
+    private final double COS135 = FastMath.cos((3*FastMath.PI)/4);
     private final double SIN135 = -COS135;
     private final double DEG45 = FastMath.PI / 4;
 
@@ -28,12 +28,10 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
             throw new IllegalArgumentException("Mecanum drive requires all 4 motors to be present!");
         }
 
-        // using pid mode
-        this.secondaryLeftDriveMotor.get().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.secondaryRightDriveMotor.get().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.rightDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.leftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        this.secondaryLeftDriveMotor.get().setDirection(DcMotorSimple.Direction.FORWARD);
+        this.secondaryRightDriveMotor.get().setDirection(DcMotorSimple.Direction.FORWARD);
+        this.leftDriveMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.rightDriveMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     /**
@@ -60,10 +58,10 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
 //        xcomponent *= scale;
 //        ycomponent *= scale;
 
-        super.leftDriveMotor.setPower(speed * ycomponent + rotation);
-        super.rightDriveMotor.setPower(speed * xcomponent + rotation);
-        this.secondaryLeftDriveMotor.get().setPower(speed * xcomponent - rotation);
-        this.secondaryRightDriveMotor.get().setPower(speed * ycomponent - rotation);
+        super.leftDriveMotor.setPower((speed * ycomponent) + rotation);
+        super.rightDriveMotor.setPower((speed * xcomponent) + rotation);
+        this.secondaryLeftDriveMotor.get().setPower((speed * xcomponent) - rotation);
+        this.secondaryRightDriveMotor.get().setPower((speed * ycomponent) - rotation);
     }
 
     /**
