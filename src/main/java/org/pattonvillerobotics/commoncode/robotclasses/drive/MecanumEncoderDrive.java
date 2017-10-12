@@ -33,9 +33,9 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         this.leftRearMotor = secondaryLeftDriveMotor.get();
         this.rightRearMotor = secondaryRightDriveMotor.get();
 
-        this.leftRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         this.rightRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        this.leftDriveMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.leftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         this.rightDriveMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
@@ -64,10 +64,10 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
 //        xcomponent *= scale;
 //        ycomponent *= scale;
 
-        super.leftDriveMotor.setPower((speed * ycomponent) + rotation);
-        super.rightDriveMotor.setPower((speed * xcomponent) - rotation);
-        this.leftRearMotor.setPower((speed * xcomponent) + rotation);
-        this.rightRearMotor.setPower((speed * ycomponent) - rotation);
+        super.leftDriveMotor.setPower((speed * ycomponent) - rotation);
+        super.rightDriveMotor.setPower((speed * xcomponent) + rotation);
+        this.leftRearMotor.setPower((speed * xcomponent) - rotation);
+        this.rightRearMotor.setPower((speed * ycomponent) + rotation);
     }
 
     /**
