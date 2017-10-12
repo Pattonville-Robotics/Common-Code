@@ -27,9 +27,9 @@ public class SimpleMecanumDrive extends AbstractDrive {
         ZERO_POWER_BEHAVIOR_SETTER.accept(this.leftRearMotor);
         ZERO_POWER_BEHAVIOR_SETTER.accept(this.rightRearMotor);
 
-        this.leftRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         this.rightRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        this.leftDriveMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.leftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         this.rightDriveMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
@@ -57,10 +57,10 @@ public class SimpleMecanumDrive extends AbstractDrive {
 //        xcomponent *= scale;
 //        ycomponent *= scale;
 
-        super.leftDriveMotor.setPower((speed * ycomponent) + rotation);
+        super.leftDriveMotor.setPower((speed * ycomponent) - rotation);
         super.rightDriveMotor.setPower((speed * xcomponent) + rotation);
         this.leftRearMotor.setPower((speed * xcomponent) - rotation);
-        this.rightRearMotor.setPower((speed * ycomponent) - rotation);
+        this.rightRearMotor.setPower((speed * ycomponent) + rotation);
     }
 
     /**
