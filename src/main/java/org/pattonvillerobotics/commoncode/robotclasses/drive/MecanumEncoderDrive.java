@@ -18,9 +18,9 @@ import org.pattonvillerobotics.commoncode.enums.Direction;
 public class MecanumEncoderDrive extends QuadEncoderDrive {
 
     private static final String TAG = "MecanumEncoderDrive";
-    private final double COS135 = FastMath.cos((3*FastMath.PI)/4);
+    private final double COS135 = FastMath.cos((3.*FastMath.PI)/4.);
     private final double SIN135 = -COS135;
-    private final double DEG45 = FastMath.PI / 4;
+    private final double DEG45 = FastMath.PI / 4.;
     private DcMotor leftRearMotor, rightRearMotor;
 
     public MecanumEncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, RobotParameters robotParameters) {
@@ -59,13 +59,14 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         double xcomponent = COS135 * (FastMath.cos(angle + DEG45));
         double ycomponent = SIN135 * (FastMath.sin(angle + DEG45));
 
+
 //        double scale = 1. / FastMath.max(FastMath.abs(xcomponent), FastMath.abs(ycomponent));
 //        xcomponent *= scale;
 //        ycomponent *= scale;
 
         super.leftDriveMotor.setPower((speed * ycomponent) + rotation);
-        super.rightDriveMotor.setPower((speed * xcomponent) + rotation);
-        this.leftRearMotor.setPower((speed * xcomponent) - rotation);
+        super.rightDriveMotor.setPower((speed * xcomponent) - rotation);
+        this.leftRearMotor.setPower((speed * xcomponent) + rotation);
         this.rightRearMotor.setPower((speed * ycomponent) - rotation);
     }
 
