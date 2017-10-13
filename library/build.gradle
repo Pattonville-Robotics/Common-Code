@@ -36,8 +36,8 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
 
-        versionName '3.4.0-alpha2'
-        versionCode 1
+        versionName '3.4.0-alpha3'
+        versionCode 3
     }
 
     // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed
@@ -81,4 +81,30 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.annimon/stream
     compile group: 'com.annimon', name: 'stream', version: '1.1.8'
+}
+
+//For JitPack
+
+// build a jar with source files
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    failOnError  false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
+
+// build a jar with javadoc
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }
