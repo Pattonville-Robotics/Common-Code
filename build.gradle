@@ -1,101 +1,16 @@
-import java.util.regex.Pattern
-
-//
-// build.gradle in TeamCode
-//
-// Most of the definitions for building your module reside in a common, shared
-// file 'build.common.gradle'. Being factored in this way makes it easier to
-// integrate updates to the FTC into your code. If you really need to customize
-// the build definitions, you can place those customizations in this file, but
-// please think carefully as to whether such customizations are really necessary
-// before doing so.
-
-// Custom definitions may go here
-
-// Include common definitions from above.
-//apply from: '../build.common.gradle'
-
-apply plugin: 'com.android.library'
-
-android {
-
-    compileSdkVersion 23
-    buildToolsVersion '25.0.3'
-
-    signingConfigs {
-        debug {
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-            storeFile file('../libs/ftc.debug.keystore')
-            storePassword 'android'
-        }
+/**
+ * Top-level build file for ftc_app project.
+ *
+ * It is extraordinarily rare that you will ever need to edit this file.
+ */
+buildscript {
+    repositories {
+        jcenter()
     }
-
-    defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 19
-
-        /**
-         * We keep the versionCode and versionName of robot controller applications in sync with
-         * the master information published in the AndroidManifest.xml file of the FtcRobotController
-         * module. This helps avoid confusion that might arise from having multiple versions of
-         * a robot controller app simultaneously installed on a robot controller device.
-         *
-         * We accomplish this with the help of a funky little Groovy script that maintains that
-         * correspondence automatically.
-         *
-         * @see <a href="http://developer.android.com/tools/building/configuring-gradle.html">Configure Your Build</a>
-         * @see <a href="http://developer.android.com/tools/publishing/versioning.html">Versioning Your App</a>
-         */
-        def manifestFile = file('../FtcRobotController/src/main/AndroidManifest.xml');
-        def manifestText = manifestFile.getText()
-        //
-        def vCodePattern = Pattern.compile("versionCode=\"(\\d+(\\.\\d+)*)\"")
-        def matcher = vCodePattern.matcher(manifestText)
-        matcher.find()
-        def vCode = Integer.parseInt(matcher.group(1))
-        //
-        def vNamePattern = Pattern.compile("versionName=\"(.*)\"")
-        matcher = vNamePattern.matcher(manifestText);
-        matcher.find()
-        def vName = matcher.group(1)
-        //
-        versionCode vCode
-        versionName vName
-    }
-
-    // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed
-    buildTypes {
-        release {
-            debuggable true
-            ndk {
-                abiFilters "armeabi-v7a"
-            }
-        }
-        debug {
-            debuggable true
-            ndk {
-                abiFilters "armeabi-v7a"
-            }
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
-
-    sourceSets.main {
-        jni.srcDirs = []
-        jniLibs.srcDir "../libs"
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
     }
 }
 
-repositories {
-    flatDir {
-        dirs '../libs'
-    }
-    jcenter()
-}
 
-apply from: 'build.release.gradle'
