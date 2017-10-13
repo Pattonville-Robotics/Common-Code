@@ -35,6 +35,9 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 26
+
+        versionName '3.4.0-alpha2'
+        versionCode 1
     }
 
     // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed
@@ -64,14 +67,18 @@ android {
     }
 }
 
-repositories {
-    flatDir {
-        dirs '../libs'
-    }
-    jcenter()
-    maven {
-        url "https://raw.githubusercontent.com/Pattonville-Robotics/ftc-lib-repo/mvn-repo/"
-    }
-}
+dependencies {
+    compile 'org.first.ftc:inspection:3.4'
+    compile 'org.first.ftc:blocks:3.4'
+    compile 'org.first.ftc:robotcore:3.4'
+    compile 'org.first.ftc:hardware:3.4'
+    compile 'org.first.ftc:ftc-common:3.4'
+    compile 'org.first.ftc:analytics:3.4'
+    compile 'org.first.ftc:wireless-p2p:3.4'
 
-apply from: 'build.release.gradle'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-math3
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+
+    // https://mvnrepository.com/artifact/com.annimon/stream
+    compile group: 'com.annimon', name: 'stream', version: '1.1.8'
+}
