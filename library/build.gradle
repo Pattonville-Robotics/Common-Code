@@ -1,0 +1,110 @@
+//
+// build.gradle in TeamCode
+//
+// Most of the definitions for building your module reside in a common, shared
+// file 'build.common.gradle'. Being factored in this way makes it easier to
+// integrate updates to the FTC into your code. If you really need to customize
+// the build definitions, you can place those customizations in this file, but
+// please think carefully as to whether such customizations are really necessary
+// before doing so.
+
+// Custom definitions may go here
+
+// Include common definitions from above.
+//apply from: '../build.common.gradle'
+
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = 'com.github.Pattonville-Robotics'
+
+android {
+
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
+
+    signingConfigs {
+        debug {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file('../libs/ftc.debug.keystore')
+            storePassword 'android'
+        }
+    }
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 26
+
+        versionName '3.4.0'
+        versionCode 4
+    }
+
+    // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed
+    buildTypes {
+        release {
+            debuggable true
+            ndk {
+                abiFilters "armeabi-v7a"
+            }
+        }
+        debug {
+            debuggable true
+            ndk {
+                abiFilters "armeabi-v7a"
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    sourceSets.main {
+        jni.srcDirs = []
+        jniLibs.srcDir "../libs"
+    }
+}
+
+dependencies {
+    compile 'org.first.ftc:inspection:3.4'
+    compile 'org.first.ftc:blocks:3.4'
+    compile 'org.first.ftc:robotcore:3.4'
+    compile 'org.first.ftc:hardware:3.4'
+    compile 'org.first.ftc:ftc-common:3.4'
+    compile 'org.first.ftc:analytics:3.4'
+    compile 'org.first.ftc:wireless-p2p:3.4'
+
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-math3
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+
+    // https://mvnrepository.com/artifact/com.annimon/stream
+    compile group: 'com.annimon', name: 'stream', version: '1.1.8'
+}
+
+//For JitPack
+
+// build a jar with source files
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    failOnError  false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
+
+// build a jar with javadoc
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
