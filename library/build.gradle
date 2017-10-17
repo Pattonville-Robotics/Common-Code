@@ -36,8 +36,8 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
 
-        versionName '3.4.0-alpha3'
-        versionCode 3
+        versionName '3.4.0'
+        versionCode 4
     }
 
     // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed
