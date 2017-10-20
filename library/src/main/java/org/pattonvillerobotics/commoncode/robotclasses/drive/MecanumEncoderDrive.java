@@ -21,7 +21,7 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
     private final double COS135 = FastMath.cos((3.*FastMath.PI)/4.);
     private final double SIN135 = -COS135;
     private final double DEG45 = FastMath.PI / 4.;
-    private DcMotor leftRearMotor, rightRearMotor;
+    public DcMotor leftRearMotor, rightRearMotor;
 
     public MecanumEncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, RobotParameters robotParameters) {
         super(hardwareMap, linearOpMode, robotParameters);
