@@ -36,8 +36,8 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
 
-        versionName '3.4.0'
-        versionCode 4
+        versionName '3.4.1'
+        versionCode 5
     }
 
     // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed
@@ -81,6 +81,9 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.annimon/stream
     compile group: 'com.annimon', name: 'stream', version: '1.1.8'
+
+    // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
+    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 }
 
 //For JitPack
