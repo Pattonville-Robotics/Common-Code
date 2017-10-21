@@ -6,12 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class allows users to subscribe to certain button events in an event-driven fashion.
+ * This class allows users to subscribe to certain buttons' states in an event-driven fashion.
  *
  * @author Mitchell Skaggs
  * @since 3.4.0
  */
-
 public class ListenableGamepad {
 
     private final Map<GamepadData.Button, ListenableButton> buttons;

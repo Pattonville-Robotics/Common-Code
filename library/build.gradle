@@ -84,6 +84,9 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    compile group: 'com.google.guava', name: 'guava', version: '23.2-android'
 }
 
 //For JitPack
