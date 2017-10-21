@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 
 public class QuadEncoderDrive extends EncoderDrive {
+    private static final String LEFT_REAR_MOTOR_NAME = "left_rear_motor";
+    private static final String RIGHT_REAR_MOTOR_NAME = "right_rear_motor";
     public final Optional<DcMotor> secondaryLeftDriveMotor, secondaryRightDriveMotor;
 
     /**
@@ -23,8 +25,8 @@ public class QuadEncoderDrive extends EncoderDrive {
     public QuadEncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, final RobotParameters robotParameters) {
         super(hardwareMap, linearOpMode, robotParameters);
 
-        this.secondaryLeftDriveMotor = Optional.ofNullable(hardwareMap.dcMotor.get("left_rear_motor"));
-        this.secondaryRightDriveMotor = Optional.ofNullable(hardwareMap.dcMotor.get("right_rear_motor"));
+        this.secondaryLeftDriveMotor = hardwareMap.dcMotor.contains(LEFT_REAR_MOTOR_NAME) ? Optional.of(hardwareMap.dcMotor.get(LEFT_REAR_MOTOR_NAME)) : Optional.<DcMotor>empty();
+        this.secondaryRightDriveMotor = hardwareMap.dcMotor.contains(RIGHT_REAR_MOTOR_NAME) ? Optional.of(hardwareMap.dcMotor.get(RIGHT_REAR_MOTOR_NAME)) : Optional.<DcMotor>empty();
 
         this.secondaryLeftDriveMotor.ifPresent(ZERO_POWER_BEHAVIOR_SETTER);
         this.secondaryRightDriveMotor.ifPresent(ZERO_POWER_BEHAVIOR_SETTER);
