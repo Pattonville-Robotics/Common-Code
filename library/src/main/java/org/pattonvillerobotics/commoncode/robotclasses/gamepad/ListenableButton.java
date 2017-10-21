@@ -96,9 +96,30 @@ public class ListenableButton {
 
     /**
      * The possible states for a button to be in.
+     *
+     * @author Mitchell Skaggs
+     * @since 3.4.0
      */
     public enum ButtonState {
-        BEING_PRESSED, BEING_RELEASED, JUST_PRESSED, JUST_RELEASED
+        /**
+         * The button has been pressed for more than one cycle.
+         */
+        BEING_PRESSED,
+
+        /**
+         * The button has been released for more than one cycle.
+         */
+        BEING_RELEASED,
+
+        /**
+         * The button has been pressed for exactly one cycle.
+         */
+        JUST_PRESSED,
+
+        /**
+         * The button has been released for exactly one cycle.
+         */
+        JUST_RELEASED
     }
 
     /**

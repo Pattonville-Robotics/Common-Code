@@ -99,6 +99,12 @@ public class GamepadData {
         }
     }
 
+    /**
+     * All of the available buttons on the controller.
+     *
+     * @author Mitchell Skaggs
+     * @since 3.4.0
+     */
     public enum Button {
         A, B, X, Y, LEFT_BUMPER, RIGHT_BUMPER, DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT, STICK_BUTTON_LEFT, STICK_BUTTON_RIGHT
     }
