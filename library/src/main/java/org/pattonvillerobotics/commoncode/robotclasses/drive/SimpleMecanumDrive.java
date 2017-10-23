@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.util.FastMath;
 
 /**
@@ -38,8 +39,8 @@ public class SimpleMecanumDrive extends AbstractDrive {
      *
      * @return coordinate array in the form of [r, theta]
      */
-    public static double[] toPolar(double x, double y) {
-        return new double[]{FastMath.hypot(x, y), FastMath.atan2(y, x)};
+    public static Vector2D toPolar(double x, double y) {
+        return new Vector2D(FastMath.hypot(x, y), FastMath.atan2(y, x));
     }
 
     /**
@@ -71,8 +72,8 @@ public class SimpleMecanumDrive extends AbstractDrive {
      * @param rotation x-position of the other joystick
      */
     public void driveWithJoysticks(double x, double y, double rotation) {
-        double[] coords = toPolar(x, y);
-        moveFreely(coords[1], coords[0], rotation);
+        Vector2D coords = toPolar(x, y);
+        moveFreely(coords.getY(), coords.getX(), rotation);
     }
 
 }
