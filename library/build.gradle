@@ -16,8 +16,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
-group = 'com.github.Pattonville-Robotics'
-
 android {
 
     compileSdkVersion 26
@@ -36,8 +34,8 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
 
-        versionName '3.4.1'
-        versionCode 5
+        versionName '3.4.2'
+        versionCode 6
     }
 
     // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed
@@ -66,6 +64,10 @@ android {
         jniLibs.srcDir "../libs"
     }
 }
+
+group = 'com.github.Pattonville-Robotics'
+version = android.defaultConfig.versionName
+project.archivesBaseName = 'Common-Code'
 
 dependencies {
     compile 'org.first.ftc:inspection:3.4'
@@ -98,7 +100,7 @@ task sourcesJar(type: Jar) {
 }
 
 task javadoc(type: Javadoc) {
-    failOnError  false
+    failOnError false
     source = android.sourceSets.main.java.sourceFiles
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     classpath += configurations.compile
