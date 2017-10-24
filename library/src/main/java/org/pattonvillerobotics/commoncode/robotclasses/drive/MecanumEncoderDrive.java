@@ -7,9 +7,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.pattonvillerobotics.commoncode.enums.Direction;
+
+import java.util.Locale;
+
+import static org.apache.commons.math3.util.FastMath.PI;
+import static org.apache.commons.math3.util.FastMath.cos;
+import static org.apache.commons.math3.util.FastMath.sin;
 
 /**
  * Created by greg on 10/2/2017.
@@ -18,9 +25,9 @@ import org.pattonvillerobotics.commoncode.enums.Direction;
 public class MecanumEncoderDrive extends QuadEncoderDrive {
 
     private static final String TAG = "MecanumEncoderDrive";
-    private final double COS135 = FastMath.cos((3.*FastMath.PI)/4.);
-    private final double SIN135 = -COS135;
-    private final double DEG45 = FastMath.PI / 4.;
+    private static final double COS_135 = cos(3 * PI / 4);
+    private static final double SIN_135 = -COS_135;
+    private static final double DEG_45 = PI / 4;
     public DcMotor leftRearMotor, rightRearMotor;
 
     public MecanumEncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, RobotParameters robotParameters) {
@@ -44,8 +51,8 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
      *
      * @return coordinate array in the form of [r, theta]
      */
-    public static double[] toPolar(double x, double y) {
-        return new double[]{FastMath.hypot(x, y), FastMath.atan2(y, x)};
+    public static Vector2D toPolar(double x, double y) {
+        return new Vector2D(FastMath.hypot(x, y), FastMath.atan2(y, x));
     }
 
     /**
@@ -56,8 +63,8 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
      * @param rotation rate of rotation
      */
     public void moveFreely(double angle, double speed, double rotation) {
-        double xcomponent = COS135 * (FastMath.cos(angle + DEG45));
-        double ycomponent = SIN135 * (FastMath.sin(angle + DEG45));
+        double xcomponent = COS_135 * (cos(angle + DEG_45));
+        double ycomponent = SIN_135 * (sin(angle + DEG_45));
 
 
 //        double scale = 1. / FastMath.max(FastMath.abs(xcomponent), FastMath.abs(ycomponent));
@@ -144,10 +151,11 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         Telemetry.Item distance = telemetry("DistanceL: N/A DistanceR: N/A");
         Telemetry.Item distanceRear = telemetry("DistanceLR: N/A DistanceRR: N/A");
 
-        while (isMovingToPosition() || !motorsReachedTarget(targetPositionLeft, targetPositionRight, targetPositionLeftRear, targetPositionRightRear) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
-            Thread.yield();
-            distance.setValue("DistanceL: " + leftDriveMotor.getCurrentPosition() + " DistanceR: " + rightDriveMotor.getCurrentPosition());
-            distanceRear.setValue("DistanceLR: " + secondaryLeftDriveMotor.get().getCurrentPosition() + " DistanceRR: " + secondaryRightDriveMotor.get().getCurrentPosition());
+        while (isMovingToPosition()
+                || !motorsReachedTarget(targetPositionLeft, targetPositionRight, targetPositionLeftRear, targetPositionRightRear)
+                && linearOpMode.opModeIsActive()) {
+            distance.setValue(String.format(Locale.getDefault(), "DistanceL: %d DistanceR: %d", leftDriveMotor.getCurrentPosition(), rightDriveMotor.getCurrentPosition()));
+            distanceRear.setValue(String.format(Locale.getDefault(), "DistanceLR: %d DistanceRR: %d", secondaryLeftDriveMotor.get().getCurrentPosition(), secondaryRightDriveMotor.get().getCurrentPosition()));
             linearOpMode.telemetry.update();
         }
         Log.e(TAG, "Setting motor power low");
@@ -214,8 +222,9 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         Telemetry.Item distanceRear = items[7];
 
         move(Direction.FORWARD, speed); // To keep speed in [0.0, 1.0]. Encoders control direction
-        while (isMovingToPosition() && !motorsReachedTarget(targetPositionLeft, targetPositionRight, targetPositionLeftRear, targetPositionRightRear) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
-            Thread.yield();
+        while (isMovingToPosition()
+                || !motorsReachedTarget(targetPositionLeft, targetPositionRight, targetPositionLeftRear, targetPositionRightRear)
+                && linearOpMode.opModeIsActive()) {
             distance.setValue("DistanceLF: " + leftDriveMotor.getCurrentPosition() + " DistanceRF: " + rightDriveMotor.getCurrentPosition());
             distanceRear.setValue("DistanceLR: " + leftRearMotor.getCurrentPosition() + " DistanceRR: " + rightRearMotor.getCurrentPosition());
             linearOpMode.telemetry.update();

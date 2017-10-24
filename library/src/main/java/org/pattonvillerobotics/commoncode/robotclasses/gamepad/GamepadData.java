@@ -2,11 +2,15 @@ package org.pattonvillerobotics.commoncode.robotclasses.gamepad;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
- * Created by skaggsm on 11/24/15.
- * This class stores all data pertaining to a gamepad at the given time.
- * This class is IMMUTABLE
+ * This immutable class stores all data pertaining to a gamepad at the given instant.
+ *
+ * @author Mitchell Skaggs
+ * @since 3.4.0
  */
+@Immutable
 public class GamepadData {
 
     public final float left_stick_x;
@@ -28,6 +32,11 @@ public class GamepadData {
     public final float left_trigger;
     public final float right_trigger;
 
+    /**
+     * Copies the contents of a {@link Gamepad} to an immutable form.
+     *
+     * @param gamepad the Gamepad to copy
+     */
     public GamepadData(Gamepad gamepad) {
         this.left_stick_x = gamepad.left_stick_x;
         this.left_stick_y = gamepad.left_stick_y;
@@ -53,6 +62,12 @@ public class GamepadData {
         this.right_trigger = gamepad.right_trigger;
     }
 
+    /**
+     * Gets the captured state of a given button.
+     *
+     * @param button the button to query
+     * @return true if pressed, false otherwise
+     */
     public boolean getButtonPressed(Button button) {
         switch (button) {
             case A:
@@ -80,10 +95,16 @@ public class GamepadData {
             case STICK_BUTTON_RIGHT:
                 return this.right_stick_button;
             default:
-                throw new IllegalStateException("The button \"" + button + "\" does not exist!");
+                throw new IllegalStateException(String.format("The button $1%s does not exist!", button));
         }
     }
 
+    /**
+     * All of the available buttons on the controller.
+     *
+     * @author Mitchell Skaggs
+     * @since 3.4.0
+     */
     public enum Button {
         A, B, X, Y, LEFT_BUMPER, RIGHT_BUMPER, DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT, STICK_BUTTON_LEFT, STICK_BUTTON_RIGHT
     }
