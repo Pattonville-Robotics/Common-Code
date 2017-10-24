@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.pattonvillerobotics.commoncode.enums.Direction;
@@ -50,9 +51,8 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
      *
      * @return coordinate array in the form of [r, theta]
      */
-    public static double[] toPolar(double x, double y) {
-        //TODO return a Point2D or Vector object with a fixed number of fields for performance reasons?
-        return new double[]{FastMath.hypot(x, y), FastMath.atan2(y, x)};
+    public static Vector2D toPolar(double x, double y) {
+        return new Vector2D(FastMath.hypot(x, y), FastMath.atan2(y, x));
     }
 
     /**
@@ -222,8 +222,9 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         Telemetry.Item distanceRear = items[7];
 
         move(Direction.FORWARD, speed); // To keep speed in [0.0, 1.0]. Encoders control direction
-        while (isMovingToPosition() && !motorsReachedTarget(targetPositionLeft, targetPositionRight, targetPositionLeftRear, targetPositionRightRear) && !linearOpMode.isStopRequested() && linearOpMode.opModeIsActive()) {
-            Thread.yield();
+        while (isMovingToPosition()
+                || !motorsReachedTarget(targetPositionLeft, targetPositionRight, targetPositionLeftRear, targetPositionRightRear)
+                && linearOpMode.opModeIsActive()) {
             distance.setValue("DistanceLF: " + leftDriveMotor.getCurrentPosition() + " DistanceRF: " + rightDriveMotor.getCurrentPosition());
             distanceRear.setValue("DistanceLR: " + leftRearMotor.getCurrentPosition() + " DistanceRR: " + rightRearMotor.getCurrentPosition());
             linearOpMode.telemetry.update();
