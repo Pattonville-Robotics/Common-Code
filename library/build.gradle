@@ -80,13 +80,13 @@ version = android.defaultConfig.versionName
 project.archivesBaseName = 'Common-Code'
 
 dependencies {
-    compileOnly 'org.first.ftc:inspection:3.4'
-    compileOnly 'org.first.ftc:blocks:3.4'
-    compileOnly 'org.first.ftc:robotcore:3.4'
-    compileOnly 'org.first.ftc:hardware:3.4'
-    compileOnly 'org.first.ftc:ftc-common:3.4'
-    compileOnly 'org.first.ftc:analytics:3.4'
-    compileOnly 'org.first.ftc:wireless-p2p:3.4'
+    provided 'org.first.ftc:inspection:3.4'
+    provided 'org.first.ftc:blocks:3.4'
+    provided 'org.first.ftc:robotcore:3.4'
+    provided 'org.first.ftc:hardware:3.4'
+    provided 'org.first.ftc:ftc-common:3.4'
+    provided 'org.first.ftc:analytics:3.4'
+    provided 'org.first.ftc:wireless-p2p:3.4'
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-math3
     implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
