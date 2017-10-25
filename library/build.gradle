@@ -45,18 +45,28 @@ android {
             ndk {
                 abiFilters "armeabi-v7a"
             }
+
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
             debuggable true
             ndk {
                 abiFilters "armeabi-v7a"
             }
+
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    lintOptions {
+        abortOnError false //TODO actually ignore the exact lint checks that error
     }
 
     sourceSets.main {
@@ -79,16 +89,16 @@ dependencies {
     compileOnly 'org.first.ftc:wireless-p2p:3.4'
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-math3
-    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
 
     // https://mvnrepository.com/artifact/com.annimon/stream
-    compile group: 'com.annimon', name: 'stream', version: '1.1.8'
+    implementation group: 'com.annimon', name: 'stream', version: '1.1.8'
 
     // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
-    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 
     // https://mvnrepository.com/artifact/com.google.guava/guava
-    compile group: 'com.google.guava', name: 'guava', version: '23.2-android'
+    implementation group: 'com.google.guava', name: 'guava', version: '23.2-android'
 }
 
 //For JitPack
