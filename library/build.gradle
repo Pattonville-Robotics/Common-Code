@@ -17,9 +17,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 android {
-
     compileSdkVersion 26
-    buildToolsVersion '26.0.2'
 
     signingConfigs {
         debug {
@@ -34,7 +32,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
 
-        versionName '3.4.2'
+        versionName "$ftc_version.2"
         versionCode 6
     }
 
@@ -80,13 +78,13 @@ version = android.defaultConfig.versionName
 project.archivesBaseName = 'Common-Code'
 
 dependencies {
-    implementation 'org.first.ftc:inspection:3.4'
-    implementation 'org.first.ftc:blocks:3.4'
-    implementation 'org.first.ftc:robotcore:3.4'
-    implementation 'org.first.ftc:hardware:3.4'
-    implementation 'org.first.ftc:ftc-common:3.4'
-    implementation 'org.first.ftc:analytics:3.4'
-    implementation 'org.first.ftc:wireless-p2p:3.4'
+    implementation "org.first.ftc:inspection:$ftc_version"
+    implementation "org.first.ftc:blocks:$ftc_version"
+    implementation "org.first.ftc:robotcore:$ftc_version"
+    implementation "org.first.ftc:hardware:$ftc_version"
+    implementation "org.first.ftc:ftc-common:$ftc_version"
+    implementation "org.first.ftc:analytics:$ftc_version"
+    implementation "org.first.ftc:wireless-p2p:$ftc_version"
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-math3
     implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
@@ -126,7 +124,7 @@ artifacts {
     archives sourcesJar
     archives javadocJar
 }
-
+/*
 android.libraryVariants.all { variant ->
     def name = variant.buildType.name
     def task = project.tasks.create "jar${name.capitalize()}", Jar
@@ -134,3 +132,4 @@ android.libraryVariants.all { variant ->
     task.from variant.javaCompiler.destinationDir
     artifacts.add 'archives', task
 }
+*/
