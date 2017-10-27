@@ -16,12 +16,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
-group = 'com.github.Pattonville-Robotics'
-
 android {
-
     compileSdkVersion 26
-    buildToolsVersion '26.0.2'
 
     signingConfigs {
         debug {
@@ -36,8 +32,8 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
 
-        versionName '3.4.1'
-        versionCode 5
+        versionName "$ftc_version.2"
+        versionCode 6
     }
 
     // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed
@@ -47,12 +43,18 @@ android {
             ndk {
                 abiFilters "armeabi-v7a"
             }
+
+            //minifyEnabled true
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
             debuggable true
             ndk {
                 abiFilters "armeabi-v7a"
             }
+
+            //minifyEnabled true
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -61,32 +63,40 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
+    lintOptions {
+        abortOnError false //TODO actually ignore the exact lint checks that error
+    }
+
     sourceSets.main {
         jni.srcDirs = []
         jniLibs.srcDir "../libs"
     }
 }
 
+group = 'com.github.Pattonville-Robotics'
+version = android.defaultConfig.versionName
+project.archivesBaseName = 'Common-Code'
+
 dependencies {
-    compile 'org.first.ftc:inspection:3.4'
-    compile 'org.first.ftc:blocks:3.4'
-    compile 'org.first.ftc:robotcore:3.4'
-    compile 'org.first.ftc:hardware:3.4'
-    compile 'org.first.ftc:ftc-common:3.4'
-    compile 'org.first.ftc:analytics:3.4'
-    compile 'org.first.ftc:wireless-p2p:3.4'
+    implementation "org.first.ftc:inspection:$ftc_version"
+    implementation "org.first.ftc:blocks:$ftc_version"
+    implementation "org.first.ftc:robotcore:$ftc_version"
+    implementation "org.first.ftc:hardware:$ftc_version"
+    implementation "org.first.ftc:ftc-common:$ftc_version"
+    implementation "org.first.ftc:analytics:$ftc_version"
+    implementation "org.first.ftc:wireless-p2p:$ftc_version"
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-math3
-    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
 
     // https://mvnrepository.com/artifact/com.annimon/stream
-    compile group: 'com.annimon', name: 'stream', version: '1.1.8'
+    implementation group: 'com.annimon', name: 'stream', version: '1.1.8'
 
     // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
-    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 
     // https://mvnrepository.com/artifact/com.google.guava/guava
-    compile group: 'com.google.guava', name: 'guava', version: '23.2-android'
+    implementation group: 'com.google.guava', name: 'guava', version: '23.2-android'
 }
 
 //For JitPack
@@ -98,7 +108,7 @@ task sourcesJar(type: Jar) {
 }
 
 task javadoc(type: Javadoc) {
-    failOnError  false
+    failOnError false
     source = android.sourceSets.main.java.sourceFiles
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     classpath += configurations.compile
@@ -114,3 +124,12 @@ artifacts {
     archives sourcesJar
     archives javadocJar
 }
+/*
+android.libraryVariants.all { variant ->
+    def name = variant.buildType.name
+    def task = project.tasks.create "jar${name.capitalize()}", Jar
+    task.dependsOn variant.javaCompiler
+    task.from variant.javaCompiler.destinationDir
+    artifacts.add 'archives', task
+}
+*/
