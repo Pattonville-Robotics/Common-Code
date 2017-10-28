@@ -14,6 +14,7 @@
 //apply from: '../build.common.gradle'
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'com.github.dcendents.android-maven'
 
 android {
@@ -78,6 +79,8 @@ version = android.defaultConfig.versionName
 project.archivesBaseName = 'Common-Code'
 
 dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+
     implementation "org.first.ftc:inspection:$ftc_version"
     implementation "org.first.ftc:blocks:$ftc_version"
     implementation "org.first.ftc:robotcore:$ftc_version"
@@ -123,6 +126,9 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives sourcesJar
     archives javadocJar
+}
+repositories {
+    mavenCentral()
 }
 /*
 android.libraryVariants.all { variant ->
