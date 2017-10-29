@@ -127,9 +127,7 @@ artifacts {
     archives sourcesJar
     archives javadocJar
 }
-repositories {
-    mavenCentral()
-}
+
 /*
 android.libraryVariants.all { variant ->
     def name = variant.buildType.name
