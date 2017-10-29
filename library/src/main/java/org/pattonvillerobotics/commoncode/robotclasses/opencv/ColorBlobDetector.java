@@ -72,19 +72,4 @@ public class ColorBlobDetector {
     public List<MatOfPoint> getContours() {
         return contours;
     }
-
-    public MatOfPoint getLargestContour() {
-        double largestArea = 0;
-        MatOfPoint largestContour = new MatOfPoint();
-
-        for (MatOfPoint contour : contours) {
-            double contourArea = Imgproc.contourArea(contour);
-            if (contourArea > largestArea) {
-                largestArea = contourArea;
-                largestContour = contour;
-            }
-        }
-
-        return largestContour;
-    }
 }
