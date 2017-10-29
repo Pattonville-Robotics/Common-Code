@@ -2,7 +2,8 @@ package org.pattonvillerobotics.commoncode.robotclasses.gamepad
 
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.pattonvillerobotics.commoncode.robotclasses.gamepad.GamepadData.Button
-import java.util.*
+import org.pattonvillerobotics.commoncode.robotclasses.gamepad.ListenableButton.ButtonListener
+import org.pattonvillerobotics.commoncode.robotclasses.gamepad.ListenableButton.ButtonState
 
 /**
  * This class allows users to subscribe to certain buttons' states in an event-driven fashion.
@@ -12,15 +13,7 @@ import java.util.*
  */
 class ListenableGamepad {
 
-    private val buttons: MutableMap<Button, ListenableButton> = HashMap()
-
-    /**
-     * Constructs a new ListenableGamepad and populates it with [ListenableButton] instances
-     */
-    init {
-        for (b in Button.values())
-            buttons.put(b, ListenableButton())
-    }
+    private val buttons: Map<Button, ListenableButton> = mapOf(*Button.values().map { Pair(it, ListenableButton()) }.toTypedArray())
 
     /**
      * Calls all button listeners based on the new gamepad values.
@@ -52,4 +45,53 @@ class ListenableGamepad {
         return buttons[button]!!
     }
 
+    /**
+     * Add a listener to a given button and state.
+     *
+     * @param button the button to listen for
+     * @param buttonState    the state to listen for
+     * @param buttonListener the listener
+     * @return itself, for chaining calls
+     */
+    fun addButtonListener(button: Button, buttonState: ButtonState, buttonListener: () -> Unit): ListenableGamepad {
+        getButton(button).addListener(buttonState, buttonListener)
+        return this
+    }
+
+    /**
+     * Add a listener to a given button and state.
+     *
+     * @param button the button to listen for
+     * @param buttonState    the state to listen for
+     * @param buttonListener the listener
+     * @return itself, for chaining calls
+     */
+    fun addButtonListener(button: Button, buttonState: ButtonState, buttonListener: ButtonListener): ListenableGamepad {
+        getButton(button).addListener(buttonState, buttonListener)
+        return this
+    }
+
+    /**
+     * Remove a listener from a given state.
+     *
+     * @param button the button to listen for
+     * @param buttonState    the state to listen for
+     * @param buttonListener the listener
+     * @return see [MutableList.remove]
+     */
+    fun removeListener(button: Button, buttonState: ButtonState, buttonListener: () -> Unit): Boolean {
+        return getButton(button).removeListener(buttonState, buttonListener)
+    }
+
+    /**
+     * Remove a listener from a given state.
+     *
+     * @param button the button to listen for
+     * @param buttonState    the state to listen for
+     * @param buttonListener the listener
+     * @return see [MutableList.remove]
+     */
+    fun removeListener(button: Button, buttonState: ButtonState, buttonListener: ButtonListener): Boolean {
+        return getButton(button).removeListener(buttonState, buttonListener)
+    }
 }
