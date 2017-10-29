@@ -14,7 +14,7 @@ public final class Contour {
 
     public static MatOfPoint findLargestContour(List<MatOfPoint> contours) {
         double largestArea = 0;
-        MatOfPoint largestContour = new MatOfPoint();
+        MatOfPoint largestContour = null;
 
         for (MatOfPoint contour : contours) {
             double contourArea = Imgproc.contourArea(contour);

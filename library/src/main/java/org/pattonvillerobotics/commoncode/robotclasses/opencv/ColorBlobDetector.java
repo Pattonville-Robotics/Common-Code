@@ -7,6 +7,7 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.pattonvillerobotics.commoncode.enums.ColorSensorColor;
+import org.pattonvillerobotics.commoncode.robotclasses.opencv.util.Contour;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,5 +72,9 @@ public class ColorBlobDetector {
 
     public List<MatOfPoint> getContours() {
         return contours;
+    }
+
+    public MatOfPoint getLargestContour() {
+        return Contour.findLargestContour(contours);
     }
 }
