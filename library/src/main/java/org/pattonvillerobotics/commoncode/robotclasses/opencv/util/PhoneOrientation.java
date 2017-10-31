@@ -6,9 +6,9 @@ package org.pattonvillerobotics.commoncode.robotclasses.opencv.util;
 
 public enum PhoneOrientation {
     LANDSCAPE(0),
-    PORTRAIT(90),
+    PORTRAIT(270),
     LANDSCAPE_INVERSE(180),
-    POTRAIT_INVERSE(270);
+    POTRAIT_INVERSE(90);
 
     public final double rotation;
 

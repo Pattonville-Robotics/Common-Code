@@ -3,6 +3,7 @@ package org.pattonvillerobotics.commoncode.robotclasses.opencv;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -22,7 +23,7 @@ public final class ImageProcessor {
 
     private ImageProcessor() {}
 
-    public static void initOpenCV(HardwareMap hardwareMap) {
+    public static void initOpenCV(HardwareMap hardwareMap, LinearOpMode opMode) {
         BaseLoaderCallback baseLoaderCallback = null;
 
         try {
@@ -63,12 +64,8 @@ public final class ImageProcessor {
             }
         }
 
-        while (!initialized) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        while (!initialized && opMode.opModeIsActive()) {
+            opMode.idle();
         }
     }
 
@@ -86,6 +83,9 @@ public final class ImageProcessor {
         Mat rotMat = Imgproc.getRotationMatrix2D(new Point(tmp.cols()/2, tmp.rows()/2), orientation.getRotation(), 1.0);
         Mat rotated = new Mat();
         Imgproc.warpAffine(tmp, rotated, rotMat, tmp.size());
+
+        Log.i("Jewel", "Rotated.");
+
         return rotated;
     }
 }
