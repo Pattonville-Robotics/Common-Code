@@ -36,11 +36,18 @@ public class JewelColorDetector {
         blueDetector = new ColorBlobDetector(ColorSensorColor.BLUE);
     }
 
+    /**
+     * Converts bitmap to mat and processes it.
+     */
     public void process(Bitmap bitmap) {
         Mat rgbaMat = ImageProcessor.processBitmap(bitmap, phoneOrientation);
         process(rgbaMat);
     }
 
+    /**
+     * Uses Hough Circles to find which color blobs are jewels. If no Hough Circle found, uses the
+     * largest color blob.
+     */
     private void findJewelContours() {
         Mat redCircles = new Mat();
         Mat blueCircles = new Mat();
@@ -81,6 +88,14 @@ public class JewelColorDetector {
         }
     }
 
+    /**
+     * Thresholds the image to find the white tape. Filters the threshold to find the tape by using
+     * the location of the jewels.
+     *
+     * @param jewel1  the first jewel found
+     * @param jewel2  the second jewel found
+     * @param rgbaMat a mat of the rgba image that is being processed for color detection
+     */
     private void findTapeContour(Vector3D jewel1, Vector3D jewel2, Mat rgbaMat) {
         Imgproc.cvtColor(rgbaMat, grayScaleMat, Imgproc.COLOR_RGB2GRAY);
         Imgproc.threshold(grayScaleMat, thresholdMat, 230, 255, Imgproc.THRESH_BINARY);
@@ -98,6 +113,7 @@ public class JewelColorDetector {
             }
         }
 
+
         Point lowestPoint = new Point(0, 0);
         for (MatOfPoint contour : filteredArea) {
             Point contourCenter = Contour.centroid(contour);
@@ -109,6 +125,12 @@ public class JewelColorDetector {
         //Imgproc.circle(rgbaMat, lowestPoint, 3, new Scalar(255, 0, 0), 3);
     }
 
+    /**
+     * Processes the image for color blobs. Filters the color blobs to find the jewels. Then finds
+     * a contour representing the tape between the jewels.
+     *
+     * @param rgbaMat a mat of the rgba image that is wanting to be processed for detection
+     */
     public void process(Mat rgbaMat) {
         redDetector.process(rgbaMat);
         blueDetector.process(rgbaMat);
@@ -130,12 +152,24 @@ public class JewelColorDetector {
         }*/
     }
 
+    /**
+     * Finds if a point is within a certain distance of a contour.
+     * @param tape the contour of the tape
+     * @param jewel the circle representing a jewel on the image
+     * @return true if the distance is less than range
+     */
     private boolean inRange(MatOfPoint tape, Vector3D jewel) {
         if (jewel == null) return false;
         Point tapeCenter = Contour.centroid(tape);
         return Math.hypot(tapeCenter.x - jewel.getX(), tapeCenter.y - jewel.getY()) < TAPE_JEWEL_RANGE;
     }
 
+    /**
+     * Compares the center of the jewels to the center of the found tape and decides
+     * what side each jewel is on depending on the x value of the points.
+     *
+     * @return the results of the analysis, if no tape contour found then both colors are null
+     */
     public JewelColorDetector.Analysis getAnalysis() {
         ColorSensorColor leftJewelColor = null;
         ColorSensorColor rightJewelColor = null;
@@ -161,6 +195,9 @@ public class JewelColorDetector {
         return new JewelColorDetector.Analysis(leftJewelColor, rightJewelColor);
     }
 
+    /**
+     * Contains the results of an analysis of the jewel holder.
+     */
     public static class Analysis {
         public final ColorSensorColor leftJewelColor;
         public final ColorSensorColor rightJewelColor;
