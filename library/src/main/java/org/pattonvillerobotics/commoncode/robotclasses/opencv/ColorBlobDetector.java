@@ -51,9 +51,9 @@ public class ColorBlobDetector {
     }
 
     public void process(Mat rgbaMat) {
-        Imgproc.blur(rgbaMat, blurMat, new Size(71, 71));
+        Imgproc.blur(rgbaMat, blurMat, new Size(10, 10));
 
-        Imgproc.cvtColor(blurMat, hsvMat, Imgproc.COLOR_BGR2HSV);
+        Imgproc.cvtColor(blurMat, hsvMat, Imgproc.COLOR_RGB2HSV);
         Core.inRange(hsvMat, lowerBoundHSV, upperBoundHSV, thresholdMat);
 
         List<MatOfPoint> tmp = new ArrayList<>();
