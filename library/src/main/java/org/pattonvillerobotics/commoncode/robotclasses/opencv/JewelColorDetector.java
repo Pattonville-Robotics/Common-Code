@@ -1,8 +1,8 @@
 package org.pattonvillerobotics.commoncode.robotclasses.opencv;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
@@ -18,12 +18,13 @@ import java.util.List;
 public class JewelColorDetector {
 
     public static final String TAG = JewelColorDetector.class.getSimpleName();
-    private static final int TAPE_JEWEL_RANGE = 300;
+    private static final int TAPE_JEWEL_RANGE = 200;
 
     private ColorBlobDetector redDetector, blueDetector;
     private PhoneOrientation phoneOrientation;
 
-    private MatOfPoint redJewel, blueJewel, jewelHolderTape;
+    private MatOfPoint jewelHolderTape;
+    private Vector3D redJewel, blueJewel;
 
     private Mat grayScaleMat = new Mat();
     private Mat thresholdMat = new Mat();
@@ -36,8 +37,6 @@ public class JewelColorDetector {
     }
 
     public void process(Bitmap bitmap) {
-        Log.i(TAG, "Processing bitmap");
-
         Mat rgbaMat = ImageProcessor.processBitmap(bitmap, phoneOrientation);
         process(rgbaMat);
     }
@@ -46,18 +45,23 @@ public class JewelColorDetector {
         Mat redCircles = new Mat();
         Mat blueCircles = new Mat();
 
-        Imgproc.HoughCircles(redDetector.getThresholdMat(), redCircles, Imgproc.HOUGH_GRADIENT, 3.5, 1000);
-        Imgproc.HoughCircles(blueDetector.getThresholdMat(), blueCircles, Imgproc.HOUGH_GRADIENT, 3.5, 1000);
+        Imgproc.HoughCircles(redDetector.getThresholdMat(), redCircles, Imgproc.HOUGH_GRADIENT, 3.5, 10000);
+        Imgproc.HoughCircles(blueDetector.getThresholdMat(), blueCircles, Imgproc.HOUGH_GRADIENT, 3.5, 10000);
 
         for (int i = 0; i < redCircles.cols(); i++) {
             double[] circle = redCircles.get(0, i);
 
             for (MatOfPoint contour : redDetector.getContours()) {
                 if (Imgproc.pointPolygonTest(new MatOfPoint2f(contour.toArray()), new Point(circle[0], circle[1]), false) == 1) {
-                    redJewel = contour;
+                    //Imgproc.circle(rgbaMat, new Point(circle[0], circle[1]), (int)circle[2], new Scalar(0, 255, 0), 3);
+                    redJewel = new Vector3D(circle);
                     break;
                 }
             }
+        }
+        if (redJewel == null) {
+            Point center = Contour.centroid(Contour.findLargestContour(redDetector.getContours()));
+            redJewel = new Vector3D(center.x, center.y, 20);
         }
 
         for (int i = 0; i < blueCircles.cols(); i++) {
@@ -65,26 +69,44 @@ public class JewelColorDetector {
 
             for (MatOfPoint contour : blueDetector.getContours()) {
                 if (Imgproc.pointPolygonTest(new MatOfPoint2f(contour.toArray()), new Point(circle[0], circle[1]), false) == 1) {
-                    blueJewel = contour;
+                    blueJewel = new Vector3D(circle);
+                    //Imgproc.circle(rgbaMat, new Point(circle[0], circle[1]), (int)circle[2], new Scalar(0, 255, 0), 3);
                     break;
                 }
             }
         }
+        if (blueJewel == null) {
+            Point center = Contour.centroid(Contour.findLargestContour(redDetector.getContours()));
+            blueJewel = new Vector3D(center.x, center.y, 20);
+        }
     }
 
-    private void findTapeContour(MatOfPoint jewel1, MatOfPoint jewel2, Mat rgbaMat) {
-        Imgproc.cvtColor(rgbaMat.clone(), grayScaleMat, Imgproc.COLOR_BGR2GRAY);
+    private void findTapeContour(Vector3D jewel1, Vector3D jewel2, Mat rgbaMat) {
+        Imgproc.cvtColor(rgbaMat, grayScaleMat, Imgproc.COLOR_RGB2GRAY);
         Imgproc.threshold(grayScaleMat, thresholdMat, 230, 255, Imgproc.THRESH_BINARY);
 
         List<MatOfPoint> possibleTapeContours = new ArrayList<>();
 
         Imgproc.findContours(thresholdMat, possibleTapeContours, hierarchyMat, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
+        List<MatOfPoint> filteredArea = new ArrayList<>();
+
         for (MatOfPoint contour : possibleTapeContours) {
-            if (Imgproc.contourArea(contour) > 500 && (inRange(contour, jewel1) || inRange(contour, jewel2))) {
+            if (Imgproc.contourArea(contour) > 1000 && (inRange(contour, jewel1) || inRange(contour, jewel2))) {
+                jewelHolderTape = contour;
+                filteredArea.add(contour);
+            }
+        }
+
+        Point lowestPoint = new Point(0, 0);
+        for (MatOfPoint contour : filteredArea) {
+            Point contourCenter = Contour.centroid(contour);
+            if (contourCenter.y > lowestPoint.y) {
+                lowestPoint = contourCenter;
                 jewelHolderTape = contour;
             }
         }
+        //Imgproc.circle(rgbaMat, lowestPoint, 3, new Scalar(255, 0, 0), 3);
     }
 
     public void process(Mat rgbaMat) {
@@ -93,15 +115,25 @@ public class JewelColorDetector {
 
         findJewelContours();
         findTapeContour(blueJewel, redJewel, rgbaMat);
+
+        /*Bitmap bmp = Bitmap.createBitmap(rgbaMat.width(), rgbaMat.height(), Bitmap.Config.RGB_565);
+        Utils.matToBitmap(rgbaMat, bmp);
+        try {
+            FileOutputStream fos = hardwareMap.appContext.openFileOutput("testPic.png", Context.MODE_PRIVATE);
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+            Log.i("OpenCVTest", "Image saved.");
+            Log.i("OpenCVTest", hardwareMap.appContext.getFilesDir().getAbsolutePath());
+        } catch (Exception e) {
+            Log.e("OpenCVTest", e.getMessage());
+        }*/
     }
 
-    private boolean inRange(MatOfPoint tape, MatOfPoint jewel) {
+    private boolean inRange(MatOfPoint tape, Vector3D jewel) {
         if (jewel == null) return false;
-
         Point tapeCenter = Contour.centroid(tape);
-        Point jewelCenter = Contour.centroid(jewel);
-
-        return Math.hypot(tapeCenter.x - jewelCenter.x, tapeCenter.y - jewelCenter.y) < TAPE_JEWEL_RANGE;
+        return Math.hypot(tapeCenter.x - jewel.getX(), tapeCenter.y - jewel.getY()) < TAPE_JEWEL_RANGE;
     }
 
     public JewelColorDetector.Analysis getAnalysis() {
@@ -111,21 +143,17 @@ public class JewelColorDetector {
         if (jewelHolderTape == null) return new JewelColorDetector.Analysis();
 
         Point tapeCenter = Contour.centroid(jewelHolderTape);
-
         if (redJewel != null) {
-            Point redCenter = Contour.centroid(redJewel);
-            if (redCenter.x < tapeCenter.x) {
+            if (redJewel.getX() < tapeCenter.x) {
                 leftJewelColor = ColorSensorColor.RED;
-            } else if (redCenter.x > tapeCenter.x) {
+            } else if (redJewel.getX() > tapeCenter.x) {
                 rightJewelColor = ColorSensorColor.RED;
             }
         }
-
         if (blueJewel != null) {
-            Point blueCenter = Contour.centroid(blueJewel);
-            if (blueCenter.x < tapeCenter.x) {
+            if (blueJewel.getX() < tapeCenter.x) {
                 leftJewelColor = ColorSensorColor.BLUE;
-            } else if (blueCenter.x > tapeCenter.x) {
+            } else if (blueJewel.getX() > tapeCenter.x) {
                 rightJewelColor = ColorSensorColor.BLUE;
             }
         }

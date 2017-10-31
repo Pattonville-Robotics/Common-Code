@@ -31,7 +31,7 @@ public class OpenCVTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         ImageProcessor.initOpenCV(hardwareMap, this);
 
-        jewelColorDetector = new JewelColorDetector(PhoneOrientation.LANDSCAPE);
+        jewelColorDetector = new JewelColorDetector(PhoneOrientation.PORTRAIT);
         vuforia = new VuforiaNavigation(VUFORIA_PARAMETERS);
 
         JewelColorDetector.Analysis analysis = null;
