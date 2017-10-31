@@ -7,7 +7,6 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.pattonvillerobotics.commoncode.enums.ColorSensorColor;
-import org.pattonvillerobotics.commoncode.robotclasses.opencv.util.Contour;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +40,7 @@ public class ColorBlobDetector {
                 setHSVBounds(new Scalar(160, 40, 0), new Scalar(180, 255, 255));
                 break;
             case BLUE:
-                setHSVBounds(new Scalar(90, 40, 0), new Scalar(120, 255, 255));
+                setHSVBounds(new Scalar(90, 40, 0), new Scalar(110, 255, 255));
                 break;
             case GREEN:
                 setHSVBounds(new Scalar(45, 40, 0), new Scalar(75, 255, 255));
@@ -52,7 +51,7 @@ public class ColorBlobDetector {
     }
 
     public void process(Mat rgbaMat) {
-        Imgproc.GaussianBlur(rgbaMat, blurMat, new Size(151, 151), 25);
+        Imgproc.blur(rgbaMat, blurMat, new Size(71, 71));
 
         Imgproc.cvtColor(blurMat, hsvMat, Imgproc.COLOR_BGR2HSV);
         Core.inRange(hsvMat, lowerBoundHSV, upperBoundHSV, thresholdMat);
@@ -70,11 +69,11 @@ public class ColorBlobDetector {
         }
     }
 
-    public List<MatOfPoint> getContours() {
-        return contours;
+    public Mat getThresholdMat() {
+        return thresholdMat;
     }
 
-    public MatOfPoint getLargestContour() {
-        return Contour.findLargestContour(contours);
+    public List<MatOfPoint> getContours() {
+        return contours;
     }
 }
