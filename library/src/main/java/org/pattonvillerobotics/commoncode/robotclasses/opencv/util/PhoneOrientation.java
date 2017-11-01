@@ -8,7 +8,7 @@ public enum PhoneOrientation {
     LANDSCAPE(0),
     PORTRAIT(270),
     LANDSCAPE_INVERSE(180),
-    POTRAIT_INVERSE(90);
+    PORTRAIT_INVERSE(90);
 
     public final double rotation;
 
