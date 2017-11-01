@@ -1,32 +1,29 @@
 package org.pattonvillerobotics.commoncode.robotclasses.opencv;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.imgproc.Imgproc;
+import org.pattonvillerobotics.commoncode.robotclasses.opencv.util.PhoneOrientation;
 
-
-/**
- * Created by greg on 10/4/2017.
- */
-
-public abstract class ImageProcessor {
+public final class ImageProcessor {
 
     private static final String TAG = ImageProcessor.class.getSimpleName();
 
-    private boolean initialized;
-    private HardwareMap hardwareMap;
+    private static boolean initialized;
 
-    public ImageProcessor(HardwareMap hardwareMap) {
-        this.hardwareMap = hardwareMap;
+    private ImageProcessor() {}
 
-        initOpenCV();
-    }
-
-    private void initOpenCV() {
+    public static void initOpenCV(HardwareMap hardwareMap, LinearOpMode opMode) {
         BaseLoaderCallback baseLoaderCallback = null;
 
         try {
@@ -67,7 +64,7 @@ public abstract class ImageProcessor {
             }
         }
 
-        while (!initialized) {
+        while (!initialized && opMode.opModeIsActive()) {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
@@ -76,16 +73,23 @@ public abstract class ImageProcessor {
         }
     }
 
-    public void waitForOpenCVInit() {
-        while (!initialized) {
-            synchronized (this) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return;
-                }
-            }
-        }
+    /**
+     * Converts the Bitmap to a Mat and then rotates the image based off of the phone's orientation.
+     *
+     * @param bitmap A bitmap from taken from vuforia
+     * @param orientation The current orientation of the phone on the robot
+     * @return a Mat of the bitmap in the correct orientation
+     */
+    public static Mat processBitmap(Bitmap bitmap, PhoneOrientation orientation) {
+        Mat tmp = new Mat();
+        Utils.bitmapToMat(bitmap, tmp);
+
+        Mat rotMat = Imgproc.getRotationMatrix2D(new Point(tmp.cols()/2, tmp.rows()/2), orientation.getRotation(), 1.0);
+        Mat rotated = new Mat();
+        Imgproc.warpAffine(tmp, rotated, rotMat, tmp.size());
+
+        Log.i("Jewel", "Rotated.");
+
+        return rotated;
     }
 }
