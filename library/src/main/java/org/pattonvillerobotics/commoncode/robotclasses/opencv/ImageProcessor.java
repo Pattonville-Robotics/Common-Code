@@ -65,7 +65,11 @@ public final class ImageProcessor {
         }
 
         while (!initialized && opMode.opModeIsActive()) {
-            opMode.idle();
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

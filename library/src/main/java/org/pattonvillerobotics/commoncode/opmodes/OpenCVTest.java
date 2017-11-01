@@ -34,7 +34,7 @@ public class OpenCVTest extends LinearOpMode {
         jewelColorDetector = new JewelColorDetector(PhoneOrientation.PORTRAIT);
         vuforia = new VuforiaNavigation(VUFORIA_PARAMETERS);
 
-        JewelColorDetector.Analysis analysis = null;
+        JewelColorDetector.Analysis analysis;
 
         waitForStart();
 
@@ -45,7 +45,6 @@ public class OpenCVTest extends LinearOpMode {
             telemetry.addData("Left: ", analysis.leftJewelColor);
             telemetry.addData("Right: ", analysis.rightJewelColor);
             telemetry.update();
-            idle();
         }
     }
 }
