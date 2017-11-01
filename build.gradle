@@ -22,5 +22,6 @@ allprojects {
         maven {
             url "https://raw.githubusercontent.com/Pattonville-Robotics/ftc-lib-repo/mvn-repo/"
         }
+        maven { url 'https://jitpack.io' }
     }
 }
