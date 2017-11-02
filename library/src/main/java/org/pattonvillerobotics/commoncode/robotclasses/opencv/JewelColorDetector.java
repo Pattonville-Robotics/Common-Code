@@ -66,7 +66,7 @@ public class JewelColorDetector {
                 }
             }
         }
-        if (redJewel == null) {
+        if (redJewel == null && Contour.findLargestContour(redDetector.getContours()) != null) {
             Point center = Contour.centroid(Contour.findLargestContour(redDetector.getContours()));
             redJewel = new Vector3D(center.x, center.y, 20);
         }
@@ -82,7 +82,7 @@ public class JewelColorDetector {
                 }
             }
         }
-        if (blueJewel == null) {
+        if (blueJewel == null && Contour.findLargestContour(redDetector.getContours()) != null) {
             Point center = Contour.centroid(Contour.findLargestContour(redDetector.getContours()));
             blueJewel = new Vector3D(center.x, center.y, 20);
         }
