@@ -17,44 +17,30 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 android {
-    compileSdkVersion 26
-
-    signingConfigs {
-        debug {
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-            storeFile file('../libs/ftc.debug.keystore')
-            storePassword 'android'
-        }
-    }
+    compileSdkVersion 27
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 19
 
         versionName "$ftc_version.2"
         versionCode 6
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
-    // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed
     buildTypes {
         release {
             debuggable true
             ndk {
                 abiFilters "armeabi-v7a"
             }
-
-            //minifyEnabled true
-            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
             debuggable true
             ndk {
                 abiFilters "armeabi-v7a"
             }
-
-            //minifyEnabled true
-            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -64,12 +50,7 @@ android {
     }
 
     lintOptions {
-        abortOnError false //TODO actually ignore the exact lint checks that error
-    }
-
-    sourceSets.main {
-        jni.srcDirs = []
-        jniLibs.srcDir "../libs"
+        disable 'InvalidPackage'
     }
 }
 
@@ -78,23 +59,23 @@ version = android.defaultConfig.versionName
 project.archivesBaseName = 'Common-Code'
 
 dependencies {
-    implementation "org.first.ftc:inspection:$ftc_version"
-    implementation "org.first.ftc:blocks:$ftc_version"
-    implementation "org.first.ftc:robotcore:$ftc_version"
+    //FTC
+    implementation "com.github.magneticflux-:robotcore-repackaged:$ftc_version.0"
     implementation "org.first.ftc:hardware:$ftc_version"
-    implementation "org.first.ftc:ftc-common:$ftc_version"
-    implementation "org.first.ftc:analytics:$ftc_version"
-    implementation "org.first.ftc:wireless-p2p:$ftc_version"
 
+    //Utilities
     implementation 'org.apache.commons:commons-math3:3.6.1'
-
     implementation 'com.annimon:stream:1.1.8'
-
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-
     implementation 'com.google.guava:guava:23.2-android'
-
     implementation 'com.github.magneticflux-:opencv-repackaged:3.3.1'
+
+    testImplementation 'junit:junit:4.12'
+
+    androidTestImplementation 'com.android.support:support-annotations:27.0.0'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test:rules:1.0.1'
+    androidTestImplementation 'com.android.support:multidex:1.0.2'
 }
 
 //For JitPack
@@ -122,12 +103,3 @@ artifacts {
     archives sourcesJar
     archives javadocJar
 }
-/*
-android.libraryVariants.all { variant ->
-    def name = variant.buildType.name
-    def task = project.tasks.create "jar${name.capitalize()}", Jar
-    task.dependsOn variant.javaCompiler
-    task.from variant.javaCompiler.destinationDir
-    artifacts.add 'archives', task
-}
-*/

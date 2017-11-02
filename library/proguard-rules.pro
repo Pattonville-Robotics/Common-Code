@@ -1,4 +1,4 @@
--verbose
+#-verbose
 -dontobfuscate
 
 #Common Code

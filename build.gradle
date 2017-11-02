@@ -19,6 +19,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        google()
         maven {
             url "https://raw.githubusercontent.com/Pattonville-Robotics/ftc-lib-repo/mvn-repo/"
         }
