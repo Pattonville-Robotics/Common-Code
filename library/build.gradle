@@ -24,8 +24,8 @@ android {
         minSdkVersion 19
         targetSdkVersion 19
 
-        versionName "$ftc_version.3"
-        versionCode 7
+        versionName "$ftc_version.4"
+        versionCode 8
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -64,7 +64,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
     //FTC
-    implementation "com.github.magneticflux-:robotcore-repackaged:$ftc_version.0"
+    implementation "com.github.modular-ftc:robotcore-repackaged:$ftc_version.5"
     implementation "org.first.ftc:hardware:$ftc_version"
 
     //Utilities
@@ -72,7 +72,7 @@ dependencies {
     implementation 'com.annimon:stream:1.1.8'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'com.google.guava:guava:23.2-android'
-    implementation 'com.github.magneticflux-:opencv-repackaged:3.3.1'
+    implementation 'com.github.modular-ftc:opencv-repackaged:3.3.1'
 
     testImplementation 'junit:junit:4.12'
 
