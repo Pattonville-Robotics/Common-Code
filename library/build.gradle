@@ -31,31 +31,24 @@ android {
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 19
 
-        versionName "$ftc_version.3"
-        versionCode 7
+        versionName "$ftc_version.2"
+        versionCode 8
     }
 
-    // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed
     buildTypes {
         release {
             debuggable true
             ndk {
                 abiFilters "armeabi-v7a"
             }
-
-            //minifyEnabled true
-            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
             debuggable true
             ndk {
                 abiFilters "armeabi-v7a"
             }
-
-            //minifyEnabled true
-            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -127,13 +120,3 @@ artifacts {
     archives sourcesJar
     archives javadocJar
 }
-
-/*
-android.libraryVariants.all { variant ->
-    def name = variant.buildType.name
-    def task = project.tasks.create "jar${name.capitalize()}", Jar
-    task.dependsOn variant.javaCompiler
-    task.from variant.javaCompiler.destinationDir
-    artifacts.add 'archives', task
-}
-*/
