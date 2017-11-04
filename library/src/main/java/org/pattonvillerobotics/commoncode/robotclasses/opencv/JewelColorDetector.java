@@ -55,14 +55,14 @@ public class JewelColorDetector {
         Imgproc.HoughCircles(redDetector.getThresholdMat(), redCircles, Imgproc.HOUGH_GRADIENT, 3.5, 10000);
         Imgproc.HoughCircles(blueDetector.getThresholdMat(), blueCircles, Imgproc.HOUGH_GRADIENT, 3.5, 10000);
 
+        redCircles:
         for (int i = 0; i < redCircles.cols(); i++) {
             double[] circle = redCircles.get(0, i);
 
             for (MatOfPoint contour : redDetector.getContours()) {
                 if (Imgproc.pointPolygonTest(new MatOfPoint2f(contour.toArray()), new Point(circle[0], circle[1]), false) == 1) {
-                    //Imgproc.circle(rgbaMat, new Point(circle[0], circle[1]), (int)circle[2], new Scalar(0, 255, 0), 3);
                     redJewel = new Vector3D(circle);
-                    break;
+                    break redCircles;
                 }
             }
         }
@@ -71,19 +71,19 @@ public class JewelColorDetector {
             redJewel = new Vector3D(center.x, center.y, 20);
         }
 
+        blueCircles:
         for (int i = 0; i < blueCircles.cols(); i++) {
             double[] circle = blueCircles.get(0, i);
 
             for (MatOfPoint contour : blueDetector.getContours()) {
                 if (Imgproc.pointPolygonTest(new MatOfPoint2f(contour.toArray()), new Point(circle[0], circle[1]), false) == 1) {
                     blueJewel = new Vector3D(circle);
-                    //Imgproc.circle(rgbaMat, new Point(circle[0], circle[1]), (int)circle[2], new Scalar(0, 255, 0), 3);
-                    break;
+                    break blueCircles;
                 }
             }
         }
-        if (blueJewel == null && Contour.findLargestContour(redDetector.getContours()) != null) {
-            Point center = Contour.centroid(Contour.findLargestContour(redDetector.getContours()));
+        if (blueJewel == null && Contour.findLargestContour(blueDetector.getContours()) != null) {
+            Point center = Contour.centroid(Contour.findLargestContour(blueDetector.getContours()));
             blueJewel = new Vector3D(center.x, center.y, 20);
         }
     }
@@ -122,7 +122,6 @@ public class JewelColorDetector {
                 jewelHolderTape = contour;
             }
         }
-        //Imgproc.circle(rgbaMat, lowestPoint, 3, new Scalar(255, 0, 0), 3);
     }
 
     /**
@@ -137,19 +136,6 @@ public class JewelColorDetector {
 
         findJewelContours();
         findTapeContour(blueJewel, redJewel, rgbaMat);
-
-        /*Bitmap bmp = Bitmap.createBitmap(rgbaMat.width(), rgbaMat.height(), Bitmap.Config.RGB_565);
-        Utils.matToBitmap(rgbaMat, bmp);
-        try {
-            FileOutputStream fos = hardwareMap.appContext.openFileOutput("testPic.png", Context.MODE_PRIVATE);
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            fos.flush();
-            fos.close();
-            Log.i("OpenCVTest", "Image saved.");
-            Log.i("OpenCVTest", hardwareMap.appContext.getFilesDir().getAbsolutePath());
-        } catch (Exception e) {
-            Log.e("OpenCVTest", e.getMessage());
-        }*/
     }
 
     /**
