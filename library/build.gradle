@@ -24,7 +24,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 19
 
-        versionName "$ftc_version.4"
+        versionName "$ftc_version.3"
         versionCode 8
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
