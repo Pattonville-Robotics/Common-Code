@@ -208,7 +208,6 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
 
     public void rotateDegreesEncoders(Direction direction, double degrees, double speed) {
         //Move specified degrees using motor encoders
-        //TODO: use the IMU on the REV module for more accurate turns
         int targetPositionLeft;
         int targetPositionRight;
         int targetPositionLeftRear;
