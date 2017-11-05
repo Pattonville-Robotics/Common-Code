@@ -2,6 +2,9 @@ package org.pattonvillerobotics.commoncode.robotclasses.drive;
 
 import android.util.Log;
 
+import com.annimon.stream.Optional;
+import com.annimon.stream.function.Function;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -10,6 +13,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.pattonvillerobotics.commoncode.enums.Direction;
 
 import java.util.Locale;
@@ -24,10 +30,17 @@ import static org.apache.commons.math3.util.FastMath.sin;
 
 public class MecanumEncoderDrive extends QuadEncoderDrive {
 
+    protected static final Function<BNO055IMU, Double> GET_HEADING_FUNCTION = new Function<BNO055IMU, Double>() {
+        @Override
+        public Double apply(BNO055IMU bno055IMU) {
+            return (double) bno055IMU.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).secondAngle;
+        }
+    };
     private static final String TAG = "MecanumEncoderDrive";
     private static final double COS_135 = cos(3 * PI / 4);
     private static final double SIN_135 = -COS_135;
     private static final double DEG_45 = PI / 4;
+    private final Optional<BNO055IMU> imu;
     public DcMotor leftRearMotor, rightRearMotor;
 
     public MecanumEncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, RobotParameters robotParameters) {
@@ -44,6 +57,26 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         this.rightRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         this.leftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         this.rightDriveMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        imu = Optional.empty();
+    }
+
+    public MecanumEncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, RobotParameters robotParameters, BNO055IMU imu) {
+        super(hardwareMap, linearOpMode, robotParameters);
+
+        if (!super.secondaryLeftDriveMotor.isPresent() || !super.secondaryRightDriveMotor.isPresent()) {
+            throw new IllegalArgumentException("Mecanum drive requires all 4 motors to be present!");
+        }
+
+        this.leftRearMotor = secondaryLeftDriveMotor.get();
+        this.rightRearMotor = secondaryRightDriveMotor.get();
+
+        this.leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.rightRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.leftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.rightDriveMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        this.imu = imu != null ? Optional.of(imu) : Optional.<BNO055IMU>empty();
     }
 
     /**
@@ -67,9 +100,9 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         double ycomponent = SIN_135 * (sin(angle + DEG_45));
 
 
-//        double scale = 1. / FastMath.max(FastMath.abs(xcomponent), FastMath.abs(ycomponent));
-//        xcomponent *= scale;
-//        ycomponent *= scale;
+        double scale = 1. / FastMath.max(FastMath.abs(xcomponent), FastMath.abs(ycomponent));
+        xcomponent *= scale;
+        ycomponent *= scale;
 
         super.leftDriveMotor.setPower((speed * ycomponent) - rotation);
         super.rightDriveMotor.setPower((speed * xcomponent) + rotation);
@@ -169,6 +202,14 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
 
     @Override
     public void rotateDegrees(Direction direction, double degrees, double speed) {
+        if (imu.isPresent()) {
+            rotateDegreesGyro(direction, degrees, speed);
+        } else {
+            rotateDegreesEncoders(direction, degrees, speed);
+        }
+    }
+
+    public void rotateDegreesEncoders(Direction direction, double degrees, double speed) {
         //Move specified degrees using motor encoders
         //TODO: use the IMU on the REV module for more accurate turns
         int targetPositionLeft;
@@ -231,13 +272,51 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         }
         stop();
 
-        Log.e(TAG, "Restoring motor mode");
+        Log.i(TAG, "Restoring motor mode");
         restoreMotorModes();
 
         for (Telemetry.Item i : items)
             i.setRetained(false);
 
         sleep(100);
+    }
+
+    public void rotateDegreesGyro(Direction direction, double degrees, double speed) {
+        double currentHeading = imu.map(GET_HEADING_FUNCTION).orElse(0.);
+        double targetHeading;
+        Direction currentDirection = direction;
+        int numOvershoots = 0;
+
+        switch (direction) {
+            case LEFT:
+                targetHeading = currentHeading - degrees;
+                break;
+            case RIGHT:
+                targetHeading = currentHeading + degrees;
+                break;
+            default:
+                throw new IllegalArgumentException();
+
+        }
+
+        Telemetry.Item headingsTelemetryItem = telemetry("Headings", "Current Heading: " + currentHeading + "& Target Heading: " + targetHeading).setRetained(true);
+
+        while (FastMath.abs(currentHeading - targetHeading) > .01) {
+            Direction newDirection = FastMath.signum(currentHeading - targetHeading) > 0 ? Direction.LEFT : Direction.RIGHT;
+            if (newDirection != currentDirection)
+                numOvershoots++;
+            turn(currentDirection, speed / (numOvershoots + 1));
+            currentHeading = imu.map(GET_HEADING_FUNCTION).orElse(0.);
+            headingsTelemetryItem.setValue("Headings", "Current Heading: " + currentHeading + "& Target Heading: " + targetHeading);
+            linearOpMode.telemetry.update();
+            if (numOvershoots > 5)
+                break;
+        }
+        stop();
+
+        telemetry("Drive", "Angle obtained, stopping motors.");
+        Log.i(TAG, Double.toString(imu.map(GET_HEADING_FUNCTION).orElse(0.)));
+        headingsTelemetryItem.setRetained(false);
     }
 
     @Override
