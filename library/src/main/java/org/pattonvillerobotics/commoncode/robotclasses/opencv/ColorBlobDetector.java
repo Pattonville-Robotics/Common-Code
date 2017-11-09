@@ -4,7 +4,6 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.pattonvillerobotics.commoncode.enums.ColorSensorColor;
 
@@ -51,10 +50,14 @@ public class ColorBlobDetector {
     }
 
     public void process(Mat rgbaMat) {
-        Imgproc.blur(rgbaMat, blurMat, new Size(10, 10));
+        Imgproc.pyrDown(rgbaMat, blurMat);
+        Imgproc.pyrDown(blurMat, blurMat);
+        Imgproc.pyrUp(blurMat, blurMat);
+        Imgproc.pyrUp(blurMat, blurMat);
 
         Imgproc.cvtColor(blurMat, hsvMat, Imgproc.COLOR_RGB2HSV);
         Core.inRange(hsvMat, lowerBoundHSV, upperBoundHSV, thresholdMat);
+        Imgproc.dilate(thresholdMat, thresholdMat, new Mat());
 
         List<MatOfPoint> tmp = new ArrayList<>();
 
