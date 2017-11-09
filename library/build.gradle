@@ -49,7 +49,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
     //FTC
-    implementation "com.github.modular-ftc:robotcore-repackaged:$ftc_version.5"
+    implementation "com.github.modular-ftc:robotcore-repackaged:$ftc_version.5-lite"
+    implementation "com.github.modular-ftc:ftc-common-repackaged:$ftc_version.0-lite"
     implementation "org.first.ftc:hardware:$ftc_version"
 
     //Utilities
