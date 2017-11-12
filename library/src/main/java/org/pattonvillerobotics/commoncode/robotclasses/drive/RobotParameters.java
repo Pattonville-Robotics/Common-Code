@@ -3,6 +3,7 @@ package org.pattonvillerobotics.commoncode.robotclasses.drive;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.apache.commons.math3.util.FastMath;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 
 /**
  * Created by skaggsm on 9/22/16.
@@ -19,18 +20,20 @@ public class RobotParameters {
     private final double wheelBaseRadius, wheelRadius, driveGearRatio;
     private final boolean gyroEnabled, encodersEnabled;
     private final DcMotorSimple.Direction leftDriveMotorDirection, rightDriveMotorDirection;
+    private final AxesOrder hubOrientation;
 
     /**
      * Cached computed values, never change since the class is final
      */
     private final double wheelCircumference, wheelBaseCircumference, adjustedTicksPerRevolution;
 
-    private RobotParameters(double wheelBaseRadius, double wheelRadius, double driveGearRatio, boolean gyroEnabled, boolean encodersEnabled, DcMotorSimple.Direction leftDriveMotorDirection, DcMotorSimple.Direction rightDriveMotorDirection) {
+    private RobotParameters(double wheelBaseRadius, double wheelRadius, double driveGearRatio, boolean gyroEnabled, boolean encodersEnabled, DcMotorSimple.Direction leftDriveMotorDirection, DcMotorSimple.Direction rightDriveMotorDirection, AxesOrder hubOrientation) {
         this.wheelBaseRadius = wheelBaseRadius;
         this.wheelRadius = wheelRadius;
         this.driveGearRatio = driveGearRatio;
         this.gyroEnabled = gyroEnabled;
         this.encodersEnabled = encodersEnabled;
+        this.hubOrientation = hubOrientation;
 
         this.wheelCircumference = wheelRadius * 2 * FastMath.PI;
         this.wheelBaseCircumference = wheelBaseRadius * 2 * FastMath.PI;
@@ -75,6 +78,10 @@ public class RobotParameters {
         return rightDriveMotorDirection;
     }
 
+    public AxesOrder getHubOrientation() {
+        return hubOrientation;
+    }
+
     public boolean areEncodersEnabled() {
         return encodersEnabled;
     }
@@ -87,6 +94,7 @@ public class RobotParameters {
         private boolean encodersEnabled = false;
         private DcMotorSimple.Direction leftDriveMotorDirection = DcMotorSimple.Direction.FORWARD;
         private DcMotorSimple.Direction rightDriveMotorDirection = DcMotorSimple.Direction.REVERSE;
+        private AxesOrder hubOrientation = AxesOrder.XYZ;
 
         public Builder() {
         }
@@ -126,12 +134,17 @@ public class RobotParameters {
             return this;
         }
 
+        public Builder hubOrientation(AxesOrder hubOrientation) {
+            this.hubOrientation = hubOrientation;
+            return this;
+        }
+
         public RobotParameters build() {
             if (wheelBaseRadius <= 0)
                 throw new IllegalArgumentException("wheelBaseRadius must be > 0");
             if (wheelRadius <= 0)
                 throw new IllegalArgumentException("wheelRadius must be > 0");
-            return new RobotParameters(wheelBaseRadius, wheelRadius, driveGearRatio, gyroEnabled, encodersEnabled, leftDriveMotorDirection, rightDriveMotorDirection);
+            return new RobotParameters(wheelBaseRadius, wheelRadius, driveGearRatio, gyroEnabled, encodersEnabled, leftDriveMotorDirection, rightDriveMotorDirection, hubOrientation);
         }
     }
 }
