@@ -3,6 +3,7 @@ package org.pattonvillerobotics.commoncode.robotclasses.opencv;
 import android.graphics.Bitmap;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
@@ -92,11 +93,9 @@ public class JewelColorDetector {
      * Thresholds the image to find the white tape. Filters the threshold to find the tape by using
      * the location of the jewels.
      *
-     * @param jewel1  the first jewel found
-     * @param jewel2  the second jewel found
      * @param rgbaMat a mat of the rgba image that is being processed for color detection
      */
-    private void findTapeContour(Vector3D jewel1, Vector3D jewel2, Mat rgbaMat) {
+    private void findTapeContour(Mat rgbaMat) {
         Imgproc.cvtColor(rgbaMat, grayScaleMat, Imgproc.COLOR_RGB2GRAY);
         Imgproc.threshold(grayScaleMat, thresholdMat, 230, 255, Imgproc.THRESH_BINARY);
 
@@ -107,15 +106,31 @@ public class JewelColorDetector {
         List<MatOfPoint> filteredArea = new ArrayList<>();
 
         for (MatOfPoint contour : possibleTapeContours) {
-            if (Imgproc.contourArea(contour) > 1000 && (inRange(contour, jewel1) || inRange(contour, jewel2))) {
+            if (Imgproc.contourArea(contour) > 500 && Imgproc.contourArea(contour) < 10000) {
                 jewelHolderTape = contour;
                 filteredArea.add(contour);
             }
         }
 
+        List<MatOfPoint> rectangles = new ArrayList<>();
+
+        for (MatOfPoint contour : filteredArea) {
+            double peri = Imgproc.arcLength(new MatOfPoint2f(contour.toArray()), true);
+            MatOfPoint2f approx2f = new MatOfPoint2f();
+            MatOfPoint approx = new MatOfPoint();
+
+            Imgproc.approxPolyDP(new MatOfPoint2f(contour.toArray()), approx2f, 0.04 * peri, true);
+            approx2f.convertTo(approx, CvType.CV_32S);
+
+            if (approx.size().height == 4) {
+                rectangles.add(contour);
+            }
+        }
+
+        if (rectangles.size() == 0) rectangles = filteredArea;
 
         Point lowestPoint = new Point(0, 0);
-        for (MatOfPoint contour : filteredArea) {
+        for (MatOfPoint contour : rectangles) {
             Point contourCenter = Contour.centroid(contour);
             if (contourCenter.y > lowestPoint.y) {
                 lowestPoint = contourCenter;
@@ -135,7 +150,7 @@ public class JewelColorDetector {
         blueDetector.process(rgbaMat);
 
         findJewelContours();
-        findTapeContour(blueJewel, redJewel, rgbaMat);
+        findTapeContour(rgbaMat);
     }
 
     /**
@@ -152,15 +167,24 @@ public class JewelColorDetector {
 
     /**
      * Compares the center of the jewels to the center of the found tape and decides
-     * what side each jewel is on depending on the x value of the points.
+     * what side each jewel is on depending on the x value of the points. Attempts to compare jewels
+     * to each other if no tape is found.
      *
-     * @return the results of the analysis, if no tape contour found then both colors are null
+     * @return the results of the analysis, if nothing found then both colors are null
      */
     public JewelColorDetector.Analysis getAnalysis() {
         ColorSensorColor leftJewelColor = null;
         ColorSensorColor rightJewelColor = null;
 
-        if (jewelHolderTape == null) return new JewelColorDetector.Analysis();
+        if (jewelHolderTape == null && redJewel != null && blueJewel != null) {
+            if (redJewel.getX() < blueJewel.getX()) {
+                return new JewelColorDetector.Analysis(ColorSensorColor.RED, ColorSensorColor.BLUE);
+            } else {
+                return new JewelColorDetector.Analysis(ColorSensorColor.BLUE, ColorSensorColor.RED);
+            }
+        } else if (jewelHolderTape == null) {
+            return new JewelColorDetector.Analysis();
+        }
 
         Point tapeCenter = Contour.centroid(jewelHolderTape);
         if (redJewel != null) {
