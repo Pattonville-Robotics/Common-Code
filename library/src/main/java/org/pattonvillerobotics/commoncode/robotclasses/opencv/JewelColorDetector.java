@@ -97,7 +97,7 @@ public class JewelColorDetector {
      */
     private void findTapeContour(Mat rgbaMat) {
         Imgproc.cvtColor(rgbaMat, grayScaleMat, Imgproc.COLOR_RGB2GRAY);
-        Imgproc.threshold(grayScaleMat, thresholdMat, 230, 255, Imgproc.THRESH_BINARY);
+        Imgproc.threshold(grayScaleMat, thresholdMat, 200, 255, Imgproc.THRESH_BINARY);
 
         List<MatOfPoint> possibleTapeContours = new ArrayList<>();
 
@@ -176,15 +176,7 @@ public class JewelColorDetector {
         ColorSensorColor leftJewelColor = null;
         ColorSensorColor rightJewelColor = null;
 
-        if (jewelHolderTape == null && redJewel != null && blueJewel != null) {
-            if (redJewel.getX() < blueJewel.getX()) {
-                return new JewelColorDetector.Analysis(ColorSensorColor.RED, ColorSensorColor.BLUE);
-            } else {
-                return new JewelColorDetector.Analysis(ColorSensorColor.BLUE, ColorSensorColor.RED);
-            }
-        } else if (jewelHolderTape == null) {
-            return new JewelColorDetector.Analysis();
-        }
+        if (jewelHolderTape == null) return new JewelColorDetector.Analysis();
 
         Point tapeCenter = Contour.centroid(jewelHolderTape);
         if (redJewel != null) {
