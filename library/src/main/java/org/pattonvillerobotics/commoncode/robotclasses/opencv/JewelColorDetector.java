@@ -90,8 +90,8 @@ public class JewelColorDetector {
     }
 
     /**
-     * Thresholds the image to find the white tape. Filters the threshold to find the tape by using
-     * the location of the jewels.
+     * Thresholds the image to find the white tape. Filters the threshold by area and by shape to
+     * find the correct contour.
      *
      * @param rgbaMat a mat of the rgba image that is being processed for color detection
      */
