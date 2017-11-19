@@ -2,17 +2,23 @@ package org.pattonvillerobotics.commoncode.robotclasses.opencv;
 
 import android.graphics.Bitmap;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.pattonvillerobotics.commoncode.enums.ColorSensorColor;
 import org.pattonvillerobotics.commoncode.robotclasses.opencv.util.Contour;
 import org.pattonvillerobotics.commoncode.robotclasses.opencv.util.PhoneOrientation;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,9 +36,19 @@ public class JewelColorDetector {
     private Mat grayScaleMat = new Mat();
     private Mat thresholdMat = new Mat();
     private Mat hierarchyMat = new Mat();
+    private HardwareMap hardwareMap;
+    private boolean debug;
 
     public JewelColorDetector(PhoneOrientation phoneOrientation) {
         this.phoneOrientation = phoneOrientation;
+        redDetector = new ColorBlobDetector(ColorSensorColor.RED);
+        blueDetector = new ColorBlobDetector(ColorSensorColor.BLUE);
+    }
+
+    public JewelColorDetector(PhoneOrientation phoneOrientation, HardwareMap hardwareMap, boolean debug) {
+        this.debug = debug;
+        this.phoneOrientation = phoneOrientation;
+        this.hardwareMap = hardwareMap;
         redDetector = new ColorBlobDetector(ColorSensorColor.RED);
         blueDetector = new ColorBlobDetector(ColorSensorColor.BLUE);
     }
@@ -97,7 +113,7 @@ public class JewelColorDetector {
      */
     private void findTapeContour(Mat rgbaMat) {
         Imgproc.cvtColor(rgbaMat, grayScaleMat, Imgproc.COLOR_RGB2GRAY);
-        Imgproc.threshold(grayScaleMat, thresholdMat, 200, 255, Imgproc.THRESH_BINARY);
+        Imgproc.threshold(grayScaleMat, thresholdMat, 220, 255, Imgproc.THRESH_BINARY);
 
         List<MatOfPoint> possibleTapeContours = new ArrayList<>();
 
@@ -106,7 +122,7 @@ public class JewelColorDetector {
         List<MatOfPoint> filteredArea = new ArrayList<>();
 
         for (MatOfPoint contour : possibleTapeContours) {
-            if (Imgproc.contourArea(contour) > 500 && Imgproc.contourArea(contour) < 10000) {
+            if (Imgproc.contourArea(contour) > 2000) {
                 jewelHolderTape = contour;
                 filteredArea.add(contour);
             }
@@ -126,8 +142,6 @@ public class JewelColorDetector {
                 rectangles.add(contour);
             }
         }
-
-        if (rectangles.size() == 0) rectangles = filteredArea;
 
         Point lowestPoint = new Point(0, 0);
         for (MatOfPoint contour : rectangles) {
@@ -151,6 +165,27 @@ public class JewelColorDetector {
 
         findJewelContours();
         findTapeContour(rgbaMat);
+        if (debug) {
+            ArrayList<MatOfPoint> temp = new ArrayList<>();
+            temp.add(jewelHolderTape);
+            Imgproc.drawContours(rgbaMat, temp, -1, new Scalar(0, 0, 255), 2);
+            Imgproc.circle(rgbaMat, new Point(blueJewel.getX(), blueJewel.getY()), 100, new Scalar(0, 255, 0));
+            Imgproc.circle(rgbaMat, new Point(redJewel.getX(), redJewel.getY()), 100, new Scalar(0, 255, 0));
+
+            FileOutputStream out = null;
+            Bitmap bmp = Bitmap.createBitmap(rgbaMat.width(), rgbaMat.height(), Bitmap.Config.RGB_565);
+            Utils.matToBitmap(rgbaMat, bmp);
+
+            try {
+                out = new FileOutputStream(new File(hardwareMap.appContext.getFilesDir(), "testPic.png"));
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
+                // PNG is a lossless format, the compression factor (100) is ignored
+                out.flush();
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
