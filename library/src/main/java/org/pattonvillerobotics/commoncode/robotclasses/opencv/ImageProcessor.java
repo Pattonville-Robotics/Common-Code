@@ -73,6 +73,10 @@ public final class ImageProcessor {
         }
     }
 
+    public static boolean isInitialized() {
+        return initialized;
+    }
+
     /**
      * Converts the Bitmap to a Mat and then rotates the image based off of the phone's orientation.
      *

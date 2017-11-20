@@ -43,12 +43,18 @@ public class JewelColorDetector {
     private boolean debug;
 
     public JewelColorDetector(PhoneOrientation phoneOrientation) {
+        if (!ImageProcessor.isInitialized())
+            throw new IllegalStateException("OpenCV not initialized!");
+
         this.phoneOrientation = phoneOrientation;
         redDetector = new ColorBlobDetector(ColorSensorColor.RED);
         blueDetector = new ColorBlobDetector(ColorSensorColor.BLUE);
     }
 
     public JewelColorDetector(PhoneOrientation phoneOrientation, HardwareMap hardwareMap, boolean debug) {
+        if (!ImageProcessor.isInitialized())
+            throw new IllegalStateException("OpenCV not initialized!");
+
         this.debug = debug;
         this.phoneOrientation = phoneOrientation;
         this.hardwareMap = hardwareMap;
