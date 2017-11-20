@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.opencv.android.Utils;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -19,7 +20,9 @@ import org.pattonvillerobotics.commoncode.robotclasses.opencv.util.PhoneOrientat
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class JewelColorDetector {
@@ -155,7 +158,8 @@ public class JewelColorDetector {
 
     /**
      * Processes the image for color blobs. Filters the color blobs to find the jewels. Then finds
-     * a contour representing the tape between the jewels.
+     * a contour representing the tape between the jewels. If debug is enabled, then it draws on the
+     * image and saves it.
      *
      * @param rgbaMat a mat of the rgba image that is wanting to be processed for detection
      */
@@ -165,19 +169,32 @@ public class JewelColorDetector {
 
         findJewelContours();
         findTapeContour(rgbaMat);
+
         if (debug) {
             ArrayList<MatOfPoint> temp = new ArrayList<>();
             temp.add(jewelHolderTape);
             Imgproc.drawContours(rgbaMat, temp, -1, new Scalar(0, 0, 255), 2);
-            Imgproc.circle(rgbaMat, new Point(blueJewel.getX(), blueJewel.getY()), 100, new Scalar(0, 255, 0));
-            Imgproc.circle(rgbaMat, new Point(redJewel.getX(), redJewel.getY()), 100, new Scalar(0, 255, 0));
+            Imgproc.circle(rgbaMat, new Point(blueJewel.getX(), blueJewel.getY()), (int) blueJewel.getZ(), new Scalar(0, 255, 0));
+            Imgproc.circle(rgbaMat, new Point(redJewel.getX(), redJewel.getY()), (int) redJewel.getZ(), new Scalar(0, 255, 0));
 
-            FileOutputStream out = null;
+            Imgproc.putText(rgbaMat, "BLUE", new Point(blueJewel.getX(), blueJewel.getY()),
+                    Core.FONT_HERSHEY_PLAIN, 12, new Scalar(0, 255, 0), 3);
+
+            Imgproc.putText(rgbaMat, "RED", new Point(redJewel.getX(), redJewel.getY()),
+                    Core.FONT_HERSHEY_PLAIN, 12, new Scalar(0, 255, 0), 3);
+
+            Imgproc.putText(rgbaMat, "TAPE", Contour.centroid(jewelHolderTape),
+                    Core.FONT_HERSHEY_PLAIN, 12, new Scalar(0, 255, 0), 3);
+
+            Imgproc.putText(rgbaMat, phoneOrientation.toString(), new Point(10, 100),
+                    Core.FONT_HERSHEY_PLAIN, 12, new Scalar(0, 255, 0), 3);
+
+            FileOutputStream out;
             Bitmap bmp = Bitmap.createBitmap(rgbaMat.width(), rgbaMat.height(), Bitmap.Config.RGB_565);
             Utils.matToBitmap(rgbaMat, bmp);
 
             try {
-                out = new FileOutputStream(new File(hardwareMap.appContext.getFilesDir(), "testPic.png"));
+                out = new FileOutputStream(new File(hardwareMap.appContext.getFilesDir(), DateFormat.getDateTimeInstance().format(new Date()) + ".png"));
                 bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
                 // PNG is a lossless format, the compression factor (100) is ignored
                 out.flush();
