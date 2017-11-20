@@ -92,8 +92,6 @@ public final class ImageProcessor {
         Mat rotated = new Mat();
         Imgproc.warpAffine(tmp, rotated, rotMat, tmp.size());
 
-        Log.i("Jewel", "Rotated.");
-
         return rotated;
     }
 }
