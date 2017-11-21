@@ -1,6 +1,7 @@
 package org.pattonvillerobotics.commoncode.robotclasses.opencv;
 
 import android.graphics.Bitmap;
+import android.os.Environment;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -205,7 +206,7 @@ public class JewelColorDetector {
             String fileName = DateFormat.getDateTimeInstance().format(date) + ".png";
 
             try {
-                out = new FileOutputStream(new File(hardwareMap.appContext.getFilesDir(), fileName));
+                out = new FileOutputStream(new File(Environment.getExternalStorageDirectory(), fileName));
                 bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
                 // PNG is a lossless format, the compression factor (100) is ignored
                 out.flush();
