@@ -28,7 +28,6 @@ import java.util.List;
 public class JewelColorDetector {
 
     public static final String TAG = JewelColorDetector.class.getSimpleName();
-    private static final int TAPE_JEWEL_RANGE = 200;
 
     private ColorBlobDetector redDetector, blueDetector;
     private PhoneOrientation phoneOrientation;
@@ -115,8 +114,8 @@ public class JewelColorDetector {
     }
 
     /**
-     * Thresholds the image to find the white tape. Filters the threshold by area and by shape to
-     * find the correct contour.
+     * Thresholds the image to find the white tape. Filters the threshold by area, distance from jewels,
+     * and shape to find the correct contour.
      *
      * @param rgbaMat a mat of the rgba image that is being processed for color detection
      */
@@ -131,8 +130,7 @@ public class JewelColorDetector {
         List<MatOfPoint> filteredArea = new ArrayList<>();
 
         for (MatOfPoint contour : possibleTapeContours) {
-            if (Imgproc.contourArea(contour) > 2000) {
-                jewelHolderTape = contour;
+            if (Imgproc.contourArea(contour) > 500 && (inRange(contour, blueJewel) || inRange(contour, redJewel))) {
                 filteredArea.add(contour);
             }
         }
@@ -170,37 +168,44 @@ public class JewelColorDetector {
      * @param rgbaMat a mat of the rgba image that is wanting to be processed for detection
      */
     public void process(Mat rgbaMat) {
+        jewelHolderTape = null;
+        redJewel = null;
+        blueJewel = null;
+
         redDetector.process(rgbaMat);
         blueDetector.process(rgbaMat);
 
         findJewelContours();
         findTapeContour(rgbaMat);
 
-        if (debug) {
+
+        if (debug && jewelHolderTape != null) {
             ArrayList<MatOfPoint> temp = new ArrayList<>();
             temp.add(jewelHolderTape);
-            Imgproc.drawContours(rgbaMat, temp, -1, new Scalar(0, 0, 255), 2);
-            Imgproc.circle(rgbaMat, new Point(blueJewel.getX(), blueJewel.getY()), (int) blueJewel.getZ(), new Scalar(0, 255, 0));
-            Imgproc.circle(rgbaMat, new Point(redJewel.getX(), redJewel.getY()), (int) redJewel.getZ(), new Scalar(0, 255, 0));
+            Imgproc.drawContours(rgbaMat, temp, -1, new Scalar(0, 0, 255), 3);
+            Imgproc.circle(rgbaMat, new Point(blueJewel.getX(), blueJewel.getY()), (int) blueJewel.getZ(), new Scalar(0, 255, 0), 3);
+            Imgproc.circle(rgbaMat, new Point(redJewel.getX(), redJewel.getY()), (int) redJewel.getZ(), new Scalar(0, 255, 0), 3);
 
             Imgproc.putText(rgbaMat, "BLUE", new Point(blueJewel.getX(), blueJewel.getY()),
-                    Core.FONT_HERSHEY_PLAIN, 12, new Scalar(0, 255, 0), 3);
+                    Core.FONT_HERSHEY_PLAIN, 3, new Scalar(0, 255, 0), 3);
 
             Imgproc.putText(rgbaMat, "RED", new Point(redJewel.getX(), redJewel.getY()),
-                    Core.FONT_HERSHEY_PLAIN, 12, new Scalar(0, 255, 0), 3);
+                    Core.FONT_HERSHEY_PLAIN, 3, new Scalar(0, 255, 0), 3);
 
             Imgproc.putText(rgbaMat, "TAPE", Contour.centroid(jewelHolderTape),
-                    Core.FONT_HERSHEY_PLAIN, 12, new Scalar(0, 255, 0), 3);
+                    Core.FONT_HERSHEY_PLAIN, 3, new Scalar(0, 255, 0), 3);
 
             Imgproc.putText(rgbaMat, phoneOrientation.toString(), new Point(10, 100),
-                    Core.FONT_HERSHEY_PLAIN, 12, new Scalar(0, 255, 0), 3);
+                    Core.FONT_HERSHEY_PLAIN, 3, new Scalar(0, 255, 0), 3);
 
             FileOutputStream out;
             Bitmap bmp = Bitmap.createBitmap(rgbaMat.width(), rgbaMat.height(), Bitmap.Config.RGB_565);
             Utils.matToBitmap(rgbaMat, bmp);
+            Date date = new Date();
+            String fileName = DateFormat.getDateTimeInstance().format(date) + ".png";
 
             try {
-                out = new FileOutputStream(new File(hardwareMap.appContext.getFilesDir(), DateFormat.getDateTimeInstance().format(new Date()) + ".png"));
+                out = new FileOutputStream(new File(hardwareMap.appContext.getFilesDir(), fileName));
                 bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
                 // PNG is a lossless format, the compression factor (100) is ignored
                 out.flush();
@@ -212,7 +217,7 @@ public class JewelColorDetector {
     }
 
     /**
-     * Finds if a point is within a certain distance of a contour.
+     * Finds if a point is within twice the radius of a jewel.
      * @param tape the contour of the tape
      * @param jewel the circle representing a jewel on the image
      * @return true if the distance is less than range
@@ -220,7 +225,7 @@ public class JewelColorDetector {
     private boolean inRange(MatOfPoint tape, Vector3D jewel) {
         if (jewel == null) return false;
         Point tapeCenter = Contour.centroid(tape);
-        return Math.hypot(tapeCenter.x - jewel.getX(), tapeCenter.y - jewel.getY()) < TAPE_JEWEL_RANGE;
+        return Math.hypot(tapeCenter.x - jewel.getX(), tapeCenter.y - jewel.getY()) < jewel.getZ() * 2;
     }
 
     /**
