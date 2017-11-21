@@ -3,8 +3,6 @@ package org.pattonvillerobotics.commoncode.robotclasses.opencv;
 import android.graphics.Bitmap;
 import android.os.Environment;
 
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -39,7 +37,6 @@ public class JewelColorDetector {
     private Mat grayScaleMat = new Mat();
     private Mat thresholdMat = new Mat();
     private Mat hierarchyMat = new Mat();
-    private HardwareMap hardwareMap;
     private boolean debug;
 
     public JewelColorDetector(PhoneOrientation phoneOrientation) {
@@ -51,13 +48,12 @@ public class JewelColorDetector {
         blueDetector = new ColorBlobDetector(ColorSensorColor.BLUE);
     }
 
-    public JewelColorDetector(PhoneOrientation phoneOrientation, HardwareMap hardwareMap, boolean debug) {
+    public JewelColorDetector(PhoneOrientation phoneOrientation, boolean debug) {
         if (!ImageProcessor.isInitialized())
             throw new IllegalStateException("OpenCV not initialized!");
 
         this.debug = debug;
         this.phoneOrientation = phoneOrientation;
-        this.hardwareMap = hardwareMap;
         redDetector = new ColorBlobDetector(ColorSensorColor.RED);
         blueDetector = new ColorBlobDetector(ColorSensorColor.BLUE);
     }
@@ -122,7 +118,7 @@ public class JewelColorDetector {
      */
     private void findTapeContour(Mat rgbaMat) {
         Imgproc.cvtColor(rgbaMat, grayScaleMat, Imgproc.COLOR_RGB2GRAY);
-        Imgproc.threshold(grayScaleMat, thresholdMat, 220, 255, Imgproc.THRESH_BINARY);
+        Imgproc.threshold(grayScaleMat, thresholdMat, 240, 255, Imgproc.THRESH_BINARY);
 
         List<MatOfPoint> possibleTapeContours = new ArrayList<>();
 
@@ -131,7 +127,7 @@ public class JewelColorDetector {
         List<MatOfPoint> filteredArea = new ArrayList<>();
 
         for (MatOfPoint contour : possibleTapeContours) {
-            if (Imgproc.contourArea(contour) > 500 && (inRange(contour, blueJewel) || inRange(contour, redJewel))) {
+            if (Imgproc.contourArea(contour) > 1000 && (inRange(contour, blueJewel) || inRange(contour, redJewel))) {
                 filteredArea.add(contour);
             }
         }
