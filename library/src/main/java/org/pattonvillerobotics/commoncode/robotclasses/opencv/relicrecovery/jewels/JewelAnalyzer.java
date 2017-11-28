@@ -20,6 +20,14 @@ public class JewelAnalyzer {
     private JewelAnalyzer() {
     }
 
+    /**
+     * Uses the Douglas-Peucker algorithm to approximate shapes of the contours and finds the largest
+     * circular contour.
+     *
+     * @param contours possible jewel contours
+     * @return {@link Vector3D} containing the center coordinates and radius of the jewel.
+     * @see <a href="https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm">https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm</a>
+     */
     public static Vector3D analyzeFast(List<MatOfPoint> contours) {
         MatOfPoint2f approx = new MatOfPoint2f();
 
@@ -43,6 +51,15 @@ public class JewelAnalyzer {
         return null;
     }
 
+    /**
+     * Uses a Hough transform to find circular shapes on the threshold. Then checks for hough circles
+     * and contours that overlap, as an overlapping circle and contour is likely to be a jewel.
+     *
+     * @param contours  the possible jewel contours
+     * @param threshold the color threshold
+     * @return a {@link Vector3D} containing the center coordinates and radius of the jewel.
+     * @see <a href="https://en.wikipedia.org/wiki/Hough_transform">https://en.wikipedia.org/wiki/Hough_transform</a>
+     */
     public static Vector3D analyzeComplex(List<MatOfPoint> contours, Mat threshold) {
         Mat circles = new Mat();
         Vector3D jewel = null;
