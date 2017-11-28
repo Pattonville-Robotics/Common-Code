@@ -1,4 +1,4 @@
-package org.pattonvillerobotics.commoncode.robotclasses.opencv;
+package org.pattonvillerobotics.commoncode.robotclasses.opencv.relicrecovery.jewels;
 
 import android.graphics.Bitmap;
 import android.os.Environment;
@@ -6,7 +6,6 @@ import android.os.Environment;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
@@ -14,6 +13,8 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.pattonvillerobotics.commoncode.enums.ColorSensorColor;
+import org.pattonvillerobotics.commoncode.robotclasses.opencv.ColorBlobDetector;
+import org.pattonvillerobotics.commoncode.robotclasses.opencv.ImageProcessor;
 import org.pattonvillerobotics.commoncode.robotclasses.opencv.util.Contour;
 import org.pattonvillerobotics.commoncode.robotclasses.opencv.util.PhoneOrientation;
 
@@ -30,6 +31,7 @@ public class JewelColorDetector {
 
     private ColorBlobDetector redDetector, blueDetector;
     private PhoneOrientation phoneOrientation;
+    private JewelAnalysisMode analysisMode;
 
     private MatOfPoint jewelHolderTape;
     private Vector3D redJewel, blueJewel;
@@ -46,6 +48,7 @@ public class JewelColorDetector {
         this.phoneOrientation = phoneOrientation;
         redDetector = new ColorBlobDetector(ColorSensorColor.RED);
         blueDetector = new ColorBlobDetector(ColorSensorColor.BLUE);
+        analysisMode = JewelAnalysisMode.FAST;
     }
 
     public JewelColorDetector(PhoneOrientation phoneOrientation, boolean debug) {
@@ -56,6 +59,28 @@ public class JewelColorDetector {
         this.phoneOrientation = phoneOrientation;
         redDetector = new ColorBlobDetector(ColorSensorColor.RED);
         blueDetector = new ColorBlobDetector(ColorSensorColor.BLUE);
+        analysisMode = JewelAnalysisMode.FAST;
+    }
+
+    public JewelColorDetector(PhoneOrientation phoneOrientation, JewelAnalysisMode analysisMode) {
+        if (!ImageProcessor.isInitialized())
+            throw new IllegalStateException("OpenCV not initialized!");
+
+        this.phoneOrientation = phoneOrientation;
+        redDetector = new ColorBlobDetector(ColorSensorColor.RED);
+        blueDetector = new ColorBlobDetector(ColorSensorColor.BLUE);
+        this.analysisMode = analysisMode;
+    }
+
+    public JewelColorDetector(PhoneOrientation phoneOrientation, JewelAnalysisMode analysisMode, boolean debug) {
+        if (!ImageProcessor.isInitialized())
+            throw new IllegalStateException("OpenCV not initialized!");
+
+        this.debug = debug;
+        this.phoneOrientation = phoneOrientation;
+        redDetector = new ColorBlobDetector(ColorSensorColor.RED);
+        blueDetector = new ColorBlobDetector(ColorSensorColor.BLUE);
+        this.analysisMode = analysisMode;
     }
 
     /**
@@ -66,47 +91,26 @@ public class JewelColorDetector {
         process(rgbaMat);
     }
 
-    /**
-     * Uses Hough Circles to find which color blobs are jewels. If no Hough Circle found, uses the
-     * largest color blob.
-     */
     private void findJewelContours() {
-        Mat redCircles = new Mat();
-        Mat blueCircles = new Mat();
+        findJewelContours(analysisMode);
+    }
 
-        Imgproc.HoughCircles(redDetector.getThresholdMat(), redCircles, Imgproc.HOUGH_GRADIENT, 3.5, 10000);
-        Imgproc.HoughCircles(blueDetector.getThresholdMat(), blueCircles, Imgproc.HOUGH_GRADIENT, 3.5, 10000);
 
-        redCircles:
-        for (int i = 0; i < redCircles.cols(); i++) {
-            double[] circle = redCircles.get(0, i);
-
-            for (MatOfPoint contour : redDetector.getContours()) {
-                if (Imgproc.pointPolygonTest(new MatOfPoint2f(contour.toArray()), new Point(circle[0], circle[1]), false) == 1) {
-                    redJewel = new Vector3D(circle);
-                    break redCircles;
-                }
-            }
-        }
-        if (redJewel == null && Contour.findLargestContour(redDetector.getContours()) != null) {
-            Point center = Contour.centroid(Contour.findLargestContour(redDetector.getContours()));
-            redJewel = new Vector3D(center.x, center.y, 20);
-        }
-
-        blueCircles:
-        for (int i = 0; i < blueCircles.cols(); i++) {
-            double[] circle = blueCircles.get(0, i);
-
-            for (MatOfPoint contour : blueDetector.getContours()) {
-                if (Imgproc.pointPolygonTest(new MatOfPoint2f(contour.toArray()), new Point(circle[0], circle[1]), false) == 1) {
-                    blueJewel = new Vector3D(circle);
-                    break blueCircles;
-                }
-            }
-        }
-        if (blueJewel == null && Contour.findLargestContour(blueDetector.getContours()) != null) {
-            Point center = Contour.centroid(Contour.findLargestContour(blueDetector.getContours()));
-            blueJewel = new Vector3D(center.x, center.y, 20);
+    /**
+     * Uses the selected mode of analysis to find where the jewels are in the image.
+     *
+     * @param mode The selected mode of analysis (either FAST or COMPLEX)
+     */
+    private void findJewelContours(JewelAnalysisMode mode) {
+        switch (mode) {
+            case COMPLEX:
+                blueJewel = JewelAnalyzer.analyzeComplex(blueDetector.getContours(), blueDetector.getThresholdMat());
+                redJewel = JewelAnalyzer.analyzeComplex(redDetector.getContours(), redDetector.getThresholdMat());
+                break;
+            case FAST:
+            default:
+                blueJewel = JewelAnalyzer.analyzeFast(blueDetector.getContours());
+                redJewel = JewelAnalyzer.analyzeFast(redDetector.getContours());
         }
     }
 
@@ -137,12 +141,9 @@ public class JewelColorDetector {
         for (MatOfPoint contour : filteredArea) {
             double peri = Imgproc.arcLength(new MatOfPoint2f(contour.toArray()), true);
             MatOfPoint2f approx2f = new MatOfPoint2f();
-            MatOfPoint approx = new MatOfPoint();
-
             Imgproc.approxPolyDP(new MatOfPoint2f(contour.toArray()), approx2f, 0.04 * peri, true);
-            approx2f.convertTo(approx, CvType.CV_32S);
 
-            if (approx.size().height == 4) {
+            if (approx2f.total() == 4) {
                 rectangles.add(contour);
             }
         }
@@ -174,7 +175,6 @@ public class JewelColorDetector {
 
         findJewelContours();
         findTapeContour(rgbaMat);
-
 
         if (debug && jewelHolderTape != null) {
             ArrayList<MatOfPoint> temp = new ArrayList<>();
@@ -232,11 +232,11 @@ public class JewelColorDetector {
      *
      * @return the results of the analysis, if nothing found then both colors are null
      */
-    public JewelColorDetector.Analysis getAnalysis() {
+    public AnalysisResult getAnalysis() {
         ColorSensorColor leftJewelColor = null;
         ColorSensorColor rightJewelColor = null;
 
-        if (jewelHolderTape == null) return new JewelColorDetector.Analysis();
+        if (jewelHolderTape == null) return new AnalysisResult();
 
         Point tapeCenter = Contour.centroid(jewelHolderTape);
         if (redJewel != null) {
@@ -254,22 +254,26 @@ public class JewelColorDetector {
             }
         }
 
-        return new JewelColorDetector.Analysis(leftJewelColor, rightJewelColor);
+        return new AnalysisResult(leftJewelColor, rightJewelColor);
+    }
+
+    public void setAnalysisMode(JewelAnalysisMode analysisMode) {
+        this.analysisMode = analysisMode;
     }
 
     /**
      * Contains the results of an analysis of the jewel holder.
      */
-    public static class Analysis {
+    public static class AnalysisResult {
         public final ColorSensorColor leftJewelColor;
         public final ColorSensorColor rightJewelColor;
 
-        Analysis() {
+        AnalysisResult() {
             this.leftJewelColor = null;
             this.rightJewelColor = null;
         }
 
-        Analysis(ColorSensorColor leftJewelColor, ColorSensorColor rightJewelColor) {
+        AnalysisResult(ColorSensorColor leftJewelColor, ColorSensorColor rightJewelColor) {
             this.leftJewelColor = leftJewelColor;
             this.rightJewelColor = rightJewelColor;
         }
