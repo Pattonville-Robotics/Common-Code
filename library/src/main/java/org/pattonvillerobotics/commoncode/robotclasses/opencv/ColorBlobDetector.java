@@ -4,9 +4,9 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.pattonvillerobotics.commoncode.enums.ColorSensorColor;
+import org.pattonvillerobotics.commoncode.robotclasses.opencv.util.Contour;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,19 +51,28 @@ public class ColorBlobDetector {
     }
 
     public void process(Mat rgbaMat) {
-        Imgproc.blur(rgbaMat, blurMat, new Size(10, 10));
+        Imgproc.pyrDown(rgbaMat, blurMat);
+        Imgproc.pyrDown(blurMat, blurMat);
 
         Imgproc.cvtColor(blurMat, hsvMat, Imgproc.COLOR_RGB2HSV);
         Core.inRange(hsvMat, lowerBoundHSV, upperBoundHSV, thresholdMat);
+        Imgproc.dilate(thresholdMat, thresholdMat, new Mat());
 
         List<MatOfPoint> tmp = new ArrayList<>();
 
         Imgproc.findContours(thresholdMat, tmp, hierarchyMat, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
+        MatOfPoint largest = Contour.findLargestContour(tmp);
+        double maxArea = 0;
+        if (largest != null) {
+            maxArea = Imgproc.contourArea(largest);
+        }
+
         // filters out super small contours
         contours.clear();
         for (MatOfPoint contour : tmp) {
-            if (Imgproc.contourArea(contour) > 500) {
+            if (Imgproc.contourArea(contour) > maxArea * .1) {
+                Core.multiply(contour, new Scalar(4, 4), contour);
                 contours.add(contour);
             }
         }
