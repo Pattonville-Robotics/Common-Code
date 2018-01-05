@@ -283,42 +283,51 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
 
         BNO055IMU imu = this.imu.get();
         Orientation angles = imu.getAngularOrientation(AxesReference.EXTRINSIC, axesOrder, AngleUnit.DEGREES);
+
         double currentHeading = angles.thirdAngle;
         double targetHeading;
-        Direction currentDirection = direction;
-        int numOvershoots = 0;
+
+        telemetry("StartHeading", "" + angles.thirdAngle).setRetained(true);
 
         switch (direction) {
             case LEFT:
-                targetHeading = currentHeading - degrees;
+                targetHeading = currentHeading + degrees;
                 break;
             case RIGHT:
-                targetHeading = currentHeading + degrees;
+                targetHeading = currentHeading - degrees;
                 break;
             default:
                 throw new IllegalArgumentException();
 
         }
 
+        if (targetHeading < -180) {
+            targetHeading += 360;
+        } else if (targetHeading > 180) {
+            targetHeading -= 360;
+        }
+
+        telemetry("TargetHeading", "" + targetHeading).setRetained(true);
+
         Telemetry.Item headingsTelemetryItem = telemetry("Headings", "Current Heading: " + currentHeading + "& Target Heading: " + targetHeading).setRetained(true);
 
-        while (FastMath.abs(currentHeading - targetHeading) > .01) {
+        while (linearOpMode.opModeIsActive()) {
             angles = imu.getAngularOrientation(AxesReference.EXTRINSIC, axesOrder, AngleUnit.DEGREES);
 
-            Direction newDirection = FastMath.signum(currentHeading - targetHeading) > 0 ? Direction.LEFT : Direction.RIGHT;
-            if (newDirection != currentDirection)
-                numOvershoots++;
-            turn(currentDirection, speed / (numOvershoots + 1));
+            if (FastMath.abs(currentHeading - targetHeading) < 10) {
+                if (FastMath.abs(currentHeading - targetHeading) < .01) break;
+                turn(direction, FastMath.max(speed * (1 - (FastMath.abs(currentHeading - targetHeading) / 10.)), FastMath.max(speed * .1, .1)));
+            } else {
+                turn(direction, speed);
+            }
+
             currentHeading = angles.thirdAngle;
-            headingsTelemetryItem.setValue("Headings", "Current Heading: " + currentHeading + "& Target Heading: " + targetHeading);
+            headingsTelemetryItem.setValue("Current Heading: " + currentHeading + "& Target Heading: " + targetHeading);
             linearOpMode.telemetry.update();
-            if (numOvershoots > 5)
-                break;
         }
         stop();
 
         telemetry("Drive", "Angle obtained, stopping motors.");
-        Log.i(TAG, Double.toString(angles.thirdAngle));
         headingsTelemetryItem.setRetained(false);
     }
 
