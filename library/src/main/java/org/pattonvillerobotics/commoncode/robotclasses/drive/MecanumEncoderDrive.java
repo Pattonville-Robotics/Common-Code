@@ -316,7 +316,7 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
 
             if (FastMath.abs(currentHeading - targetHeading) < 10) {
                 if (FastMath.abs(currentHeading - targetHeading) < .01) break;
-                turn(direction, FastMath.max(speed * (1 - (FastMath.abs(currentHeading - targetHeading) / 10.)), FastMath.max(speed * .1, .1)));
+                turn(direction, FastMath.max(speed * (1 - (FastMath.abs(currentHeading - targetHeading) / 10.)), .1));
             } else {
                 turn(direction, speed);
             }
