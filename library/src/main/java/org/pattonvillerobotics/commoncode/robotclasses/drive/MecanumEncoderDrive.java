@@ -24,10 +24,6 @@ import static org.apache.commons.math3.util.FastMath.PI;
 import static org.apache.commons.math3.util.FastMath.cos;
 import static org.apache.commons.math3.util.FastMath.sin;
 
-/**
- * Created by greg on 10/2/2017.
- */
-
 public class MecanumEncoderDrive extends QuadEncoderDrive {
 
     private static final String TAG = "MecanumEncoderDrive";
@@ -220,8 +216,13 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
 
         double inches = degreesToInches(degrees);
         int deltaPosition = (int) FastMath.round(inchesToTicks(inches));
+        if (leftRearMotor.getDirection().equals(DcMotorSimple.Direction.REVERSE)
+                && rightRearMotor.getDirection().equals(DcMotorSimple.Direction.FORWARD)) {
+            deltaPosition = -deltaPosition;
+        }
 
         switch (direction) {
+            case COUNTERCLOCKWISE:
             case LEFT: {
                 targetPositionLeft = -deltaPosition;
                 targetPositionRight = deltaPosition;
@@ -229,6 +230,7 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
                 targetPositionRightRear = deltaPosition;
                 break;
             }
+            case CLOCKWISE:
             case RIGHT: {
                 targetPositionLeft = deltaPosition;
                 targetPositionRight = -deltaPosition;
@@ -290,9 +292,11 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         telemetry("StartHeading", "" + angles.thirdAngle).setRetained(true);
 
         switch (direction) {
+            case COUNTERCLOCKWISE:
             case LEFT:
                 targetHeading = currentHeading + degrees;
                 break;
+            case CLOCKWISE:
             case RIGHT:
                 targetHeading = currentHeading - degrees;
                 break;
@@ -310,19 +314,23 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         telemetry("TargetHeading", "" + targetHeading).setRetained(true);
 
         Telemetry.Item headingsTelemetryItem = telemetry("Headings", "Current Heading: " + currentHeading + "& Target Heading: " + targetHeading).setRetained(true);
+        Telemetry.Item speedTelemetryItem = telemetry("Speed", "Current Speed: " + leftRearMotor.getPower()).setRetained(true);
+
+
 
         while (linearOpMode.opModeIsActive()) {
             angles = imu.getAngularOrientation(AxesReference.EXTRINSIC, axesOrder, AngleUnit.DEGREES);
 
-            if (FastMath.abs(currentHeading - targetHeading) < 10) {
-                if (FastMath.abs(currentHeading - targetHeading) < .01) break;
-                turn(direction, FastMath.max(speed * (1 - (FastMath.abs(currentHeading - targetHeading) / 10.)), .1));
+            if (FastMath.abs(currentHeading - targetHeading) < degrees / 2) {
+                if (FastMath.abs(currentHeading - targetHeading) < .5) break;
+                turn(direction, FastMath.max(speed * (1 - (FastMath.abs(currentHeading - targetHeading) / (degrees / 2))), .01));
             } else {
                 turn(direction, speed);
             }
 
             currentHeading = angles.thirdAngle;
             headingsTelemetryItem.setValue("Current Heading: " + currentHeading + "& Target Heading: " + targetHeading);
+            speedTelemetryItem.setValue("Current Speed: " + leftRearMotor.getPower());
             linearOpMode.telemetry.update();
         }
         stop();
