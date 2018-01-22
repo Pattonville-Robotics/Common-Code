@@ -18,11 +18,13 @@ import java.util.List;
 public class GlyphDetector {
 
     public static final String TAG = GlyphDetector.class.getSimpleName();
+    private static final double CANNY_THRESHOLD = 15;
+
     private final Mat hierarchyMat = new Mat();
     private PhoneOrientation phoneOrientation;
     private boolean debug;
     private List<MatOfPoint> glyphs;
-    private double CANNY_THRESHHOLD = 15;
+
     private Mat grayScaleMat = new Mat();
     private Mat canny = new Mat();
     private Mat structuringElement = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(5, 5));
@@ -53,7 +55,7 @@ public class GlyphDetector {
         Imgproc.pyrDown(grayScaleMat, grayScaleMat);
         Imgproc.pyrDown(grayScaleMat, grayScaleMat);
 
-        Imgproc.Canny(grayScaleMat, canny, CANNY_THRESHHOLD, CANNY_THRESHHOLD * 3);
+        Imgproc.Canny(grayScaleMat, canny, CANNY_THRESHOLD, CANNY_THRESHOLD * 3);
         Imgproc.morphologyEx(canny, processed, Imgproc.MORPH_CLOSE, structuringElement);
 
         findContours(processed);
