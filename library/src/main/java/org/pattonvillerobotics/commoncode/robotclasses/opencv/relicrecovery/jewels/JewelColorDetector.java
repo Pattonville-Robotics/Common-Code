@@ -257,6 +257,24 @@ public class JewelColorDetector {
         return new AnalysisResult(leftJewelColor, rightJewelColor);
     }
 
+    public AnalysisResult getAnalysis(boolean compareToTape) {
+        ColorSensorColor leftJewelColor = null;
+        ColorSensorColor rightJewelColor = null;
+
+        if (compareToTape) return getAnalysis();
+        if (redJewel == null || blueJewel == null) return new AnalysisResult();
+
+        if (redJewel.getX() < blueJewel.getX()) {
+            leftJewelColor = ColorSensorColor.RED;
+            rightJewelColor = ColorSensorColor.BLUE;
+        } else if (blueJewel.getX() < redJewel.getX()) {
+            rightJewelColor = ColorSensorColor.RED;
+            leftJewelColor = ColorSensorColor.BLUE;
+        }
+
+        return new AnalysisResult(leftJewelColor, rightJewelColor);
+    }
+
     public void setAnalysisMode(JewelAnalysisMode analysisMode) {
         this.analysisMode = analysisMode;
     }
