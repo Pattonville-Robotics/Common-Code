@@ -19,8 +19,8 @@ public class GyroEncoderDrive extends EncoderDrive {
 
     private static final double ANGLE_THRESHOLD = 1;
 
-    public BNO055IMU imu = null;
-    public Orientation angles;
+    private BNO055IMU imu = null;
+    private Orientation angles;
     public GyroEncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, RobotParameters robotParameters) {
         super(hardwareMap, linearOpMode, robotParameters);
 
@@ -49,9 +49,10 @@ public class GyroEncoderDrive extends EncoderDrive {
         this.gyroTurnDegrees(direction, degrees, speed);
     }
 
-    public void gyroTurnDegrees(Direction direction, double angle, double speed) {
+    private void gyroTurnDegrees(Direction direction, double angle, double speed) {
         //Turn Specified Degrees Using Gyro Sensor
 
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double currentHeading = angles.firstAngle;
         double targetHeading;
         Direction currentDirection = direction;
@@ -76,6 +77,8 @@ public class GyroEncoderDrive extends EncoderDrive {
             if (newDirection != currentDirection)
                 numOvershoots++;
             turn(currentDirection, speed / (numOvershoots + 1));
+
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             currentHeading = angles.firstAngle;
             headingsTelemetryItem.setValue("Headings", "Current Heading: " + currentHeading + "& Target Heading: " + targetHeading);
 
