@@ -12,6 +12,8 @@ import org.pattonvillerobotics.commoncode.robotclasses.BeaconColorSensor;
  * Created by developer on 9/10/16.
  */
 
+// Test
+
 @TeleOp(name = "Partial Color Sensor Test", group = "Common")
 @Disabled
 public class BeaconColorSensorTest extends LinearOpMode {
