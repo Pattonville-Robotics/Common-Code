@@ -2,29 +2,41 @@ package org.pattonvillerobotics.commoncode.robotclasses.drive;
 
 import android.util.Log;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.pattonvillerobotics.commoncode.enums.Direction;
 
 public class GyroEncoderDrive extends EncoderDrive {
 
     private static final double ANGLE_THRESHOLD = 1;
 
-    public ModernRoboticsI2cGyro gyroSensor = null;
-
+    public BNO055IMU imu = null;
+    public Orientation angles;
     public GyroEncoderDrive(HardwareMap hardwareMap, LinearOpMode linearOpMode, RobotParameters robotParameters) {
         super(hardwareMap, linearOpMode, robotParameters);
 
-        gyroSensor = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
-        gyroSensor.calibrate();
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
-        while (gyroSensor.isCalibrating() && !linearOpMode.isStopRequested()) {
-            linearOpMode.idle();
-        }
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
     }
 
     @Override
@@ -40,7 +52,7 @@ public class GyroEncoderDrive extends EncoderDrive {
     public void gyroTurnDegrees(Direction direction, double angle, double speed) {
         //Turn Specified Degrees Using Gyro Sensor
 
-        double currentHeading = gyroSensor.getIntegratedZValue();
+        double currentHeading = angles.firstAngle;
         double targetHeading;
         Direction currentDirection = direction;
         int numOvershoots = 0;
@@ -64,7 +76,7 @@ public class GyroEncoderDrive extends EncoderDrive {
             if (newDirection != currentDirection)
                 numOvershoots++;
             turn(currentDirection, speed / (numOvershoots + 1));
-            currentHeading = gyroSensor.getIntegratedZValue();
+            currentHeading = angles.firstAngle;
             headingsTelemetryItem.setValue("Headings", "Current Heading: " + currentHeading + "& Target Heading: " + targetHeading);
 
             if (numOvershoots > 5)
@@ -72,7 +84,7 @@ public class GyroEncoderDrive extends EncoderDrive {
         }
 
         telemetry("Drive", "Angle obtained, stopping motors.");
-        Log.i("GyroHeading", Double.toString(gyroSensor.getIntegratedZValue()));
+        Log.i("GyroHeading", Double.toString(currentHeading));
 
         stop();
     }
