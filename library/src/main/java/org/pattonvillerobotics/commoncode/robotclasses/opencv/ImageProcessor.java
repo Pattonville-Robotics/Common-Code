@@ -1,5 +1,6 @@
 package org.pattonvillerobotics.commoncode.robotclasses.opencv;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
@@ -21,36 +22,43 @@ public final class ImageProcessor {
 
     private static boolean initialized;
 
-    private ImageProcessor() {}
+    private ImageProcessor() {
+    }
 
-    public static void initOpenCV(HardwareMap hardwareMap, LinearOpMode opMode) {
-        BaseLoaderCallback baseLoaderCallback = null;
+    public static boolean initOpenCV(HardwareMap hardwareMap, LinearOpMode opMode) {
+        return initOpenCV(hardwareMap.appContext, opMode);
+    }
+
+    public static boolean initOpenCV(Context context, LinearOpMode opMode) {
+        final BaseLoaderCallback baseLoaderCallback;
 
         try {
-            baseLoaderCallback = new BaseLoaderCallback(hardwareMap.appContext) {
+            baseLoaderCallback = new BaseLoaderCallback(context) {
                 @Override
                 public void onManagerConnected(int status) {
                     switch (status) {
                         case LoaderCallbackInterface.SUCCESS:
                             Log.i(TAG, "OpenCV Loaded Successfully!");
                             initialized = true;
+                            super.onManagerConnected(status);
                             break;
                         default:
                             super.onManagerConnected(status);
+                            break;
                     }
                 }
             };
         } catch (NullPointerException e) {
-            Log.e(TAG, "Failed to load OpenCV app, it can be found on the playstore.");
+            Log.e(TAG, "Failed to load OpenCV app, it can be found on the Google Play store.", e);
+            return false;
         }
 
         if (!OpenCVLoader.initDebug()) {
             Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-            boolean success = OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, hardwareMap.appContext, baseLoaderCallback);
+            boolean success = OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, context, baseLoaderCallback);
             if (!success) {
                 Log.e(TAG, "Asynchronous initialization failed!");
-                Log.e(TAG, "Could not initialize OpenCV!\r\n" +
-                        "Did you install the OpenCV Manager from the Play Store?");
+                Log.e(TAG, "Could not initialize OpenCV! Did you install the OpenCV Manager from the Google Play Store?");
             } else {
                 Log.d(TAG, "Asynchronous initialization succeeded!");
             }
@@ -60,7 +68,7 @@ public final class ImageProcessor {
                 baseLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
             else {
                 Log.e(TAG, "Failed to load OpenCV from package!");
-                return;
+                return false;
             }
         }
 
@@ -71,6 +79,8 @@ public final class ImageProcessor {
                 e.printStackTrace();
             }
         }
+
+        return initialized;
     }
 
     public static boolean isInitialized() {
@@ -80,7 +90,7 @@ public final class ImageProcessor {
     /**
      * Converts the Bitmap to a Mat and then rotates the image based off of the phone's orientation.
      *
-     * @param bitmap A bitmap from taken from vuforia
+     * @param bitmap      A bitmap from taken from vuforia
      * @param orientation The current orientation of the phone on the robot
      * @return a Mat of the bitmap in the correct orientation
      */
@@ -88,7 +98,7 @@ public final class ImageProcessor {
         Mat tmp = new Mat();
         Utils.bitmapToMat(bitmap, tmp);
 
-        Mat rotMat = Imgproc.getRotationMatrix2D(new Point(tmp.cols()/2, tmp.rows()/2), orientation.getRotation(), 1.0);
+        Mat rotMat = Imgproc.getRotationMatrix2D(new Point(tmp.cols() / 2, tmp.rows() / 2), orientation.getRotation(), 1.0);
         Mat rotated = new Mat();
         Imgproc.warpAffine(tmp, rotated, rotMat, tmp.size());
 
