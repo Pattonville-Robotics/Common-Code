@@ -6,7 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.pattonvillerobotics.commoncode.robotclasses.opencv.ImageProcessor;
-import org.pattonvillerobotics.commoncode.robotclasses.opencv.JewelColorDetector;
+import org.pattonvillerobotics.commoncode.robotclasses.opencv.relicrecovery.jewels.JewelAnalysisMode;
+import org.pattonvillerobotics.commoncode.robotclasses.opencv.relicrecovery.jewels.JewelColorDetector;
 import org.pattonvillerobotics.commoncode.robotclasses.opencv.util.PhoneOrientation;
 import org.pattonvillerobotics.commoncode.robotclasses.vuforia.VuforiaNavigation;
 import org.pattonvillerobotics.commoncode.robotclasses.vuforia.VuforiaParameters;
@@ -31,16 +32,22 @@ public class OpenCVTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         ImageProcessor.initOpenCV(hardwareMap, this);
 
-        jewelColorDetector = new JewelColorDetector(PhoneOrientation.PORTRAIT);
+        jewelColorDetector = new JewelColorDetector(PhoneOrientation.LANDSCAPE_INVERSE, JewelAnalysisMode.FAST, true);
         vuforia = new VuforiaNavigation(VUFORIA_PARAMETERS);
 
-        JewelColorDetector.Analysis analysis;
+        JewelColorDetector.AnalysisResult analysis;
+
+        long startTime, endTime;
 
         waitForStart();
 
         while (opModeIsActive()) {
+            startTime = System.currentTimeMillis();
             jewelColorDetector.process(vuforia.getImage());
             analysis = jewelColorDetector.getAnalysis();
+            endTime = System.currentTimeMillis();
+
+            telemetry.addData("Time: ", endTime - startTime);
 
             telemetry.addData("Left: ", analysis.leftJewelColor);
             telemetry.addData("Right: ", analysis.rightJewelColor);
