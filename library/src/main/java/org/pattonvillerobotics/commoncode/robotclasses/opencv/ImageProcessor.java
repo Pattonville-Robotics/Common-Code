@@ -83,6 +83,10 @@ public final class ImageProcessor {
         return initialized;
     }
 
+    public static boolean isInitialized() {
+        return initialized;
+    }
+
     /**
      * Converts the Bitmap to a Mat and then rotates the image based off of the phone's orientation.
      *
@@ -97,8 +101,6 @@ public final class ImageProcessor {
         Mat rotMat = Imgproc.getRotationMatrix2D(new Point(tmp.cols() / 2, tmp.rows() / 2), orientation.getRotation(), 1.0);
         Mat rotated = new Mat();
         Imgproc.warpAffine(tmp, rotated, rotMat, tmp.size());
-
-        Log.i("Jewel", "Rotated.");
 
         return rotated;
     }
