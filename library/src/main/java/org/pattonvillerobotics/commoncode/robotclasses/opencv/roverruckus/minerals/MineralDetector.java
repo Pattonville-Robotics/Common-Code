@@ -68,11 +68,11 @@ public class MineralDetector {
             Imgproc.drawContours(rgbaMat, temp, -1, new Scalar(0, 0, 255), 3);
 
             Imgproc.putText(rgbaMat, "Contour Area: "+Imgproc.contourArea(temp.get(0)),
-                    new Point(rgbaMat.width()/2, rgbaMat.height()*3/4),
+                    new Point(rgbaMat.width()/4, rgbaMat.height()*3/4),
                     Core.FONT_HERSHEY_PLAIN, 3, new Scalar(0, 255, 0), 3);
 
             Imgproc.putText(rgbaMat, "Contour Area: "+Imgproc.contourArea(temp.get(1)),
-                    new Point(rgbaMat.width()/2, rgbaMat.height()/4),
+                    new Point(rgbaMat.width()/4, rgbaMat.height()/4),
                     Core.FONT_HERSHEY_PLAIN, 3, new Scalar(0, 0, 255), 3);
 
             FileOutputStream out;
