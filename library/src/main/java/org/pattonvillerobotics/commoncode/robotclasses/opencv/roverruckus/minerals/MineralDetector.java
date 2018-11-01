@@ -62,18 +62,26 @@ public class MineralDetector {
 
         if(debug) {
             ArrayList<MatOfPoint> temp = new ArrayList<>();
-            temp.add(Contour.findLargestContour(goldDetector.getContours()));
-            temp.add(Contour.findLargestContour(silverDetector.getContours()));
 
-            Imgproc.drawContours(rgbaMat, temp, -1, new Scalar(0, 0, 255), 3);
+            ArrayList<MatOfPoint> largestGoldContour = new ArrayList<>();
+            ArrayList<MatOfPoint> largestSilverContour = new ArrayList<>();
+
+            temp.add(Contour.findLargestContour(goldDetector.getContours()));
+            largestGoldContour.add(Contour.findLargestContour(goldDetector.getContours()));
+
+            temp.add(Contour.findLargestContour(silverDetector.getContours()));
+            largestSilverContour.add(Contour.findLargestContour(silverDetector.getContours()));
+
+            Imgproc.drawContours(rgbaMat, largestGoldContour, -1, new Scalar(230, 180, 30), 3);
+            Imgproc.drawContours(rgbaMat, largestSilverContour, -1, new Scalar(255, 255, 255), 3);
 
             Imgproc.putText(rgbaMat, "Contour Area: "+Imgproc.contourArea(temp.get(0)),
                     new Point(rgbaMat.width()/4, rgbaMat.height()*3/4),
-                    Core.FONT_HERSHEY_PLAIN, 3, new Scalar(0, 255, 0), 3);
+                    Core.FONT_HERSHEY_PLAIN, 3, new Scalar(230, 180, 30), 3);
 
             Imgproc.putText(rgbaMat, "Contour Area: "+Imgproc.contourArea(temp.get(1)),
                     new Point(rgbaMat.width()/4, rgbaMat.height()/4),
-                    Core.FONT_HERSHEY_PLAIN, 3, new Scalar(0, 0, 255), 3);
+                    Core.FONT_HERSHEY_PLAIN, 3, new Scalar(255, 255, 255), 3);
 
             FileOutputStream out;
             Bitmap bmp = Bitmap.createBitmap(rgbaMat.width(), rgbaMat.height(), Bitmap.Config.RGB_565);
