@@ -116,17 +116,17 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
                 break;
             }
             case LEFT: {
-                targetPositionLeft = deltaPosition;
-                targetPositionRight = -deltaPosition;
-                targetPositionLeftRear = -deltaPosition;
-                targetPositionRightRear = deltaPosition;
-                break;
-            }
-            case RIGHT: {
                 targetPositionLeft = -deltaPosition;
                 targetPositionRight = deltaPosition;
                 targetPositionLeftRear = deltaPosition;
                 targetPositionRightRear = -deltaPosition;
+                break;
+            }
+            case RIGHT: {
+                targetPositionLeft = deltaPosition;
+                targetPositionRight = -deltaPosition;
+                targetPositionLeftRear = -deltaPosition;
+                targetPositionRightRear = deltaPosition;
                 break;
             }
             default:
@@ -186,17 +186,17 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
 
         switch (direction) {
             case LEFT: {
-                targetPositionLeft = -deltaPosition;
-                targetPositionRight = deltaPosition;
-                targetPositionLeftRear = -deltaPosition;
-                targetPositionRightRear = deltaPosition;
-                break;
-            }
-            case RIGHT: {
                 targetPositionLeft = deltaPosition;
                 targetPositionRight = -deltaPosition;
                 targetPositionLeftRear = deltaPosition;
                 targetPositionRightRear = -deltaPosition;
+                break;
+            }
+            case RIGHT: {
+                targetPositionLeft = -deltaPosition;
+                targetPositionRight = deltaPosition;
+                targetPositionLeftRear = -deltaPosition;
+                targetPositionRightRear = deltaPosition;
                 break;
             }
             default:
