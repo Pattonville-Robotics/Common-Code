@@ -7,6 +7,7 @@ import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
@@ -61,34 +62,49 @@ public class MineralDetector {
         silverDetector.process(rgbaMat);
 
         if(debug) {
+            // Holder arrays because latter methods require arrays of contours
             ArrayList<MatOfPoint> temp = new ArrayList<>();
 
             ArrayList<MatOfPoint> largestGoldContour = new ArrayList<>();
             ArrayList<MatOfPoint> largestSilverContour = new ArrayList<>();
 
+            // adding the largest contours to the holder arrays
             temp.add(Contour.findLargestContour(goldDetector.getContours()));
             largestGoldContour.add(Contour.findLargestContour(goldDetector.getContours()));
 
             temp.add(Contour.findLargestContour(silverDetector.getContours()));
             largestSilverContour.add(Contour.findLargestContour(silverDetector.getContours()));
 
+            // drawing contours on the original image in corresponding colors
             Imgproc.drawContours(rgbaMat, largestGoldContour, -1, new Scalar(230, 180, 30), 3);
             Imgproc.drawContours(rgbaMat, largestSilverContour, -1, new Scalar(255, 255, 255), 3);
 
+            // finding the center of the contours
+            Point goldCenter = new Point();
+            float[] goldRadius = new float[1];
+            Imgproc.minEnclosingCircle(new MatOfPoint2f(temp.get(0).toArray()), goldCenter, goldRadius);
+
+            Point silverCenter = new Point();
+            float[] silverRadius = new float[1];
+            Imgproc.minEnclosingCircle(new MatOfPoint2f(temp.get(1).toArray()), silverCenter, silverRadius);
+
+            // putting the contour area at the center of the contour
             Imgproc.putText(rgbaMat, "Contour Area: "+Imgproc.contourArea(temp.get(0)),
-                    new Point(rgbaMat.width()/4, rgbaMat.height()*3/4),
+                    new Point(goldCenter.x, goldCenter.y),
                     Core.FONT_HERSHEY_PLAIN, 3, new Scalar(230, 180, 30), 3);
 
             Imgproc.putText(rgbaMat, "Contour Area: "+Imgproc.contourArea(temp.get(1)),
-                    new Point(rgbaMat.width()/4, rgbaMat.height()/4),
+                    new Point(silverCenter.x, silverCenter.y),
                     Core.FONT_HERSHEY_PLAIN, 3, new Scalar(255, 255, 255), 3);
 
+            // creating the image file
             FileOutputStream out;
             Bitmap bmp = Bitmap.createBitmap(rgbaMat.width(), rgbaMat.height(), Bitmap.Config.RGB_565);
             Utils.matToBitmap(rgbaMat, bmp);
             Date date = new Date();
             String fileName = DateFormat.getDateTimeInstance().format(date) + ".png";
 
+            // saving the image file
             try {
                 out = new FileOutputStream(new File(Environment.getExternalStorageDirectory(), fileName));
                 bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
