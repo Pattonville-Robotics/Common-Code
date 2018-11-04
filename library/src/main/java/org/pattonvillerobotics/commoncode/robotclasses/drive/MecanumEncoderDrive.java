@@ -185,14 +185,14 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         int deltaPosition = (int) FastMath.round(inchesToTicks(inches));
 
         switch (direction) {
-            case LEFT: {
+            case CLOCKWISE: {
                 targetPositionLeft = deltaPosition;
                 targetPositionRight = -deltaPosition;
                 targetPositionLeftRear = deltaPosition;
                 targetPositionRightRear = -deltaPosition;
                 break;
             }
-            case RIGHT: {
+            case COUNTERCLOCKWISE: {
                 targetPositionLeft = -deltaPosition;
                 targetPositionRight = deltaPosition;
                 targetPositionLeftRear = -deltaPosition;
