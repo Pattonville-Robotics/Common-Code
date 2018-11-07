@@ -56,7 +56,7 @@ public class MineralDetector {
     public void process(Bitmap bitmap) {
         Mat rgbaMat = ImageProcessor.processBitmap(bitmap, phoneOrientation);
 
-        Rect rectCrop = new Rect(0, 0, rgbaMat.width(), rgbaMat.height()/4);
+        Rect rectCrop = new Rect(0, rgbaMat.height()*4/5, rgbaMat.width(), rgbaMat.height()/5);
 
         rgbaMat = new Mat(rgbaMat, rectCrop);
 
