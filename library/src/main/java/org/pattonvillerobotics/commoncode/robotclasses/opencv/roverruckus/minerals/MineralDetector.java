@@ -9,6 +9,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.pattonvillerobotics.commoncode.enums.ColorSensorColor;
@@ -54,6 +55,11 @@ public class MineralDetector {
 
     public void process(Bitmap bitmap) {
         Mat rgbaMat = ImageProcessor.processBitmap(bitmap, phoneOrientation);
+
+        Rect rectCrop = new Rect(0, 0, rgbaMat.width(), rgbaMat.height()/4);
+
+        rgbaMat = new Mat(rgbaMat, rectCrop);
+
         process(rgbaMat);
     }
 
