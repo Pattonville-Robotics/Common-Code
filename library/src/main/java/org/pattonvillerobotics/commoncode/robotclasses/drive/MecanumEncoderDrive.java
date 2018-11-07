@@ -185,14 +185,14 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         int deltaPosition = (int) FastMath.round(inchesToTicks(inches));
 
         switch (direction) {
-            case CLOCKWISE: {
+            case COUNTERCLOCKWISE: {
                 targetPositionLeft = deltaPosition;
                 targetPositionRight = -deltaPosition;
                 targetPositionLeftRear = deltaPosition;
                 targetPositionRightRear = -deltaPosition;
                 break;
             }
-            case COUNTERCLOCKWISE: {
+            case CLOCKWISE: {
                 targetPositionLeft = -deltaPosition;
                 targetPositionRight = deltaPosition;
                 targetPositionLeftRear = -deltaPosition;
@@ -200,7 +200,7 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
                 break;
             }
             default:
-                throw new IllegalArgumentException("Direction must be Direction.LEFT or Direction.RIGHT!");
+                throw new IllegalArgumentException("Direction must be Direction.CLOCKWISE or Direction.COUNTERCLOCKWISE!");
         }
 
         Log.e(TAG, "Setting motor modes");
