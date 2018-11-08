@@ -56,7 +56,7 @@ public class MineralDetector {
     public void process(Bitmap bitmap) {
         Mat rgbaMat = ImageProcessor.processBitmap(bitmap, phoneOrientation);
 
-        Rect rectCrop = new Rect(rgbaMat.width()/4, rgbaMat.height()*4/5, rgbaMat.width()*3/4, rgbaMat.height()/5);
+        Rect rectCrop = new Rect(0, rgbaMat.height()*4/5, rgbaMat.width(), rgbaMat.height()/5);
 
         rgbaMat = new Mat(rgbaMat, rectCrop);
 
@@ -74,39 +74,34 @@ public class MineralDetector {
             ArrayList<MatOfPoint> largestGoldContour = new ArrayList<>();
             ArrayList<MatOfPoint> largestSilverContour = new ArrayList<>();
 
-            if(Contour.findLargestContour(goldDetector.getContours()) != null) {
+            // adding the largest contours to the holder arrays
+            temp.add(Contour.findLargestContour(goldDetector.getContours()));
+            largestGoldContour.add(Contour.findLargestContour(goldDetector.getContours()));
 
-                // adding the largest contours to the holder arrays
-                temp.add(Contour.findLargestContour(goldDetector.getContours()));
-                largestGoldContour.add(Contour.findLargestContour(goldDetector.getContours()));
+            temp.add(Contour.findLargestContour(silverDetector.getContours()));
+            largestSilverContour.add(Contour.findLargestContour(silverDetector.getContours()));
 
-                // drawing contours on the original image in corresponding colors
-                Imgproc.drawContours(rgbaMat, largestGoldContour, -1, new Scalar(230, 180, 30), 3);
+            // drawing contours on the original image in corresponding colors
+            Imgproc.drawContours(rgbaMat, largestGoldContour, -1, new Scalar(230, 180, 30), 3);
+            Imgproc.drawContours(rgbaMat, largestSilverContour, -1, new Scalar(255, 255, 255), 3);
 
-                // finding the center of the contours
-                Point goldCenter = new Point();
-                float[] goldRadius = new float[1];
-                Imgproc.minEnclosingCircle(new MatOfPoint2f(temp.get(0).toArray()), goldCenter, goldRadius);
+            // finding the center of the contours
+            Point goldCenter = new Point();
+            float[] goldRadius = new float[1];
+            Imgproc.minEnclosingCircle(new MatOfPoint2f(temp.get(0).toArray()), goldCenter, goldRadius);
 
-                // putting the contour area at the center of the contour
-                Imgproc.putText(rgbaMat, "Contour Area: "+Imgproc.contourArea(temp.get(0)),
-                        new Point(goldCenter.x, goldCenter.y),
-                        Core.FONT_HERSHEY_PLAIN, 3, new Scalar(230, 180, 30), 3);
-            }
-            if(Contour.findLargestContour(silverDetector.getContours()) != null) {
-                temp.add(Contour.findLargestContour(silverDetector.getContours()));
-                largestSilverContour.add(Contour.findLargestContour(silverDetector.getContours()));
+            Point silverCenter = new Point();
+            float[] silverRadius = new float[1];
+            Imgproc.minEnclosingCircle(new MatOfPoint2f(temp.get(1).toArray()), silverCenter, silverRadius);
 
-                Imgproc.drawContours(rgbaMat, largestSilverContour, -1, new Scalar(255, 255, 255), 3);
+            // putting the contour area at the center of the contour
+            Imgproc.putText(rgbaMat, "Contour Area: "+Imgproc.contourArea(temp.get(0)),
+                    new Point(goldCenter.x, goldCenter.y),
+                    Core.FONT_HERSHEY_PLAIN, 3, new Scalar(230, 180, 30), 3);
 
-                Point silverCenter = new Point();
-                float[] silverRadius = new float[1];
-                Imgproc.minEnclosingCircle(new MatOfPoint2f(temp.get(1).toArray()), silverCenter, silverRadius);
-
-                Imgproc.putText(rgbaMat, "Contour Area: "+Imgproc.contourArea(temp.get(1)),
-                        new Point(silverCenter.x, silverCenter.y),
-                        Core.FONT_HERSHEY_PLAIN, 3, new Scalar(255, 255, 255), 3);
-            }
+            Imgproc.putText(rgbaMat, "Contour Area: "+Imgproc.contourArea(temp.get(1)),
+                    new Point(silverCenter.x, silverCenter.y),
+                    Core.FONT_HERSHEY_PLAIN, 3, new Scalar(255, 255, 255), 3);
 
             // creating the image file
             FileOutputStream out;
@@ -129,15 +124,8 @@ public class MineralDetector {
     }
 
     public ColorSensorColor getAnalysis() {
-        if(Contour.findLargestContour(goldDetector.getContours()) != null &&
-                Contour.findLargestContour(silverDetector.getContours()) != null) {
-            if(Imgproc.contourArea(Contour.findLargestContour(goldDetector.getContours())) >
-                    Imgproc.contourArea(Contour.findLargestContour(silverDetector.getContours()))) {
-                return ColorSensorColor.YELLOW;
-            } else {
-                return ColorSensorColor.WHITE;
-            }
-        } else if(Contour.findLargestContour(goldDetector.getContours()) != null) {
+        if(Imgproc.contourArea(Contour.findLargestContour(goldDetector.getContours())) >
+                Imgproc.contourArea(Contour.findLargestContour(silverDetector.getContours()))) {
             return ColorSensorColor.YELLOW;
         } else {
             return ColorSensorColor.WHITE;
