@@ -127,7 +127,7 @@ public class MineralDetector {
         if(Contour.findLargestContour(goldDetector.getContours()) != null &&
                 Contour.findLargestContour(silverDetector.getContours()) != null) {
             if(Imgproc.contourArea(Contour.findLargestContour(goldDetector.getContours())) >
-                    Imgproc.contourArea(Contour.findLargestContour(silverDetector.getContours()))) {
+                    8000) {
                 return ColorSensorColor.YELLOW;
             } else {
                 return ColorSensorColor.WHITE;
