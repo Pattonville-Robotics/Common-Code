@@ -5,6 +5,6 @@ package org.pattonvillerobotics.commoncode.enums;
  */
 public enum ColorSensorColor {
 
-    RED, BLUE, GREEN
+    RED, BLUE, GREEN, WHITE, YELLOW
 
 }

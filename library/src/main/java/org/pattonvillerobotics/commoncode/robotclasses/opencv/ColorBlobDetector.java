@@ -45,8 +45,14 @@ public class ColorBlobDetector {
             case GREEN:
                 setHSVBounds(new Scalar(45, 40, 0), new Scalar(75, 255, 255));
                 break;
+            case YELLOW:
+                setHSVBounds(new Scalar(10, 160, 160), new Scalar(50, 255, 255));
+                break;
+            case WHITE:
+                setHSVBounds(new Scalar(5, 0, 160), new Scalar(40, 70, 255));
+                break;
             default:
-                throw new IllegalArgumentException("Must provide RED, BLUE, or GREEN!");
+                throw new IllegalArgumentException("Must provide RED, BLUE, GREEN, YELLOW, or WHITE!");
         }
     }
 

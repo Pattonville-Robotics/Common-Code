@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
@@ -40,10 +39,10 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         this.leftRearMotor = secondaryLeftDriveMotor.get();
         this.rightRearMotor = secondaryRightDriveMotor.get();
 
-        this.leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        this.rightRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        this.leftDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        this.rightDriveMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.leftRearMotor.setDirection(robotParameters.getLeftDriveMotorDirection());
+        this.rightRearMotor.setDirection(robotParameters.getRightDriveMotorDirection());
+        this.leftDriveMotor.setDirection(robotParameters.getLeftDriveMotorDirection());
+        this.rightDriveMotor.setDirection(robotParameters.getRightDriveMotorDirection());
     }
 
     /**
@@ -116,17 +115,17 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
                 break;
             }
             case LEFT: {
-                targetPositionLeft = deltaPosition;
-                targetPositionRight = -deltaPosition;
-                targetPositionLeftRear = -deltaPosition;
-                targetPositionRightRear = deltaPosition;
-                break;
-            }
-            case RIGHT: {
                 targetPositionLeft = -deltaPosition;
                 targetPositionRight = deltaPosition;
                 targetPositionLeftRear = deltaPosition;
                 targetPositionRightRear = -deltaPosition;
+                break;
+            }
+            case RIGHT: {
+                targetPositionLeft = deltaPosition;
+                targetPositionRight = -deltaPosition;
+                targetPositionLeftRear = -deltaPosition;
+                targetPositionRightRear = deltaPosition;
                 break;
             }
             default:
@@ -185,22 +184,22 @@ public class MecanumEncoderDrive extends QuadEncoderDrive {
         int deltaPosition = (int) FastMath.round(inchesToTicks(inches));
 
         switch (direction) {
-            case LEFT: {
-                targetPositionLeft = -deltaPosition;
-                targetPositionRight = deltaPosition;
-                targetPositionLeftRear = -deltaPosition;
-                targetPositionRightRear = deltaPosition;
-                break;
-            }
-            case RIGHT: {
+            case COUNTERCLOCKWISE: {
                 targetPositionLeft = deltaPosition;
                 targetPositionRight = -deltaPosition;
                 targetPositionLeftRear = deltaPosition;
                 targetPositionRightRear = -deltaPosition;
                 break;
             }
+            case CLOCKWISE: {
+                targetPositionLeft = -deltaPosition;
+                targetPositionRight = deltaPosition;
+                targetPositionLeftRear = -deltaPosition;
+                targetPositionRightRear = deltaPosition;
+                break;
+            }
             default:
-                throw new IllegalArgumentException("Direction must be Direction.LEFT or Direction.RIGHT!");
+                throw new IllegalArgumentException("Direction must be Direction.CLOCKWISE or Direction.COUNTERCLOCKWISE!");
         }
 
         Log.e(TAG, "Setting motor modes");
