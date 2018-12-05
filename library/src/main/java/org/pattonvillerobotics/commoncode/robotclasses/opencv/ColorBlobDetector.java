@@ -29,11 +29,22 @@ public class ColorBlobDetector {
         setHSVBounds(color);
     }
 
+    /**
+     * Sets the bounds of color to look for during processing
+     *
+     * @param lower lower bounds of color
+     * @param upper upper bounds of color
+     */
     public void setHSVBounds(Scalar lower, Scalar upper) {
         lowerBoundHSV = lower;
         upperBoundHSV = upper;
     }
 
+    /**
+     * Sets the bounds of color to look for during processing from default list of tested values
+     *
+     * @param color enum to select a default color to search for
+     */
     public void setHSVBounds(ColorSensorColor color) {
         switch (color) {
             case RED:
@@ -56,6 +67,12 @@ public class ColorBlobDetector {
         }
     }
 
+    /**
+     * Processes the image to find contours of the blobs of the target color, adds them to
+     * contours
+     *
+     * @param rgbaMat image to process
+     */
     public void process(Mat rgbaMat) {
         Imgproc.pyrDown(rgbaMat, blurMat);
         Imgproc.pyrDown(blurMat, blurMat);
