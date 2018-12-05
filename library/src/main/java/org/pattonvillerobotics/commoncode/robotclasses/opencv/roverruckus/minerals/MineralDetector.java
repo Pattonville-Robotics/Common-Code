@@ -29,6 +29,8 @@ public class MineralDetector {
     private ColorBlobDetector goldDetector, silverDetector;
     private PhoneOrientation phoneOrientation;
 
+    private static final int MINIMUM_GOLD_MINERAL_SIZE = 8000;
+
     private boolean debug;
 
     public MineralDetector(PhoneOrientation phoneOrientation) {
@@ -53,6 +55,11 @@ public class MineralDetector {
         this.debug = debug;
     }
 
+    /**
+     * Converts bitmap to a Mat, while also cropping it, then processes it
+     *
+     * @param bitmap image to process
+     */
     public void process(Bitmap bitmap) {
         Mat rgbaMat = ImageProcessor.processBitmap(bitmap, phoneOrientation);
 
@@ -63,6 +70,11 @@ public class MineralDetector {
         process(rgbaMat);
     }
 
+    /**
+     * Processes the image using both ColorBlobDetectors, saves the image to the phone if debugging
+     *
+     * @param rgbaMat image to process
+     */
     public void process(Mat rgbaMat) {
         goldDetector.process(rgbaMat);
         silverDetector.process(rgbaMat);
@@ -123,11 +135,17 @@ public class MineralDetector {
         }
     }
 
+    /**
+     * Checks if there is a contour of size greater than the minimum gold mineral size to tell
+     * whether the mineral being looked at is gold or not
+     *
+     * @return {@link ColorSensorColor} used to know whether the mineral is gold or not
+     */
     public ColorSensorColor getAnalysis() {
         if(Contour.findLargestContour(goldDetector.getContours()) != null &&
                 Contour.findLargestContour(silverDetector.getContours()) != null) {
             if(Imgproc.contourArea(Contour.findLargestContour(goldDetector.getContours())) >
-                    8000) {
+                    MINIMUM_GOLD_MINERAL_SIZE) {
                 return ColorSensorColor.YELLOW;
             } else {
                 return ColorSensorColor.WHITE;
