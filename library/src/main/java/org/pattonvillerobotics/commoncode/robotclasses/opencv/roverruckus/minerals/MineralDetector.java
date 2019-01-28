@@ -3,6 +3,7 @@ package org.pattonvillerobotics.commoncode.robotclasses.opencv.roverruckus.miner
 import android.graphics.Bitmap;
 import android.os.Environment;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -15,6 +16,8 @@ import org.opencv.imgproc.Imgproc;
 import org.pattonvillerobotics.commoncode.enums.ColorSensorColor;
 import org.pattonvillerobotics.commoncode.robotclasses.opencv.ColorBlobDetector;
 import org.pattonvillerobotics.commoncode.robotclasses.opencv.ImageProcessor;
+import org.pattonvillerobotics.commoncode.robotclasses.opencv.roverruckus.minerals.MineralAnalyzer;
+import org.pattonvillerobotics.commoncode.robotclasses.opencv.roverruckus.minerals.MineralPosition;
 import org.pattonvillerobotics.commoncode.robotclasses.opencv.util.Contour;
 import org.pattonvillerobotics.commoncode.robotclasses.opencv.util.PhoneOrientation;
 
@@ -26,10 +29,13 @@ import java.util.Date;
 
 public class MineralDetector {
 
-    private ColorBlobDetector goldDetector, silverDetector;
+    public ColorBlobDetector goldDetector, silverDetector;
     private PhoneOrientation phoneOrientation;
 
-    private static final int MINIMUM_GOLD_MINERAL_SIZE = 8000;
+    private Vector3D goldMineral, silverMineral;
+
+    private static final int MINIMUM_GOLD_MINERAL_SIZE = 16000;
+    private static int horizontalImageWidth;
 
     private boolean debug;
 
@@ -62,12 +68,20 @@ public class MineralDetector {
      */
     public void process(Bitmap bitmap) {
         Mat rgbaMat = ImageProcessor.processBitmap(bitmap, phoneOrientation);
-
-        Rect rectCrop = new Rect(rgbaMat.width()/5, rgbaMat.height()*3/5, rgbaMat.width()*3/5, rgbaMat.height()*2/5);
-
-        rgbaMat = new Mat(rgbaMat, rectCrop);
-
-        process(rgbaMat);
+        Rect rectCrop;
+        switch (phoneOrientation) {
+            case PORTRAIT:
+            case PORTRAIT_INVERSE:
+                rectCrop = new Rect(rgbaMat.width()/5, rgbaMat.height()*3/5, rgbaMat.width()*3/5, rgbaMat.height()*2/5);
+                rgbaMat = new Mat(rgbaMat, rectCrop);
+                process(rgbaMat);
+                break;
+            case LANDSCAPE:
+            case LANDSCAPE_INVERSE:
+                rectCrop = new Rect(0, rgbaMat.height()*3/4, rgbaMat.width(), rgbaMat.height()/4);
+                rgbaMat = new Mat(rgbaMat, rectCrop);
+                process(rgbaMat);
+        }
     }
 
     /**
@@ -78,6 +92,16 @@ public class MineralDetector {
     public void process(Mat rgbaMat) {
         goldDetector.process(rgbaMat);
         silverDetector.process(rgbaMat);
+
+        if (phoneOrientation == PhoneOrientation.LANDSCAPE_INVERSE || phoneOrientation == PhoneOrientation.LANDSCAPE) {
+            horizontalImageWidth = rgbaMat.width();
+            if (goldDetector.getContours().size() > 0) {
+                goldMineral = MineralAnalyzer.analyzeFast(Contour.findLargestContour(goldDetector.getContours()));
+            }
+            if (silverDetector.getContours().size() > 0) {
+                silverMineral = MineralAnalyzer.analyzeFast(Contour.findLargestContour(silverDetector.getContours()));
+            }
+        }
 
         if(debug) {
             ArrayList<MatOfPoint> largestGoldContour = new ArrayList<>();
@@ -97,7 +121,7 @@ public class MineralDetector {
                 Imgproc.minEnclosingCircle(new MatOfPoint2f(largestGoldContour.get(0).toArray()), goldCenter, goldRadius);
 
                 // putting the contour area at the center of the contour
-                Imgproc.putText(rgbaMat, "Contour Area: "+Imgproc.contourArea(largestGoldContour.get(0)),
+                Imgproc.putText(rgbaMat, "Contour Area: "+ Imgproc.contourArea(largestGoldContour.get(0)),
                         new Point(goldCenter.x, goldCenter.y),
                         Core.FONT_HERSHEY_PLAIN, 3, new Scalar(230, 180, 30), 3);
             }
@@ -110,7 +134,7 @@ public class MineralDetector {
                 float[] silverRadius = new float[1];
                 Imgproc.minEnclosingCircle(new MatOfPoint2f(largestSilverContour.get(0).toArray()), silverCenter, silverRadius);
 
-                Imgproc.putText(rgbaMat, "Contour Area: "+Imgproc.contourArea(largestSilverContour.get(0)),
+                Imgproc.putText(rgbaMat, "Contour Area: "+ Imgproc.contourArea(largestSilverContour.get(0)),
                         new Point(silverCenter.x, silverCenter.y),
                         Core.FONT_HERSHEY_PLAIN, 3, new Scalar(255, 255, 255), 3);
             }
@@ -141,7 +165,7 @@ public class MineralDetector {
      *
      * @return {@link ColorSensorColor} used to know whether the mineral is gold or not
      */
-    public ColorSensorColor getAnalysis() {
+    public ColorSensorColor getVerticalAnalysis() {
         if(Contour.findLargestContour(goldDetector.getContours()) != null &&
                 Contour.findLargestContour(silverDetector.getContours()) != null) {
             if(Imgproc.contourArea(Contour.findLargestContour(goldDetector.getContours())) >
@@ -154,6 +178,26 @@ public class MineralDetector {
             return ColorSensorColor.YELLOW;
         } else {
             return ColorSensorColor.WHITE;
+        }
+    }
+
+    public MineralPosition getHorizontalAnalysis() {
+        if (goldMineral != null && Imgproc.contourArea(Contour.findLargestContour(goldDetector.getContours())) >= MINIMUM_GOLD_MINERAL_SIZE) {
+            if (silverMineral != null) {
+                if(goldMineral.getX() < silverMineral.getX()) {
+                    return MineralPosition.MIDDLE;
+                } else {
+                    return MineralPosition.RIGHT;
+                }
+            } else {
+                if (goldMineral.getX() < horizontalImageWidth/2) {
+                    return MineralPosition.MIDDLE;
+                } else {
+                    return MineralPosition.RIGHT;
+                }
+            }
+        } else {
+            return MineralPosition.LEFT;
         }
     }
 }
