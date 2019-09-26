@@ -52,6 +52,7 @@ dependencies {
     //FTC
     implementation "com.github.modular-ftc:robotcore-repackaged:$ftc_version.0-lite"
     implementation "com.github.modular-ftc:ftc-common-repackaged:$ftc_version.0-lite"
+    implementation "com.github.modular-ftc:vuforia-repackaged:$ftc_version.0"
     implementation "org.first.ftc:hardware:$ftc_version"
 
     //Utilities
@@ -60,6 +61,10 @@ dependencies {
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'com.google.guava:guava:24.1-jre'
     implementation 'com.github.modular-ftc:opencv-repackaged:3.3.1'
+    
+    //Android
+    implementation 'com.android.support:support-annotations:28.0.0'
+
 
     testImplementation 'junit:junit:4.12'
 
