@@ -50,9 +50,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     //FTC
-    implementation "com.github.modular-ftc:robotcore-repackaged:$ftc_version.0-lite"
-    implementation "com.github.modular-ftc:ftc-common-repackaged:$ftc_version.0-lite"
-    implementation "com.github.modular-ftc:vuforia-repackaged:$ftc_version.0"
+    implementation "com.github.modular-ftc:robotcore-repackaged:$ftc_version.1-lite"
+    implementation "com.github.modular-ftc:ftc-common-repackaged:$ftc_version.1-lite"
+    implementation "com.github.modular-ftc:vuforia-repackaged:$ftc_version.1"
     implementation "org.first.ftc:hardware:$ftc_version"
 
     //Utilities
